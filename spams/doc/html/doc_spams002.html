@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+
+<META name="Author" content="Julien Mairal">
+<link rel="stylesheet" href="doc_spams.css">
+<LINK rel="stylesheet" type="text/css" href="doc_spams.css">
+<TITLE>Introduction</TITLE>
+</HEAD>
+<BODY >
+<A HREF="doc_spams001.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="doc_spams003.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H2 CLASS="section"><A NAME="htoc1">1</A>  Introduction</H2><P>
+SPAMS (SPArse Modeling Software) is an open-source optimization toolbox under
+licence GPLv3. It implements algorithms for solving various machine learning
+and signal processing problems involving sparse regularizations.</P><P>The library is coded in C++, is compatible with Linux, Mac, and Windows 32bits
+and 64bits Operating Systems. It is interfaced with Matlab, but can be called
+from any C++ application. A R and Python interface has been developed by
+Jean-Paul Chieze.</P><P>It requires an implementation of BLAS and LAPACK for performing efficient
+linear algebra operations such as the one provided by matlab/R, atlas, netlib,
+or the one provided by Intel (Math Kernel Library). It also exploits
+multi-core CPUs when this feature is supported by the compiler, through
+OpenMP.</P><P>The current licence is GPLv3 available at
+<TT>http://www.gnu.org/licenses/gpl.html</TT>, which limits its usage. For other
+usages (such as the use in proprietary softwares), please contact the author.</P><P>Version 2.3 of SPAMS is divided into three “toolboxes” and has a few
+additional miscellaneous functions:
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+The <B>Dictionary learning and matrix factorization toolbox</B>
+contains the online learning technique of [<A HREF="doc_spams009.html#mairal7">19</A>, <A HREF="doc_spams009.html#mairal9">20</A>] and its
+variants for solving various matrix factorization problems:
+<UL CLASS="itemize"><LI CLASS="li-itemize">
+dictionary Learning for sparse coding;
+</LI><LI CLASS="li-itemize">sparse principal component analysis (seen as a sparse matrix factorization problem);
+</LI><LI CLASS="li-itemize">non-negative matrix factorization;
+</LI><LI CLASS="li-itemize">non-negative sparse coding.
+</LI></UL>
+</LI><LI CLASS="li-itemize">The <B>Sparse decomposition toolbox</B> contains efficient implementations of
+<UL CLASS="itemize"><LI CLASS="li-itemize">
+Orthogonal Matching Pursuit, (or Forward Selection) [<A HREF="doc_spams009.html#weisberg">32</A>, <A HREF="doc_spams009.html#mallat4">24</A>];
+</LI><LI CLASS="li-itemize">the LARS/homotopy algorithm [<A >27</A>, <A HREF="doc_spams009.html#efron">8</A>] (variants for solving Lasso and Elastic-Net problems);
+</LI><LI CLASS="li-itemize">a weighted version of LARS; 
+</LI><LI CLASS="li-itemize">OMP and LARS when data come with a binary mask;
+</LI><LI CLASS="li-itemize">a coordinate-descent algorithm for ℓ<SUB>1</SUB>-decomposition problems [<A HREF="doc_spams009.html#fu">11</A>, <A HREF="doc_spams009.html#friedman">9</A>, <A HREF="doc_spams009.html#wu">33</A>]; 
+</LI><LI CLASS="li-itemize">a greedy solver for simultaneous signal approximation as defined in [<A HREF="doc_spams009.html#tropp2">31</A>, <A HREF="doc_spams009.html#tropp3">30</A>] (SOMP);
+</LI><LI CLASS="li-itemize">a solver for simulatneous signal approximation with ℓ<SUB>1</SUB>/ℓ<SUB>2</SUB>-regularization based on block-coordinate descent;
+</LI><LI CLASS="li-itemize">a homotopy method for the Fused-Lasso Signal Approximation as defined in [<A HREF="doc_spams009.html#friedman">9</A>] with the homotopy method presented in the appendix of [<A HREF="doc_spams009.html#mairal9">20</A>];
+</LI><LI CLASS="li-itemize">a tool for projecting efficiently onto a few convex sets
+inducing sparsity such as the ℓ<SUB>1</SUB>-ball using the method of
+[<A HREF="doc_spams009.html#brucker">3</A>, <A HREF="doc_spams009.html#maculan">17</A>, <A HREF="doc_spams009.html#duchi">7</A>], and Elastic-Net or Fused Lasso constraint sets as
+proposed in the appendix of [<A HREF="doc_spams009.html#mairal9">20</A>].
+</LI></UL>
+</LI><LI CLASS="li-itemize">The <B>Proximal toolbox</B>: An implementation of proximal methods
+(ISTA and FISTA [<A HREF="doc_spams009.html#beck">1</A>]) for solving a large class of sparse approximation
+problems with different combinations of loss and regularizations. One of the main
+features of this toolbox is to provide a robust stopping criterion based on
+<EM>duality gaps</EM> to control the quality of the optimization, whenever
+possible. It also handles sparse feature matrices for large-scale problems. The following regularizations are implemented:
+<UL CLASS="itemize"><LI CLASS="li-itemize">
+Tikhonov regularization (squared ℓ<SUB>2</SUB>-norm);
+</LI><LI CLASS="li-itemize">ℓ<SUB>1</SUB>-norm, ℓ<SUB>2</SUB>, ℓ<SUB>∞</SUB>-norms;
+</LI><LI CLASS="li-itemize">Elastic-Net [<A HREF="doc_spams009.html#zou">35</A>];
+</LI><LI CLASS="li-itemize">Fused Lasso [<A HREF="doc_spams009.html#tibshirani2">29</A>];
+</LI><LI CLASS="li-itemize">tree-structured sum of ℓ<SUB>2</SUB>-norms (see [<A HREF="doc_spams009.html#jenatton3">14</A>, <A HREF="doc_spams009.html#jenatton4">15</A>]);
+</LI><LI CLASS="li-itemize">tree-structured sum of ℓ<SUB>∞</SUB>-norms (see [<A HREF="doc_spams009.html#jenatton3">14</A>, <A HREF="doc_spams009.html#jenatton4">15</A>]);
+</LI><LI CLASS="li-itemize">general sum of ℓ<SUB>∞</SUB>-norms (see [<A HREF="doc_spams009.html#mairal10">21</A>, <A >22</A>]);
+</LI><LI CLASS="li-itemize">mixed ℓ<SUB>1</SUB>/ℓ<SUB>2</SUB>-norms on matrices [<A HREF="doc_spams009.html#yuan">34</A>, <A HREF="doc_spams009.html#obozinski">26</A>];
+</LI><LI CLASS="li-itemize">mixed ℓ<SUB>1</SUB>/ℓ<SUB>∞</SUB>-norms on matrices [<A HREF="doc_spams009.html#yuan">34</A>, <A HREF="doc_spams009.html#obozinski">26</A>];
+</LI><LI CLASS="li-itemize">mixed ℓ<SUB>1</SUB>/ℓ<SUB>2</SUB>-norms on matrices plus ℓ<SUB>1</SUB> [<A HREF="doc_spams009.html#sprechmann">28</A>, <A >10</A>];
+</LI><LI CLASS="li-itemize">mixed ℓ<SUB>1</SUB>/ℓ<SUB>∞</SUB>-norms on matrices plus ℓ<SUB>1</SUB>;
+</LI><LI CLASS="li-itemize">group-lasso with ℓ<SUB>2</SUB> or ℓ<SUB>∞</SUB>-norms;
+</LI><LI CLASS="li-itemize">group-lasso+ℓ<SUB>1</SUB>;
+</LI><LI CLASS="li-itemize">multi-task tree-structured sum of ℓ<SUB>∞</SUB>-norms (see [<A HREF="doc_spams009.html#mairal10">21</A>, <A >22</A>]);
+</LI><LI CLASS="li-itemize">trace norm;
+</LI><LI CLASS="li-itemize">ℓ<SUB>0</SUB> pseudo-norm (only with ISTA);
+</LI><LI CLASS="li-itemize">tree-structured ℓ<SUB>0</SUB> (only with ISTA);
+</LI><LI CLASS="li-itemize">rank regularization for matrices (only with ISTA);
+</LI><LI CLASS="li-itemize">the path-coding penalties of [<A >23</A>].
+</LI></UL>
+All of these regularization functions can be used with the following losses
+<UL CLASS="itemize"><LI CLASS="li-itemize">
+square loss;
+</LI><LI CLASS="li-itemize">square loss with missing observations; 
+</LI><LI CLASS="li-itemize">logistic loss, weighted logistic loss;
+</LI><LI CLASS="li-itemize">multi-class logistic.
+</LI></UL>
+This toolbox can also enforce non-negativity constraints, handle intercepts and
+sparse matrices. There are also a few additional undocumented functionalities,
+which are available in the source code.
+</LI><LI CLASS="li-itemize">A few tools for performing linear algebra operations such as a
+conjugate gradient algorithm, manipulating sparse matrices and graphs.
+</LI></UL><P>The toolbox was written by Julien Mairal when he was at INRIA, with the
+collaboration of Francis Bach (INRIA), Jean Ponce (Ecole Normale Supérieure),
+Guillermo Sapiro (University of Minnesota), Guillaume Obozinski (INRIA) and
+Rodolphe Jenatton (INRIA).</P><P>R and Python interfaces have been written by Jean-Paul Chieze (INRIA), and a
+few contributors have helped us making compilation scripts for various platforms.</P><HR>
+<A HREF="doc_spams001.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="doc_spams003.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

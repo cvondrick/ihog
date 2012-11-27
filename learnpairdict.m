@@ -1,0 +1,175 @@
+% learnpairdict(stream, n, k, size)
+%
+% This function learns a pair of dictionaries 'dgray' and 'dhog' to allow for
+% regression between HOG and grayscale images.
+%
+% Arguments:
+%   stream    List of filepaths where images are located
+%   n         Number of window patches to extract in total
+%   k         The size of the dictionary
+%   size      The size of the template patch to invert
+%   sbin      The HOG bin size
+% 
+% Returns a struct with fields:
+%   dgray     A dictionary of gray elements
+%   dhog      A dictionary of HOG elements
+
+function pd = learnpairdict(stream, n, k, dim, lambda, gamma, iterations, sbin),
+
+if ~exist('n', 'var'),
+   n = 100000;
+end
+if ~exist('k', 'var'),
+  k = 100;
+end
+if ~exist('dim', 'var'),
+  dim = [3 3];
+end
+if ~exist('lambda', 'var'),
+  lambda = 0.1;
+end
+if ~exist('gamma', 'var'),
+  gamma = 0.05;
+end
+if ~exist('iterations', 'var'),
+  iterations = 2000;
+end
+if ~exist('sbin', 'var'),
+  sbin = 8;
+end
+
+t = tic;
+
+stream = resolvestream(stream);
+
+[datagray, datahog] = getdata(stream, n, dim, sbin);
+
+fprintf('ihog: whiten data\n');
+datagray = whiten(datagray);
+datahog = whiten(datahog);
+
+[dgray, dhog] = lasso(datagray, datahog, k, iterations, lambda, gamma);
+
+pd.dgray = dgray;
+pd.dhog = dhog;
+pd.n = n;
+pd.k = k;
+pd.dim = dim;
+pd.sbin = sbin;
+pd.iterations = iterations;
+pd.lambda = 0.1;
+pd.gamma = gamma;
+
+fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
+
+
+
+% lasso(data)
+%
+% Learns the pair of dictionaries for the data terms.
+function [dgray, dhog] = lasso(datagray, datahog, k, iterations, lambda, gamma),
+
+data = [datagray; datahog];
+
+param.K = k;
+param.lambda = lambda;
+param.mode = 2;
+param.modeD = 0;
+param.gamma1 = gamma;
+param.iter = 100;
+param.numThreads = -1;
+param.verbose = 0;
+param.batchsize = 400;
+
+fprintf('ihog: lasso: ');
+model = struct();
+for i=1:(iterations/param.iter),
+  fprintf('.');
+  [dbig, model] = mexTrainDL(data, param, model);
+  model.iter = i*param.iter;
+  param.D = dbig;
+end
+fprintf('\n');
+
+dgray = dbig(1:size(datagray,1), :);
+dhog  = dbig(size(datagray,1)+1:end, :);
+
+
+
+% whiten(in)
+%
+% Whitens the input feature with zero mean and unit variance
+function out = whiten(in),
+out=bsxfun(@minus, in, mean(in)); 
+out=bsxfun(@rdivide, out, sqrt(sum(out.^2) + 1));
+
+
+
+% getdata(stream, n, dim, sbin)
+%
+% Reads in the stream and extracts windows along with their HOG features.
+function [datagray, datahog] = getdata(stream, n, dim, sbin),
+
+ny = dim(1);
+nx = dim(2);
+
+fprintf('ihog: initializing data stores\n');
+datahog = zeros(ny*nx*32, n);
+datagray = zeros((ny+2)*(nx+2)*sbin^2, n);
+c = 1;
+
+fprintf('ihog: loading data: ');
+while true,
+  for i=1:length(stream),
+    fprintf('.');
+    im = double(imread(stream{i})) / 255.;
+    im = mean(im,3);
+    feat = features(repmat(im, [1 1 3]), sbin);
+
+    for i=1:size(feat,1) - dim(1),
+      for j=1:size(feat,2) - dim(2),
+        if n <= 100000 && rand() > 0.1,
+          continue;
+        end
+
+        featpoint = feat(i:i+ny-1, ...
+                         j:j+ny-1, :);
+        graypoint = im((i-1)*sbin+1:(i+1+ny)*sbin, ...
+                       (j-1)*sbin+1:(j+1+nx)*sbin);
+        datahog(:, c) = featpoint(:);
+        datagray(:, c) = graypoint(:);
+
+        c = c + 1;
+        if c >= n,
+          fprintf('\n');
+          fprintf('ihog: loaded %i windows\n', c);
+          return;
+        end
+      end
+    end
+  end
+  fprintf('\n');
+  fprintf('ihog: warning: wrapping around dataset!\n');
+end
+
+
+
+% resolvestream(stream)
+%
+% If stream is a directory, convert to list of paths. Otherwise,
+% do nothing.
+function stream = resolvestream(stream),
+
+if isstr(stream),
+  directory = stream;
+  files = dir(stream);
+  clear stream;
+  c = 1;
+  for i=1:length(files);
+    if ~files(i).isdir,
+      stream{c} = [directory '/' files(i).name];
+      c = c + 1;
+    end
+  end
+  fprintf('ihog: stream resolved to %i images\n', length(stream));
+end

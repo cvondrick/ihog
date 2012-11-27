@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>SPAMS: a SPArse Modeling Software, v2.3
+</TITLE>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+
+<META name="Author" content="Julien Mairal">
+<link rel="stylesheet" href="doc_spams.css">
+<LINK rel="stylesheet" type="text/css" href="doc_spams.css">
+</HEAD>
+<BODY >
+<!--HEVEA command line is: /usr/bin/hevea -O article.hva macrocss.hva doc_spams.tex -->
+<!--HACHA command line is: /usr/bin/hacha -tocbis doc_spams.html -->
+<TABLE CLASS="title"><TR><TD><H1 CLASS="titlemain">SPAMS: a SPArse Modeling Software, v2.3</H1><H3 CLASS="titlerest">Julien Mairal<BR>
+ <TT>julien.mairal@m4x.org</TT>
+</H3></TD></TR>
+</TABLE><UL>
+<LI><A HREF="doc_spams001.html">Contents</A>
+</LI><LI><A HREF="doc_spams002.html">Introduction</A>
+</LI><LI><A HREF="doc_spams003.html">Installation</A>
+</LI><LI><A HREF="doc_spams004.html">Dictionary Learning and Matrix Factorization Toolbox</A>
+<UL>
+<LI><A HREF="doc_spams004.html#toc1">Function mexTrainDL</A>
+</LI><LI><A HREF="doc_spams004.html#toc2">Function mexTrainDL_Memory</A>
+</LI><LI><A HREF="doc_spams004.html#toc3">Function nmf</A>
+</LI><LI><A HREF="doc_spams004.html#toc4">Function nnsc</A>
+</LI></UL>
+</LI><LI><A HREF="doc_spams005.html">Sparse Decomposition Toolbox</A>
+<UL>
+<LI><A HREF="doc_spams005.html#toc5">Function mexOMP</A>
+</LI><LI><A HREF="doc_spams005.html#toc6">Function mexOMPMask</A>
+</LI><LI><A HREF="doc_spams005.html#toc7">Function mexLasso</A>
+</LI><LI><A HREF="doc_spams005.html#toc8">Function mexLassoWeighted</A>
+</LI><LI><A HREF="doc_spams005.html#toc9">Function mexLassoMask</A>
+</LI><LI><A HREF="doc_spams005.html#toc10">Function mexCD</A>
+</LI><LI><A HREF="doc_spams005.html#toc11">Function mexSOMP</A>
+</LI><LI><A HREF="doc_spams005.html#toc12">Function mexL1L2BCD</A>
+</LI><LI><A HREF="doc_spams005.html#toc13">Function mexSparseProject</A>
+</LI></UL>
+</LI><LI><A HREF="doc_spams006.html">Proximal Toolbox</A>
+<UL>
+<LI><A HREF="doc_spams006.html#toc14">Regularization Functions</A>
+</LI><LI><A HREF="doc_spams006.html#toc15">Function mexProximalFlat</A>
+</LI><LI><A HREF="doc_spams006.html#toc16">Function mexProximalTree</A>
+</LI><LI><A HREF="doc_spams006.html#toc17">Function mexProximalGraph</A>
+</LI><LI><A HREF="doc_spams006.html#toc18">Function mexProximalPathCoding</A>
+</LI><LI><A HREF="doc_spams006.html#toc19">Function mexEvalPathCoding</A>
+</LI><LI><A HREF="doc_spams006.html#toc20">Problems Addressed</A>
+</LI><LI><A HREF="doc_spams006.html#toc21">Function mexFistaFlat</A>
+</LI><LI><A HREF="doc_spams006.html#toc22">Function mexFistaTree</A>
+</LI><LI><A HREF="doc_spams006.html#toc23">Function mexFistaGraph</A>
+</LI><LI><A HREF="doc_spams006.html#toc24">Function mexFistaPathCoding</A>
+</LI></UL>
+</LI><LI><A HREF="doc_spams007.html">Miscellaneous Functions</A>
+<UL>
+<LI><A HREF="doc_spams007.html#toc25">Function mexConjGrad</A>
+</LI><LI><A HREF="doc_spams007.html#toc26">Function mexBayer</A>
+</LI><LI><A HREF="doc_spams007.html#toc27">Function mexCalcAAt</A>
+</LI><LI><A HREF="doc_spams007.html#toc28">Function mexCalcXAt</A>
+</LI><LI><A HREF="doc_spams007.html#toc29">Function mexCalcXY</A>
+</LI><LI><A HREF="doc_spams007.html#toc30">Function mexCalcXYt</A>
+</LI><LI><A HREF="doc_spams007.html#toc31">Function mexCalcXtY</A>
+</LI><LI><A HREF="doc_spams007.html#toc32">Function mexInvSym</A>
+</LI><LI><A HREF="doc_spams007.html#toc33">Function mexNormalize</A>
+</LI><LI><A HREF="doc_spams007.html#toc34">Function mexSort</A>
+</LI><LI><A HREF="doc_spams007.html#toc35">Function mexDisplayPatches</A>
+</LI><LI><A HREF="doc_spams007.html#toc36">Function mexCountPathsDAG</A>
+</LI><LI><A HREF="doc_spams007.html#toc37">Function mexRemoveCyclesGraph</A>
+</LI><LI><A HREF="doc_spams007.html#toc38">Function mexCountConnexComponents</A>
+</LI></UL>
+</LI><LI><A HREF="doc_spams008.html">Duality Gaps with Fenchel Duality</A>
+</LI><LI><A HREF="doc_spams009.html">References</A>
+</LI></UL>
+<!--FOOTER-->
+<HR SIZE=2><BLOCKQUOTE CLASS="quote"><EM>This document was translated from L<sup>A</sup>T<sub>E</sub>X by
+<A HREF="http://hevea.inria.fr/index.html">H<FONT SIZE=2><sup>E</sup></FONT>V<FONT SIZE=2><sup>E</sup></FONT>A</A>.</EM></BLOCKQUOTE></BODY>
+</HTML>

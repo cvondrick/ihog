@@ -1,0 +1,123 @@
+
+h2 {
+  text-align: left;
+  vertical-align: top;
+  background-color:  #64a2ff;
+  color: #000000;
+  font: sans-serif;
+  font-weight: bold;
+  margin-top: 2px;
+  margin-bottom:5px;
+  padding-left: 4px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  font-size: 40px;
+}
+
+h3 {
+  text-align: center;
+  vertical-align: top;
+  background-color: #ffffff;
+  color: #000000;
+  font: sans-serif;
+  font-weight: bold;
+  margin-top: 0.8em;
+  margin-bottom:0.1em;
+  padding-left: 0px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  font-size: medium;
+}
+
+
+/**********************************************************************
+ Links
+*/
+
+a:link { 
+  color: #0080c0; 
+  text-decoration : underline;
+}
+
+a:visited { 
+  color: #0080c0; 
+  text-decoration : underline;
+}
+
+a:active {
+  color: white;
+  background-color: #0080c0;
+}
+
+a:hover { 
+  text-decoration: underline;
+}
+
+div.title_links { text-align: left }
+
+/**********************************************************************
+ Body text
+*/
+
+body {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+div.question {
+  margin-top: 1em;
+  font-weight: bold ; 
+}
+
+div.answer {
+  color: black;
+  margin-left: 3em;
+}
+
+img {
+  border: 0em;
+}
+
+div.modified { 
+  margin-top: 2em ;
+  color : #999999 ; 
+  font-style: italic ;
+  text-align: left ;
+  font-size: 12px ;
+  }
+
+
+
+
+h1 {
+  color: #0080c0;
+  font-family: serif;
+  font-size: 40px;
+  font-weight: bold;
+  padding: 2px;
+  text-align: center;
+  margin-top: 15px;
+  margin-left: 15%;
+  margin-right: 15%;
+  margin-bottom: 20px;
+}
+
+
+.li-itemize{margin:1ex 0ex;}
+.li-enumerate{margin:1ex 0ex;}
+.title{margin:2ex auto;text-align:center}
+DIV TABLE{margin-left:inherit;margin-right:inherit;}
+PRE{text-align:left;margin-left:0ex;margin-right:auto;}
+BLOCKQUOTE{margin-left:4ex;margin-right:4ex;text-align:left;}
+TD P{margin:0px;}
+.hbar{border:none;height:2px;width:100%;background-color:black;}
+.display{border-collapse:separate;border-spacing:2px;width:auto; border:none;}
+.dcell{white-space:pre;padding:0px;width:auto; border:none;}
+.dcenter{margin:0ex auto;}
+BODY{background:white;}
+/*.title{padding:1ex;background:#00B200;}*/
+/*.titlemain{padding:1ex;background:#00B200;}
+.titlerest{padding:1ex;background:#00B200;}*/
+.section{padding:.5ex;background:#849eff;}
+.subsection{padding:0.3ex;background:#b1c2ff;text-align:left;}
+.verbatim{margin:1ex 1ex;padding:1ex;background:#CCd9ff;text-align:left;}

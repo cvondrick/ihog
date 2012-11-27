@@ -1,0 +1,2222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+
+<META name="Author" content="Julien Mairal">
+<link rel="stylesheet" href="doc_spams.css">
+<LINK rel="stylesheet" type="text/css" href="doc_spams.css">
+<TITLE>Proximal Toolbox</TITLE>
+</HEAD>
+<BODY >
+<A HREF="doc_spams005.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="doc_spams007.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H2 CLASS="section"><A NAME="htoc18">5</A>  Proximal Toolbox</H2><UL>
+<LI><A HREF="doc_spams006.html#toc14">Regularization Functions</A>
+</LI><LI><A HREF="doc_spams006.html#toc15">Function mexProximalFlat</A>
+</LI><LI><A HREF="doc_spams006.html#toc16">Function mexProximalTree</A>
+</LI><LI><A HREF="doc_spams006.html#toc17">Function mexProximalGraph</A>
+</LI><LI><A HREF="doc_spams006.html#toc18">Function mexProximalPathCoding</A>
+</LI><LI><A HREF="doc_spams006.html#toc19">Function mexEvalPathCoding</A>
+</LI><LI><A HREF="doc_spams006.html#toc20">Problems Addressed</A>
+</LI><LI><A HREF="doc_spams006.html#toc21">Function mexFistaFlat</A>
+</LI><LI><A HREF="doc_spams006.html#toc22">Function mexFistaTree</A>
+</LI><LI><A HREF="doc_spams006.html#toc23">Function mexFistaGraph</A>
+</LI><LI><A HREF="doc_spams006.html#toc24">Function mexFistaPathCoding</A>
+</LI></UL>
+<P>
+The previous toolbox we have presented is well
+adapted for solving a large number of small and medium-scale sparse
+decomposition problems with the square loss, which is typical from the
+classical dictionary learning framework. We now present
+a new software package that is adapted for solving a wide range of
+possibly large-scale learning problems, with several combinations of losses and
+regularization terms. The method implements the proximal methods
+of [<A HREF="doc_spams009.html#beck">1</A>], and includes the proximal solvers for the tree-structured
+regularization of [<A HREF="doc_spams009.html#jenatton3">14</A>], and the solver of [<A HREF="doc_spams009.html#mairal10">21</A>] for
+general structured sparse regularization.
+The solver for structured sparse regularization norms includes a C++ max-flow
+implementation of the push-relabel algorithm of [<A HREF="doc_spams009.html#goldberg">12</A>], with
+heuristics proposed by [<A HREF="doc_spams009.html#cherkassky">5</A>].</P><P>This implementation also provides robust stopping criteria based on
+<EM>duality gaps</EM>, which are presented in Appendix <A HREF="doc_spams008.html#appendix">A</A>. It can handle intercepts (unregularized variables). The general formulation that our software
+can solve take the form
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>w</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> [<I>g</I>(<I><B>w</B></I>) </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=2>▵</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">=</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> <I>f</I>(<I><B>w</B></I>) + λψ(<I><B>w</B></I>)],
+</TD></TR>
+</TABLE><P>
+where <I>f</I> is a smooth loss function and ψ is a regularization function.
+When one optimizes a matrix <I><B>W</B></I> in ℝ<SUP><I>p</I> × <I>r</I></SUP> instead of
+a vector <I><B>w</B></I> in ℝ<I><SUP>p</SUP></I>, we will write 
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>W</B></I> ∈ ℝ<SUP><I>p</I> × <I>r</I></SUP></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> [<I>g</I>(<I><B>W</B></I>) </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=2>▵</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">=</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> <I>f</I>(<I><B>W</B></I>) + λψ(<I><B>W</B></I>)].
+</TD></TR>
+</TABLE><P>
+Note that the software can possibly handle nonnegativity constraints.</P><P>We start by presenting the type of regularization implemented in the software
+</P><H3 CLASS="subsection"><A NAME="toc14"></A><A NAME="htoc19">5.1</A>  Regularization Functions</H3><P>
+Our software can handle the following regularization functions ψ for vectors <I><B>w</B></I> in ℝ<I><SUP>p</SUP></I>:
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B>The Tikhonov regularization</B>: ψ(<I><B>w</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> 1/2||<I><B>w</B></I>||<SUB>2</SUB><SUP>2</SUP>.
+</LI><LI CLASS="li-itemize"><B>The ℓ<SUB>1</SUB>-norm</B>: ψ(<I><B>w</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ||<I><B>w</B></I>||<SUB>1</SUB>.
+</LI><LI CLASS="li-itemize"><B>The Elastic-Net</B>: ψ(<I><B>w</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ||<I><B>w</B></I>||<SUB>1</SUB>+γ||<I><B>w</B></I>||<SUB>2</SUB><SUP>2</SUP>.
+</LI><LI CLASS="li-itemize"><B>The Fused-Lasso</B>: ψ(<I><B>w</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ||<I><B>w</B></I>||<SUB>1</SUB>+γ||<I><B>w</B></I>||<SUB>2</SUB><SUP>2</SUP>+γ<SUB>2</SUB>∑<SUB><I>i</I>=1</SUB><SUP><I>p</I>−1</SUP>|<I><B>w</B></I><SUB><I>i</I>+1</SUB>−<I><B>w</B><SUB>i</SUB></I>|.
+</LI><LI CLASS="li-itemize"><B>The group Lasso</B>: ψ(<I><B>w</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ∑<SUB><I>g</I> ∈ <FONT COLOR=red><I>G</I></FONT></SUB> η<I><SUB>g</SUB></I> ||<I><B>w</B><SUB>g</SUB></I>||<SUB>2</SUB>, where <FONT COLOR=red><I>G</I></FONT> are groups of variables.
+</LI><LI CLASS="li-itemize"><B>The group Lasso with ℓ<SUB>∞</SUB>-norm</B>: ψ(<I><B>w</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ∑<SUB><I>g</I> ∈ <FONT COLOR=red><I>G</I></FONT></SUB> η<I><SUB>g</SUB></I> ||<I><B>w</B><SUB>g</SUB></I>||<SUB>∞</SUB>, where <FONT COLOR=red><I>G</I></FONT> are groups of variables.
+</LI><LI CLASS="li-itemize"><B>The sparse group Lasso</B>: same as above but with an additional ℓ<SUB>1</SUB> term.
+</LI><LI CLASS="li-itemize"><B>The tree-structured sum of ℓ<SUB>2</SUB>-norms</B>: ψ(<I><B>w</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ∑<SUB><I>g</I> ∈ <FONT COLOR=red><I>G</I></FONT></SUB> η<I><SUB>g</SUB></I> ||<I><B>w</B><SUB>g</SUB></I>||<SUB>2</SUB>, where <FONT COLOR=red><I>G</I></FONT> is a tree-structured set of groups [<A HREF="doc_spams009.html#jenatton3">14</A>], and the η<I><SUB>g</SUB></I> are positive weights.
+</LI><LI CLASS="li-itemize"><B>The tree-structured sum of ℓ<SUB>∞</SUB>-norms</B>: ψ(<I><B>w</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ∑<SUB><I>g</I> ∈ <FONT COLOR=red><I>G</I></FONT></SUB> η<I><SUB>g</SUB></I> ||<I><B>w</B><SUB>g</SUB></I>||<SUB>∞</SUB>. See [<A HREF="doc_spams009.html#jenatton3">14</A>]
+</LI><LI CLASS="li-itemize"><B>General sum of ℓ<SUB>∞</SUB>-norms</B>: ψ(<I><B>w</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ∑<SUB><I>g</I> ∈ <FONT COLOR=red><I>G</I></FONT></SUB> η<I><SUB>g</SUB></I> ||<I><B>w</B><SUB>g</SUB></I>||<SUB>∞</SUB>, where no assumption are made on the groups <FONT COLOR=red><I>G</I></FONT>.
+</LI></UL><P>
+Our software also handles regularization functions ψ on matrices <I><B>W</B></I> in ℝ<SUP><I>p</I> × <I>r</I></SUP> (note that <I><B>W</B></I> can be transposed in these formulations). In particular,
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B>The ℓ<SUB>1</SUB>/ℓ<SUB>2</SUB>-norm</B>: ψ(<I><B>W</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ∑<SUB><I>i</I>=1</SUB><I><SUP>p</SUP></I> ||<I><B>W</B><SUB>i</SUB></I>||<SUB>2</SUB>, where <I><B>W</B><SUB>i</SUB></I> denotes the <I>i</I>-th row of <I><B>W</B></I>.
+</LI><LI CLASS="li-itemize"><B>The ℓ<SUB>1</SUB>/ℓ<SUB>∞</SUB>-norm</B>: ψ(<I><B>W</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ∑<SUB><I>i</I>=1</SUB><I><SUP>p</SUP></I> ||<I><B>W</B><SUB>i</SUB></I>||<SUB>∞</SUB>,
+</LI><LI CLASS="li-itemize"><B>The ℓ<SUB>1</SUB>/ℓ<SUB>2</SUB>+ℓ<SUB>1</SUB>-norm</B>: ψ(<I><B>W</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ∑<SUB><I>i</I>=1</SUB><I><SUP>p</SUP></I> ||<I><B>W</B><SUB>i</SUB></I>||<SUB>2</SUB> + λ<SUB>2</SUB> ∑<SUB><I>i</I>,<I>j</I></SUB>|<I><B>W</B><SUB>ij</SUB></I>|.
+</LI><LI CLASS="li-itemize"><B>The ℓ<SUB>1</SUB>/ℓ<SUB>∞</SUB>+ℓ<SUB>1</SUB>-norm</B>: ψ(<I><B>W</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ∑<SUB><I>i</I>=1</SUB><I><SUP>p</SUP></I> ||<I><B>W</B><SUB>i</SUB></I>||<SUB>∞</SUB>+λ<SUB>2</SUB> ∑<SUB><I>i</I>,<I>j</I></SUB>|<I><B>W</B><SUB>ij</SUB></I>|,
+</LI><LI CLASS="li-itemize"><B>The ℓ<SUB>1</SUB>/ℓ<SUB>∞</SUB>-norm on rows and columns</B>: ψ(<I><B>W</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ∑<SUB><I>i</I>=1</SUB><I><SUP>p</SUP></I> ||<I><B>W</B><SUB>i</SUB></I>||<SUB>∞</SUB>+λ<SUB>2</SUB> ∑<SUB><I>j</I>=1</SUB><I><SUP>r</SUP></I>||<I><B>W</B><SUP>j</SUP></I>||<SUB>∞</SUB>, where <I><B>W</B><SUP>j</SUP></I> denotes the <I>j</I>-th column of <I><B>W</B></I>.
+</LI><LI CLASS="li-itemize"><B>The multi-task tree-structured sum of ℓ<SUB>∞</SUB>-norms</B>: 
+<TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+ψ(<I><B>W</B></I>)</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=2>▵</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">=</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>r</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>G</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> η<I><SUB>g</SUB></I>||<I><B>w</B><SUB>g</SUB><SUP>i</SUP></I>||<SUB>∞</SUB>+ γ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>G</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> η<I><SUB>g</SUB></I> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">max</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>j</I> ∈ <I>g</I></TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>W</B><SUB>j</SUB></I>||<SUB>∞</SUB>,
+<A NAME="software:eq:struct"></A>
+    (25)</TD></TR>
+</TABLE>
+where the first double sums is in fact a sum of independent structured norms on the columns <I><B>w</B><SUP>i</SUP></I> of <I><B>W</B></I>, and the right term is a tree-structured regularization norm applied to the ℓ<SUB>∞</SUB>-norm of the rows of <I><B>W</B></I>, thereby inducing the tree-structured regularization at the row level. <FONT COLOR=red><I>G</I></FONT> is here a tree-structured set of groups.
+</LI><LI CLASS="li-itemize"><B>The multi-task general sum of ℓ<SUB>∞</SUB>-norms</B> is the same as Eq. (<A HREF="#software:eq:struct">25</A>) except that the groups <FONT COLOR=red><I>G</I></FONT> are general overlapping groups.
+</LI><LI CLASS="li-itemize"><B>The trace norm</B>: ψ(<I><B>W</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ||<I><B>W</B></I>||<SUB>*</SUB>.
+</LI></UL><P>
+Non-convex regularizations are also implemented with the ISTA algorithm (no duality gaps are of course provided in these cases):
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B>The ℓ<SUB>0</SUB>-pseudo-norm</B>: ψ(<I><B>w</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ||<I><B>w</B></I>||<SUB>0</SUB>.
+</LI><LI CLASS="li-itemize"><B>The rank</B>: ψ(<I><B>W</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> randk(<I><B>W</B></I>).
+</LI><LI CLASS="li-itemize"><B>The tree-structured ℓ<SUB>0</SUB>-pseudo-norm</B>: ψ(<I><B>w</B></I>) =<FONT SIZE=2><SUP>▵</SUP></FONT> ∑<SUB><I>g</I> ∈ <FONT COLOR=red><I>G</I></FONT></SUB> δ<SUB><I><B>w</B>g</I> ≠ 0</SUB>.
+</LI></UL><P>All of these regularization terms for vectors or matrices can be coupled with
+nonnegativity constraints. It is also possible to add an intercept, which one
+wishes not to regularize, and we will include this possibility in the next
+sections. There are also a few hidden undocumented options which are available in the source code.</P><P>We now present 3 functions for computing proximal operators associated to the previous regularization functions.
+</P><H3 CLASS="subsection"><A NAME="toc15"></A><A NAME="htoc20">5.2</A>  Function mexProximalFlat</H3><P>
+This function computes the proximal operators associated to many regularization functions, for input signals <I><B>U</B></I>=[<I><B>u</B></I><SUP>1</SUP>,…,<I><B>u</B><SUP>n</SUP></I>] in ℝ<SUP><I>p</I> × <I>n</I></SUP>, it finds a matrix <I><B>V</B></I>=[<I><B>v</B></I><SUP>1</SUP>,…,<I><B>v</B><SUP>n</SUP></I>] in ℝ<SUP><I>p</I> × <I>n</I></SUP> such that:</P><P>•  If one chooses a regularization function on vectors, for every column <I><B>u</B></I> of <I><B>U</B></I>, it computes one column <I><B>v</B></I> of <I><B>V</B></I> solving
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + λ ||<I><B>v</B></I>||<SUB>0</SUB>,
+    (26)</TD></TR>
+</TABLE><P>
+or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + λ ||<I><B>v</B></I>||<SUB>1</SUB>,
+    (27)</TD></TR>
+</TABLE><P>
+or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">λ</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> ||<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP>,
+    (28)</TD></TR>
+</TABLE><P>
+or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + λ ||<I><B>v</B></I>||<SUB>1</SUB> + λ<SUB>2</SUB>||<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP>,
+    (29)</TD></TR>
+</TABLE><P>
+or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + λ</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>p</I>−1</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>j</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell">|<I><B>v</B></I><SUB><I>j</I>+1</SUB><I><SUP>i</SUP></I>−<I><B>v</B><SUB>j</SUB><SUP>i</SUP></I>|+λ<SUB>2</SUB> ||<I><B>v</B></I>||<SUB>1</SUB> + λ<SUB>3</SUB>||<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP>,
+    (30)</TD></TR>
+</TABLE><P>
+or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>T</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> δ<I><SUP>g</SUP></I>(<I><B>v</B></I>),
+    (31)</TD></TR>
+</TABLE><P>
+where <FONT COLOR=red><I>T</I></FONT> is a tree-structured set of groups (see [<A HREF="doc_spams009.html#jenatton4">15</A>]), and δ<I><SUP>g</SUP></I>(<I><B>v</B></I>) = 0 if <I><B>v</B><SUB>g</SUB></I>=0 and 1 otherwise.
+It can also solve
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>T</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> η<I><SUP>g</SUP></I> ||<I><B>v</B><SUB>g</SUB></I>||<SUB>2</SUB>,
+    (32)</TD></TR>
+</TABLE><P>
+or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>T</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> η<I><SUP>g</SUP></I> ||<I><B>v</B><SUB>g</SUB></I>||<SUB>∞</SUB>,
+    (33)</TD></TR>
+</TABLE><P>
+or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>G</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> η<I><SUP>g</SUP></I> ||<I><B>v</B><SUB>g</SUB></I>||<SUB>∞</SUB>,
+    (34)</TD></TR>
+</TABLE><P>
+where <FONT COLOR=red><I>G</I></FONT> is any kind of set of groups.</P><P>This function can also solve the following proximal operators on matrices
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>V</B></I> ∈ ℝ<SUP><I>p</I> × <I>n</I></SUP></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>U</B></I>−<I><B>V</B></I>||<I><SUB>F</SUB></I><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>p</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> ||<I><B>V</B><SUB>i</SUB></I>||<SUB>2</SUB>, 
+    (35)</TD></TR>
+</TABLE><P>
+where <I><B>V</B><SUB>i</SUB></I> is the <I>i</I>-th row of <I><B>V</B></I>, or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>V</B></I> ∈ ℝ<SUP><I>p</I> × <I>n</I></SUP></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>U</B></I>−<I><B>V</B></I>||<I><SUB>F</SUB></I><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>p</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> ||<I><B>V</B><SUB>i</SUB></I>||<SUB>∞</SUB>, 
+    (36)</TD></TR>
+</TABLE><P>
+or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>V</B></I> ∈ ℝ<SUP><I>p</I> × <I>n</I></SUP></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>U</B></I>−<I><B>V</B></I>||<I><SUB>F</SUB></I><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>p</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> ||<I><B>V</B><SUB>i</SUB></I>||<SUB>2</SUB> +λ<SUB>2</SUB> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>p</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>j</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> |<I><B>V</B><SUB>ij</SUB></I>|, 
+    (37)</TD></TR>
+</TABLE><P>
+or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>V</B></I> ∈ ℝ<SUP><I>p</I> × <I>n</I></SUP></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>U</B></I>−<I><B>V</B></I>||<I><SUB>F</SUB></I><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>p</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> ||<I><B>V</B><SUB>i</SUB></I>||<SUB>∞</SUB>+λ<SUB>2</SUB> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>p</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>j</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> |<I><B>V</B><SUB>ij</SUB></I>|, 
+    (38)</TD></TR>
+</TABLE><P>
+or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>V</B></I> ∈ ℝ<SUP><I>p</I> × <I>n</I></SUP></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>U</B></I>−<I><B>V</B></I>||<I><SUB>F</SUB></I><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>p</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> ||<I><B>V</B><SUB>i</SUB></I>||<SUB>∞</SUB>+λ<SUB>2</SUB> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>j</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> ||<I><B>V</B><SUP>j</SUP></I>||<SUB>∞</SUB>.
+    (39)</TD></TR>
+</TABLE><P>
+where <I><B>V</B><SUP>j</SUP></I> is the <I>j</I>-th column of <I><B>V</B></I>.</P><P>See usage details below:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">% <BR>
+% Usage:  [V [val_regularizer]]=mexProximalFlat(U,param);<BR>
+%<BR>
+% Name: mexProximalFlat<BR>
+%<BR>
+% Description: mexProximalFlat computes proximal operators. Depending<BR>
+%         on the value of param.regul, it computes <BR>
+%<BR>
+%         Given an input matrix U=[u^1,\ldots,u^n], it computes a matrix <BR>
+%         V=[v^1,\ldots,v^n] such that<BR>
+%         if one chooses a regularization functions on vectors, it computes<BR>
+%         for each column u of U, a column v of V solving<BR>
+%         if param.regul='l0'<BR>
+%             argmin 0.5||u-v||_2^2 + lambda||v||_0<BR>
+%         if param.regul='l1'<BR>
+%             argmin 0.5||u-v||_2^2 + lambda||v||_1<BR>
+%         if param.regul='l2'<BR>
+%             argmin 0.5||u-v||_2^2 + 0.5lambda||v||_2^2<BR>
+%         if param.regul='elastic-net'<BR>
+%             argmin 0.5||u-v||_2^2 + lambda||v||_1 + lambda_2||v||_2^2<BR>
+%         if param.regul='fused-lasso'<BR>
+%             argmin 0.5||u-v||_2^2 + lambda FL(v) + ...<BR>
+%                               ...  lambda_2||v||_1 + lambda_3||v||_2^2<BR>
+%         if param.regul='linf'<BR>
+%             argmin 0.5||u-v||_2^2 + lambda||v||_inf<BR>
+%         if param.regul='l2-not-squared'<BR>
+%             argmin 0.5||u-v||_2^2 + lambda||v||_2<BR>
+%         if param.regul='group-lasso-l2'  <BR>
+%             argmin 0.5||u-v||_2^2 + lambda sum_g ||v_g||_2 <BR>
+%             where the groups are either defined by param.groups or by param.size_group,<BR>
+%         if param.regul='group-lasso-linf'<BR>
+%             argmin 0.5||u-v||_2^2 + lambda sum_g ||v_g||_inf<BR>
+%         if param.regul='sparse-group-lasso-l2'  <BR>
+%             argmin 0.5||u-v||_2^2 + lambda sum_g ||v_g||_2 + lambda_2 ||v||_1<BR>
+%             where the groups are either defined by param.groups or by param.size_group,<BR>
+%         if param.regul='sparse-group-lasso-linf'<BR>
+%             argmin 0.5||u-v||_2^2 + lambda sum_g ||v_g||_inf + lambda_2 ||v||_1<BR>
+%         if param.regul='trace-norm-vec' <BR>
+%             argmin 0.5||u-v||_2^2 + lambda ||mat(v)||_* <BR>
+%            where mat(v) has param.size_group rows<BR>
+%<BR>
+%         if one chooses a regularization function on matrices<BR>
+%         if param.regul='l1l2',  V= <BR>
+%             argmin 0.5||U-V||_F^2 + lambda||V||_{1/2}<BR>
+%         if param.regul='l1linf',  V= <BR>
+%             argmin 0.5||U-V||_F^2 + lambda||V||_{1/inf}<BR>
+%         if param.regul='l1l2+l1',  V= <BR>
+%             argmin 0.5||U-V||_F^2 + lambda||V||_{1/2} + lambda_2||V||_{1/1}<BR>
+%         if param.regul='l1linf+l1',  V= <BR>
+%             argmin 0.5||U-V||_F^2 + lambda||V||_{1/inf} + lambda_2||V||_{1/1}<BR>
+%         if param.regul='l1linf+row-column',  V= <BR>
+%             argmin 0.5||U-V||_F^2 + lambda||V||_{1/inf} + lambda_2||V'||_{1/inf}<BR>
+%         if param.regul='trace-norm',  V= <BR>
+%             argmin 0.5||U-V||_F^2 + lambda||V||_*<BR>
+%         if param.regul='rank',  V= <BR>
+%             argmin 0.5||U-V||_F^2 + lambda rank(V)<BR>
+%         if param.regul='none',  V= <BR>
+%             argmin 0.5||U-V||_F^2 <BR>
+%         <BR>
+%         for all these regularizations, it is possible to enforce non-negativity constraints<BR>
+%         with the option param.pos, and to prevent the last row of U to be regularized, with<BR>
+%         the option param.intercept<BR>
+%<BR>
+% Inputs: U:  double m x n matrix   (input signals)<BR>
+%               m is the signal size<BR>
+%         param: struct<BR>
+%               param.lambda  (regularization parameter)<BR>
+%               param.regul (choice of regularization, see above)<BR>
+%               param.lambda2  (optional, regularization parameter)<BR>
+%               param.lambda3  (optional, regularization parameter)<BR>
+%               param.verbose (optional, verbosity level, false by default)<BR>
+%               param.intercept (optional, last row of U is not regularized,<BR>
+%                 false by default)<BR>
+%               param.transpose (optional, transpose the matrix in the regularization function)<BR>
+%               param.size_group (optional, for regularization functions assuming a group<BR>
+%                 structure). It is a scalar. When param.groups is not specified, it assumes<BR>
+%                 that the groups are the sets of consecutive elements of size param.size_group<BR>
+%               param.groups (int32, optional, for regularization functions assuming a group<BR>
+%                 structure. It is an int32 vector of size m containing the group indices of the<BR>
+%                 variables (first group is 1).<BR>
+%               param.pos (optional, adds positivity constraints on the<BR>
+%                 coefficients, false by default)<BR>
+%               param.numThreads (optional, number of threads for exploiting<BR>
+%                 multi-core / multi-cpus. By default, it takes the value -1,<BR>
+%                 which automatically selects all the available CPUs/cores).<BR>
+%<BR>
+% Output: V: double m x n matrix (output coefficients)<BR>
+%         val_regularizer: double 1 x n vector (value of the regularization<BR>
+%         term at the optimum).<BR>
+%<BR>
+% Author: Julien Mairal, 2010</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting">U=<FONT COLOR="blue"><B>randn</B></FONT>(100,1000);<BR>
+<BR>
+param.lambda=0.1; <FONT COLOR="#007F00">% regularization parameter</FONT><BR>
+param.num_threads=-1; <FONT COLOR="#007F00">% all cores (-1 by default)</FONT><BR>
+param.verbose=true;   <FONT COLOR="#007F00">% verbosity, false by default<BR>
+<BR>
+% test l0</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox l0\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l0'</FONT>;<BR>
+param.pos=false;       <FONT COLOR="#007F00">% false by default</FONT><BR>
+param.intercept=false; <FONT COLOR="#007F00">% false by default</FONT><BR>
+alpha=mexProximalFlat(U,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% test l1</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox l1, intercept, positivity constraint\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1'</FONT>;<BR>
+param.pos=true;       <FONT COLOR="#007F00">% can be used with all the other regularizations</FONT><BR>
+param.intercept=true; <FONT COLOR="#007F00">% can be used with all the other regularizations     </FONT><BR>
+alpha=mexProximalFlat(U,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% test l2</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox squared-l2\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l2'</FONT>;<BR>
+param.pos=false;<BR>
+param.intercept=false;<BR>
+alpha=mexProximalFlat(U,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% test elastic-net</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox elastic-net\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'elastic-net'</FONT>;<BR>
+param.lambda2=0.1;<BR>
+alpha=mexProximalFlat(U,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% test fused-lasso</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox fused lasso\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'fused-lasso'</FONT>;<BR>
+param.lambda2=0.1;<BR>
+param.lambda3=0.1;<BR>
+alpha=mexProximalFlat(U,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% test l1l2</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox mixed norm l1/l2\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1l2'</FONT>;<BR>
+alpha=mexProximalFlat(U,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% test l1linf</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox mixed norm l1/linf\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1linf'</FONT>;<BR>
+alpha=mexProximalFlat(U,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% test l1l2+l1</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox mixed norm l1/l2 + l1\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1l2+l1'</FONT>;<BR>
+param.lambda2=0.1;<BR>
+alpha=mexProximalFlat(U,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% test l1linf+l1</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox mixed norm l1/linf + l1\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1linf+l1'</FONT>;<BR>
+param.lambda2=0.1;<BR>
+alpha=mexProximalFlat(U,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% test l1linf-row-column</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox mixed norm l1/linf on rows and columns\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1linf-row-column'</FONT>;<BR>
+param.lambda2=0.1;<BR>
+alpha=mexProximalFlat(U,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% test none</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox no regularization\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'none'</FONT>;<BR>
+alpha=mexProximalFlat(U,param);</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc16"></A><A NAME="htoc21">5.3</A>  Function mexProximalTree</H3><P>
+This function computes the proximal operators associated to tree-structured regularization functions, for input signals <I><B>U</B></I>=[<I><B>u</B></I><SUP>1</SUP>,…,<I><B>u</B><SUP>n</SUP></I>] in ℝ<SUP><I>p</I> × <I>n</I></SUP>, and a tree-structured set of groups [<A HREF="doc_spams009.html#jenatton3">14</A>], it computes a matrix <I><B>V</B></I>=[<I><B>v</B></I><SUP>1</SUP>,…,<I><B>v</B><SUP>n</SUP></I>] in ℝ<SUP><I>p</I> × <I>n</I></SUP>. When one uses a regularization function on vectors, it computes a column <I><B>v</B></I> of <I><B>V</B></I> for every column <I><B>u</B></I> of <I><B>U</B></I>:
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>T</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> η<I><SUP>g</SUP></I> ||<I><B>v</B><SUB>g</SUB></I>||<SUB>2</SUB>,
+    (40)</TD></TR>
+</TABLE><P>
+or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>T</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> η<I><SUP>g</SUP></I> ||<I><B>v</B><SUB>g</SUB></I>||<SUB>∞</SUB>,
+    (41)</TD></TR>
+</TABLE><P>
+or
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>T</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> δ<I><SUP>g</SUP></I>(<I><B>v</B></I>),
+    (42)</TD></TR>
+</TABLE><P>
+where δ<I><SUP>g</SUP></I>(<I><B>v</B></I>)=0 if <I><B>v</B><SUB>g</SUB></I>=0 and 1 otherwise (see appendix of [<A HREF="doc_spams009.html#jenatton4">15</A>]).</P><P>When the multi-task tree-structured regularization function is used, it solves
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>V</B></I> ∈ ℝ<SUP><I>p</I>× <I>n</I></SUP></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>U</B></I>−<I><B>V</B></I>||<I><SUB>F</SUB></I><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>T</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> η<I><SUP>g</SUP></I> ||<I><B>v</B><SUB>g</SUB><SUP>i</SUP></I>||<SUB>∞</SUB>+ λ<SUB>2</SUB></TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>T</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">max</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>j</I> ∈ <I>g</I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> ||<I><B>v</B><SUB>g</SUB><SUP>j</SUP></I>||<SUB>∞</SUB>,
+    (43)</TD></TR>
+</TABLE><P> 
+which is a formulation presented in [<A HREF="doc_spams009.html#mairal10">21</A>].</P><P>This function can also be used for computing the proximal operators addressed by mexProximalFlat (it will just not take into account the tree structure). The way the tree is incoded is presented below, (and examples are given in the file test_ProximalTree.m, with more usage details:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">% <BR>
+% Usage:  [V [val_regularizer]]=mexProximalTree(U,tree,param);<BR>
+%<BR>
+% Name: mexProximalTree<BR>
+%<BR>
+% Description: mexProximalTree computes a proximal operator. Depending<BR>
+%         on the value of param.regul, it computes <BR>
+%<BR>
+%         Given an input matrix U=[u^1,\ldots,u^n], and a tree-structured set of groups T,<BR>
+%         it returns a matrix V=[v^1,\ldots,v^n]:<BR>
+%         <BR>
+%         when the regularization function is for vectors,<BR>
+%         for every column u of U, it compute a column v of V solving<BR>
+%         if param.regul='tree-l0'<BR>
+%             argmin 0.5||u-v||_2^2 + lambda \sum_{g \in T} \delta^g(v)<BR>
+%         if param.regul='tree-l2'<BR>
+%           for all i, v^i = <BR>
+%             argmin 0.5||u-v||_2^2 + lambda\sum_{g \in T} \eta_g||v_g||_2<BR>
+%         if param.regul='tree-linf'<BR>
+%           for all i, v^i = <BR>
+%             argmin 0.5||u-v||_2^2 + lambda\sum_{g \in T} \eta_g||v_g||_inf<BR>
+%<BR>
+%         when the regularization function is for matrices:<BR>
+%         if param.regul='multi-task-tree'<BR>
+%            V=argmin 0.5||U-V||_F^2 + lambda \sum_{i=1}^n\sum_{g \in T} \eta_g||v^i_g||_inf + ...<BR>
+%                                                lambda_2 \sum_{g \in T} \eta_g max_{j in g}||V_j||_{inf}<BR>
+%         <BR>
+%         it can also be used with any non-tree-structured regularization addressed by mexProximalFlat<BR>
+%<BR>
+%         for all these regularizations, it is possible to enforce non-negativity constraints<BR>
+%         with the option param.pos, and to prevent the last row of U to be regularized, with<BR>
+%         the option param.intercept<BR>
+%<BR>
+% Inputs: U:  double m x n matrix   (input signals)<BR>
+%               m is the signal size<BR>
+%         tree: struct<BR>
+%               with four fields, eta_g, groups, own_variables and N_own_variables.<BR>
+%<BR>
+%               The tree structure requires a particular organization of groups and variables<BR>
+%                  * Let us denote by N = |T|, the number of groups.<BR>
+%                    the groups should be ordered T={g1,g2,\ldots,gN} such that if gi is included<BR>
+%                    in gj, then j &lt;= i. g1 should be the group at the root of the tree <BR>
+%                    and contains every variable.<BR>
+%                  * Every group is a set of  contiguous indices for instance <BR>
+%                    gi={3,4,5} or gi={4,5,6,7} or gi={4}, but not {3,5};<BR>
+%                  * We define root(gi) as the indices of the variables that are in gi,<BR>
+%                    but not in its descendants. For instance for<BR>
+%                    T={ g1={1,2,3,4},g2={2,3},g3={4} }, then, root(g1)={1}, <BR>
+%                    root(g2)={2,3}, root(g3)={4},<BR>
+%                    We assume that for all i, root(gi) is a set of contigous variables<BR>
+%                  * We assume that the smallest of root(gi) is also the smallest index of gi.<BR>
+%<BR>
+%                  For instance, <BR>
+%                    T={ g1={1,2,3,4},g2={2,3},g3={4} }, is a valid set of groups.<BR>
+%                    but we can not have<BR>
+%                    T={ g1={1,2,3,4},g2={1,2},g3={3} }, since root(g1)={4} and 4 is not the<BR>
+%                    smallest element in g1.<BR>
+%<BR>
+%               We do not lose generality with these assumptions since they can be fullfilled for any<BR>
+%               tree-structured set of groups after a permutation of variables and a correct ordering of the<BR>
+%               groups.<BR>
+%               see more examples in test_ProximalTree.m of valid tree-structured sets of groups.<BR>
+%               <BR>
+%               The first fields sets the weights for every group<BR>
+%                  tree.eta_g            double N vector <BR>
+%  <BR>
+%               The next field sets inclusion relations between groups <BR>
+%               (but not between groups and variables):<BR>
+%                  tree.groups           sparse (double or boolean) N x N matrix  <BR>
+%                  the (i,j) entry is non-zero if and only if i is different than j and <BR>
+%                  gi is included in gj.<BR>
+%                  the first column corresponds to the group at the root of the tree.<BR>
+%<BR>
+%               The next field define the smallest index of each group gi, <BR>
+%               which is also the smallest index of root(gi)<BR>
+%               tree.own_variables    int32 N vector<BR>
+%<BR>
+%               The next field define for each group gi, the size of root(gi)<BR>
+%               tree.N_own_variables  int32 N vector <BR>
+%<BR>
+%               examples are given in test_ProximalTree.m<BR>
+%<BR>
+%         param: struct<BR>
+%               param.lambda  (regularization parameter)<BR>
+%               param.regul (choice of regularization, see above)<BR>
+%               param.lambda2  (optional, regularization parameter)<BR>
+%               param.lambda3  (optional, regularization parameter)<BR>
+%               param.verbose (optional, verbosity level, false by default)<BR>
+%               param.intercept (optional, last row of U is not regularized,<BR>
+%                 false by default)<BR>
+%               param.pos (optional, adds positivity constraints on the<BR>
+%                 coefficients, false by default)<BR>
+%               param.transpose (optional, transpose the matrix in the regularization function)<BR>
+%               param.size_group (optional, for regularization functions assuming a group<BR>
+%                 structure). It is a scalar. When param.groups is not specified, it assumes<BR>
+%                 that the groups are the sets of consecutive elements of size param.size_group<BR>
+%               param.numThreads (optional, number of threads for exploiting<BR>
+%                 multi-core / multi-cpus. By default, it takes the value -1,<BR>
+%                 which automatically selects all the available CPUs/cores).<BR>
+%<BR>
+% Output: V: double m x n matrix (output coefficients)<BR>
+%         val_regularizer: double 1 x n vector (value of the regularization<BR>
+%         term at the optimum).<BR>
+%<BR>
+%<BR>
+% Author: Julien Mairal, 2010</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting">U=<FONT COLOR="blue"><B>randn</B></FONT>(10,1000);<BR>
+<BR>
+param.lambda=0.1; <FONT COLOR="#007F00">% regularization parameter</FONT><BR>
+param.num_threads=-1; <FONT COLOR="#007F00">% all cores (-1 by default)</FONT><BR>
+param.verbose=true;   <FONT COLOR="#007F00">% verbosity, false by default</FONT><BR>
+param.pos=false;       <FONT COLOR="#007F00">% can be used with all the other regularizations</FONT><BR>
+param.intercept=false; <FONT COLOR="#007F00">% can be used with all the other regularizations     </FONT><BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'First tree example\n'</FONT>);<BR>
+<FONT COLOR="#007F00">% Example 1 of tree structure<BR>
+% tree structured groups:<BR>
+% g1= {0 1 2 3 4 5 6 7 8 9}<BR>
+% g2= {2 3 4}<BR>
+% g3= {5 6 7 8 9}</FONT><BR>
+tree.own_variables=int32([0 2 5]);   <FONT COLOR="#007F00">% pointer to the first variable of each group</FONT><BR>
+tree.N_own_variables=int32([2 3 5]); <FONT COLOR="#007F00">% number of "root" variables in each group</FONT><BR>
+                              <FONT COLOR="#007F00">% (variables that are in a group, but not in its descendants).</FONT><BR>
+                              <FONT COLOR="#007F00">% for instance root(g1)={0,1}, root(g2)={2 3 4}, root(g3)={5 6 7 8 9}</FONT><BR>
+tree.eta_g=[1 1 1];           <FONT COLOR="#007F00">% weights for each group, they should be non-zero to use fenchel duality</FONT><BR>
+tree.groups=<FONT COLOR="blue"><B>sparse</B></FONT>([0 0 0; ...<BR>
+                    1 0 0; ...<BR>
+                    1 0 0]);    <FONT COLOR="#007F00">% first group should always be the root of the tree</FONT><BR>
+                                <FONT COLOR="#007F00">% non-zero entriees mean inclusion relation ship, here g2 is a children of g1,</FONT><BR>
+                                <FONT COLOR="#007F00">% g3 is a children of g1</FONT><BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\ntest prox tree-l0\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'tree-l0'</FONT>;<BR>
+alpha=mexProximalTree(U,tree,param);<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\ntest prox tree-l2\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'tree-l2'</FONT>;<BR>
+alpha=mexProximalTree(U,tree,param);<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\ntest prox tree-linf\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'tree-linf'</FONT>;<BR>
+alpha=mexProximalTree(U,tree,param);<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Second tree example\n'</FONT>);<BR>
+<FONT COLOR="#007F00">% Example 2 of tree structure<BR>
+% tree structured groups:<BR>
+% g1= {0 1 2 3 4 5 6 7 8 9}    root(g1) = { };<BR>
+% g2= {0 1 2 3 4 5}            root(g2) = {0 1 2};<BR>
+% g3= {3 4}                    root(g3) = {3 4};<BR>
+% g4= {5}                      root(g4) = {5};<BR>
+% g5= {6 7 8 9}                root(g5) = { };<BR>
+% g6= {6 7}                    root(g6) = {6 7};<BR>
+% g7= {8 9}                    root(g7) = {8};<BR>
+% g8 = {9}                     root(g8) = {9};</FONT><BR>
+tree.own_variables=  int32([0 0 3 5 6 6 8 9]);   <FONT COLOR="#007F00">% pointer to the first variable of each group</FONT><BR>
+tree.N_own_variables=int32([0 3 2 1 0 2 1 1]); <FONT COLOR="#007F00">% number of "root" variables in each group</FONT><BR>
+tree.eta_g=[1 1 1 2 2 2 2.5 2.5];<BR>
+tree.groups=<FONT COLOR="blue"><B>sparse</B></FONT>([0 0 0 0 0 0 0 0; ...<BR>
+                    1 0 0 0 0 0 0 0; ...<BR>
+                    0 1 0 0 0 0 0 0; ...<BR>
+                    0 1 0 0 0 0 0 0; ...<BR>
+                    1 0 0 0 0 0 0 0; ...<BR>
+                    0 0 0 0 1 0 0 0; ...<BR>
+                    0 0 0 0 1 0 0 0; ...<BR>
+                    0 0 0 0 0 0 1 0]);  <FONT COLOR="#007F00">% first group should always be the root of the tree</FONT><BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\ntest prox tree-l0\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'tree-l0'</FONT>;<BR>
+alpha=mexProximalTree(U,tree,param);<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\ntest prox tree-l2\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'tree-l2'</FONT>;<BR>
+alpha=mexProximalTree(U,tree,param);<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\ntest prox tree-linf\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'tree-linf'</FONT>;<BR>
+alpha=mexProximalTree(U,tree,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% mexProximalTree also works with non-tree-structured regularization functions</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox l1, intercept, positivity constraint\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1'</FONT>;<BR>
+param.pos=true;       <FONT COLOR="#007F00">% can be used with all the other regularizations</FONT><BR>
+param.intercept=true; <FONT COLOR="#007F00">% can be used with all the other regularizations     </FONT><BR>
+alpha=mexProximalTree([U; ones(1,<FONT COLOR="blue"><B>size</B></FONT>(U,2))],tree,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% Example of multi-task tree</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nprox multi-task tree\n'</FONT>);<BR>
+param.pos=false;<BR>
+param.intercept=false;<BR>
+param.lambda2=param.lambda;<BR>
+param.regul=<FONT COLOR="red">'multi-task-tree'</FONT>;  <FONT COLOR="#007F00">% with linf</FONT><BR>
+alpha=mexProximalTree(U,tree,param);</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc17"></A><A NAME="htoc22">5.4</A>  Function mexProximalGraph</H3><P>
+This function computes the proximal operators associated to structured sparse regularization, for input signals <I><B>U</B></I>=[<I><B>u</B></I><SUP>1</SUP>,…,<I><B>u</B><SUP>n</SUP></I>] in ℝ<SUP><I>p</I> × <I>n</I></SUP>, and a set of groups [<A HREF="doc_spams009.html#mairal10">21</A>], it returns a matrix <I><B>V</B></I>=[<I><B>v</B></I><SUP>1</SUP>,…,<I><B>v</B><SUP>n</SUP></I>] in ℝ<SUP><I>p</I> × <I>n</I></SUP>.
+When one uses a regularization function on vectors, it computes a column <I><B>v</B></I> of <I><B>V</B></I> for every column <I><B>u</B></I> of <I><B>U</B></I>:
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>v</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>u</B></I>−<I><B>v</B></I>||<SUB>2</SUB><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>G</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> η<I><SUP>g</SUP></I> ||<I><B>v</B><SUB>g</SUB></I>||<SUB>∞</SUB>,
+    (44)</TD></TR>
+</TABLE><P>
+or with a regularization function on matrices, it computes <I><B>V</B></I> solving
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>V</B></I> ∈ ℝ<SUP><I>p</I>× <I>n</I></SUP></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>U</B></I>−<I><B>V</B></I>||<I><SUB>F</SUB></I><SUP>2</SUP> + λ </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>G</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> η<I><SUP>g</SUP></I> ||<I><B>v</B><SUB>g</SUB><SUP>i</SUP></I>||<SUB>∞</SUB>+ λ<SUB>2</SUB></TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>g</I> ∈ <FONT COLOR=red><I>G</I></FONT></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">max</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>j</I> ∈ <I>g</I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> ||<I><B>v</B><SUB>g</SUB><SUP>j</SUP></I>||<SUB>∞</SUB>,
+    (45)</TD></TR>
+</TABLE><P> 
+This function can also be used for computing the proximal operators addressed by mexProximalFlat. The way the graph is incoded is presented below (and also in the example file test_ProximalGraph.m, with more usage details:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">% <BR>
+% Usage:   [V [val_regularizer]]=mexProximalGraph(U,graph,param);<BR>
+%<BR>
+% Name: mexProximalGraph<BR>
+%<BR>
+% Description: mexProximalGraph computes a proximal operator. Depending<BR>
+%         on the value of param.regul, it computes <BR>
+%<BR>
+%         Given an input matrix U=[u^1,\ldots,u^n], and a set of groups G,<BR>
+%         it computes a matrix V=[v^1,\ldots,v^n] such that<BR>
+%<BR>
+%         if param.regul='graph'<BR>
+%         for every column u of U, it computes a column v of V solving<BR>
+%             argmin 0.5||u-v||_2^2 + lambda\sum_{g \in G} \eta_g||v_g||_inf<BR>
+%<BR>
+%         if param.regul='graph+ridge'<BR>
+%         for every column u of U, it computes a column v of V solving<BR>
+%             argmin 0.5||u-v||_2^2 + lambda\sum_{g \in G} \eta_g||v_g||_inf + lambda_2||v||_2^2<BR>
+%<BR>
+%<BR>
+%         if param.regul='multi-task-graph'<BR>
+%            V=argmin 0.5||U-V||_F^2 + lambda \sum_{i=1}^n\sum_{g \in G} \eta_g||v^i_g||_inf + ...<BR>
+%                                                lambda_2 \sum_{g \in G} \eta_g max_{j in g}||V_j||_{inf}<BR>
+%         <BR>
+%         it can also be used with any regularization addressed by mexProximalFlat<BR>
+%<BR>
+%         for all these regularizations, it is possible to enforce non-negativity constraints<BR>
+%         with the option param.pos, and to prevent the last row of U to be regularized, with<BR>
+%         the option param.intercept<BR>
+%<BR>
+% Inputs: U:  double p x n matrix   (input signals)<BR>
+%               m is the signal size<BR>
+%         graph: struct<BR>
+%               with three fields, eta_g, groups, and groups_var<BR>
+%<BR>
+%               The first fields sets the weights for every group<BR>
+%                  graph.eta_g            double N vector <BR>
+%  <BR>
+%               The next field sets inclusion relations between groups <BR>
+%               (but not between groups and variables):<BR>
+%                  graph.groups           sparse (double or boolean) N x N matrix  <BR>
+%                  the (i,j) entry is non-zero if and only if i is different than j and <BR>
+%                  gi is included in gj.<BR>
+%               <BR>
+%               The next field sets inclusion relations between groups and variables<BR>
+%                  graph.groups_var       sparse (double or boolean) p x N matrix<BR>
+%                  the (i,j) entry is non-zero if and only if the variable i is included <BR>
+%                  in gj, but not in any children of gj.<BR>
+%<BR>
+%               examples are given in test_ProximalGraph.m<BR>
+%<BR>
+%         param: struct<BR>
+%               param.lambda  (regularization parameter)<BR>
+%               param.regul (choice of regularization, see above)<BR>
+%               param.lambda2  (optional, regularization parameter)<BR>
+%               param.lambda3  (optional, regularization parameter)<BR>
+%               param.verbose (optional, verbosity level, false by default)<BR>
+%               param.intercept (optional, last row of U is not regularized,<BR>
+%                 false by default)<BR>
+%               param.pos (optional, adds positivity constraints on the<BR>
+%                 coefficients, false by default)<BR>
+%               param.numThreads (optional, number of threads for exploiting<BR>
+%                 multi-core / multi-cpus. By default, it takes the value -1,<BR>
+%                 which automatically selects all the available CPUs/cores).<BR>
+%<BR>
+% Output: V: double p x n matrix (output coefficients)<BR>
+%         val_regularizer: double 1 x n vector (value of the regularization<BR>
+%         term at the optimum).<BR>
+%<BR>
+% Author: Julien Mairal, 2010</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting">U=<FONT COLOR="blue"><B>randn</B></FONT>(10,1000);<BR>
+<BR>
+param.lambda=0.1; <FONT COLOR="#007F00">% regularization parameter</FONT><BR>
+param.num_threads=-1; <FONT COLOR="#007F00">% all cores (-1 by default)</FONT><BR>
+param.verbose=true;   <FONT COLOR="#007F00">% verbosity, false by default</FONT><BR>
+param.pos=false;       <FONT COLOR="#007F00">% can be used with all the other regularizations</FONT><BR>
+param.intercept=false; <FONT COLOR="#007F00">% can be used with all the other regularizations     </FONT><BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'First graph example\n'</FONT>);<BR>
+<FONT COLOR="#007F00">% Example 1 of graph structure<BR>
+% groups:<BR>
+% g1= {0 1 2 3}<BR>
+% g2= {3 4 5 6}<BR>
+% g3= {6 7 8 9}</FONT><BR>
+graph.eta_g=[1 1 1];<BR>
+graph.groups=<FONT COLOR="blue"><B>sparse</B></FONT>(<FONT COLOR="blue"><B>zeros</B></FONT>(3));<BR>
+graph.groups_var=<FONT COLOR="blue"><B>sparse</B></FONT>([1 0 0;<BR>
+                         1 0 0;<BR>
+                         1 0 0;<BR>
+                         1 1 0;<BR>
+                         0 1 0;<BR>
+                         0 1 0;<BR>
+                         0 1 1;<BR>
+                         0 0 1;<BR>
+                         0 0 1;<BR>
+                         0 0 1]);<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\ntest prox graph\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'graph'</FONT>;<BR>
+alpha=mexProximalGraph(U,graph,param);<BR>
+<BR>
+<FONT COLOR="#007F00">% Example 2 of graph structure<BR>
+% groups:<BR>
+% g1= {0 1 2 3}<BR>
+% g2= {3 4 5 6}<BR>
+% g3= {6 7 8 9}<BR>
+% g4= {0 1 2 3 4 5}<BR>
+% g5= {6 7 8}</FONT><BR>
+graph.eta_g=[1 1 1 1 1];<BR>
+graph.groups=<FONT COLOR="blue"><B>sparse</B></FONT>([0 0 0 1 0;<BR>
+                     0 0 0 0 0;<BR>
+                     0 0 0 0 0;<BR>
+                     0 0 0 0 0;<BR>
+                     0 0 1 0 0]);   <FONT COLOR="#007F00">% g5 is included in g3, and g2 is included in g4</FONT><BR>
+graph.groups_var=<FONT COLOR="blue"><B>sparse</B></FONT>([1 0 0 0 0;<BR>
+                         1 0 0 0 0;<BR>
+                         1 0 0 0 0 ;<BR>
+                         1 1 0 0 0;<BR>
+                         0 1 0 1 0;<BR>
+                         0 1 0 1 0;<BR>
+                         0 1 0 0 1;<BR>
+                         0 0 0 0 1;<BR>
+                         0 0 0 0 1;<BR>
+                         0 0 1 0 0]); <FONT COLOR="#007F00">% represents direct inclusion relations </FONT><BR>
+                                      <FONT COLOR="#007F00">% between groups (columns) and variables (rows)</FONT><BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\ntest prox graph\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'graph'</FONT>;<BR>
+alpha=mexProximalGraph(U,graph,param);<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\ntest prox multi-task-graph\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'multi-task-graph'</FONT>;<BR>
+param.lambda2=0.1;<BR>
+alpha=mexProximalGraph(U,graph,param);<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\ntest no regularization\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'none'</FONT>;<BR>
+alpha=mexProximalGraph(U,graph,param);</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc18"></A><A NAME="htoc23">5.5</A>  Function mexProximalPathCoding</H3><P>
+This function computes the proximal operators associated to the path coding penalties of [<A >23</A>]. 
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">% <BR>
+% Usage:   [V [val_regularizer]]=mexProximalPathCoding(U,DAG,param);<BR>
+%<BR>
+% Name: mexProximalPathCoding<BR>
+%<BR>
+% Description: mexProximalPathCoding computes a proximal operator for<BR>
+%         the path coding penalties of http://arxiv.org/abs/1204.4539<BR>
+%<BR>
+%         Given an input matrix U=[u^1,\ldots,u^n], <BR>
+%<BR>
+%<BR>
+% Inputs: U:  double p x n matrix   (input signals)<BR>
+%               m is the signal size<BR>
+%         DAG:  struct<BR>
+%               with three fields, weights, start_weights, stop_weights<BR>
+%         for a graph with |V| nodes and |E| arcs,<BR>
+%         DAG.weights: sparse double |V| x |V| matrix. Adjacency<BR>
+%               matrix. The non-zero entries represent costs on arcs<BR>
+%               linking two nodes.<BR>
+%         DAG.start_weights: dense double |V| vector. Represent the costs<BR>
+%               of starting a path from a specific node.<BR>
+%         DAG.stop_weights: dense double |V| vector. Represent the costs<BR>
+%               of ending a path at a specific node.<BR>
+%<BR>
+%         if param.regul='graph-path-l0', non-convex penalty<BR>
+%         if param.regul='graph-path-conv', convex penalty<BR>
+%<BR>
+%         param: struct<BR>
+%               param.lambda  (regularization parameter)<BR>
+%               param.regul (choice of regularization, see above)<BR>
+%               param.verbose (optional, verbosity level, false by default)<BR>
+%               param.intercept (optional, last row of U is not regularized,<BR>
+%                 false by default)<BR>
+%               param.pos (optional, adds positivity constraints on the<BR>
+%                 coefficients, false by default)<BR>
+%               param.precision (optional, by default a very large integer.<BR>
+%                 It returns approximate proximal operator by choosing a small integer,<BR>
+%                 for example, 100 or 1000.<BR>
+%               param.numThreads (optional, number of threads for exploiting<BR>
+%                 multi-core / multi-cpus. By default, it takes the value -1,<BR>
+%                 which automatically selects all the available CPUs/cores).<BR>
+%<BR>
+% Output: V: double p x n matrix (output coefficients)<BR>
+%         val_regularizer: double 1 x n vector (value of the regularization<BR>
+%         term at the optimum).<BR>
+%<BR>
+% Author: Julien Mairal, 2012</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
+<FONT COLOR="blue"><B>rand</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'test mexProximalPathCoding\n'</FONT>);<BR>
+p=100;<BR>
+<FONT COLOR="#007F00">% generate a DAG</FONT><BR>
+G=sprand(p,p,0.02);<BR>
+G=mexRemoveCyclesGraph(G);<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\n'</FONT>);<BR>
+<BR>
+<FONT COLOR="#007F00">% generate a data matrix</FONT><BR>
+U=<FONT COLOR="blue"><B>randn</B></FONT>(p,10);<BR>
+U=U-<FONT COLOR="blue"><B>mean</B></FONT>(U(:));<BR>
+U=mexNormalize(U);<BR>
+<BR>
+<FONT COLOR="#007F00">% input graph</FONT><BR>
+graph.weights=G;<BR>
+graph.stop_weights=<FONT COLOR="blue"><B>zeros</B></FONT>(1,p);<BR>
+graph.start_weights=10*ones(1,p);<BR>
+<BR>
+<FONT COLOR="#007F00">% FISTA parameters</FONT><BR>
+param.num_threads=-1; <FONT COLOR="#007F00">% all cores (-1 by default)</FONT><BR>
+param.verbose=true;   <FONT COLOR="#007F00">% verbosity, false by default</FONT><BR>
+param.lambda=0.05; <FONT COLOR="#007F00">% regularization parameter</FONT><BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Proximal convex path penalty\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'graph-path-conv'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[V1 optim]=mexProximalPathCoding(U,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+num=mexCountConnexComponents(graph.weights,V1(:,1));<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Num of connected components: %d\n'</FONT>,num);<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Proximal non-convex path penalty\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'graph-path-l0'</FONT>;<BR>
+param.lambda=0.005;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[V2 optim]=mexProximalPathCoding(U,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+num=mexCountConnexComponents(graph.weights,V2(:,1));<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Num of connected components: %d\n'</FONT>,num);<BR>
+<BR>
+graph.start_weights=1*ones(1,p);<BR>
+param.lambda=0.05;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Proximal convex path penalty\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'graph-path-conv'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[V1 optim]=mexProximalPathCoding(U,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+num=mexCountConnexComponents(graph.weights,V1(:,1));<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Num of connected components: %d\n'</FONT>,num);<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Proximal non-convex path penalty\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'graph-path-l0'</FONT>;<BR>
+param.lambda=0.005;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[V2 optim]=mexProximalPathCoding(U,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+num=mexCountConnexComponents(graph.weights,V2(:,1));<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Num of connected components: %d\n'</FONT>,num);</TD></TR>
+</TABLE><P>
+This function is associated to a function to evaluate the penalties:
+</P><H3 CLASS="subsection"><A NAME="toc19"></A><A NAME="htoc24">5.6</A>  Function mexEvalPathCoding</H3><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">% <BR>
+% Usage:   [val [paths]]=mexEvalPathCoding(U,DAG,param);<BR>
+%<BR>
+% Name: mexEvalPathCoding<BR>
+%<BR>
+% Description: mexEvalPathCoding evaluate the path coding penalies <BR>
+%         of http://arxiv.org/abs/1204.4539 and provides a path <BR>
+%         decomposition of a vector W.<BR>
+%<BR>
+%         Given an input matrix U=[u^1,\ldots,u^n], <BR>
+%<BR>
+%<BR>
+% Inputs: U:  double p x n matrix   (input signals)<BR>
+%               m is the signal size<BR>
+%         DAG:  struct<BR>
+%               with three fields, weights, start_weights, stop_weights<BR>
+%         for a graph with |V| nodes and |E| arcs,<BR>
+%         DAG.weights: sparse double |V| x |V| matrix. Adjacency<BR>
+%               matrix. The non-zero entries represent costs on arcs<BR>
+%               linking two nodes.<BR>
+%         DAG.start_weights: dense double |V| vector. Represent the costs<BR>
+%               of starting a path from a specific node.<BR>
+%         DAG.stop_weights: dense double |V| vector. Represent the costs<BR>
+%               of ending a path at a specific node.<BR>
+%<BR>
+%         if param.regul='graph-path-l0', non-convex penalty<BR>
+%         if param.regul='graph-path-conv', convex penalty<BR>
+%<BR>
+%         param: struct<BR>
+%               param.regul (choice of regularization, see above)<BR>
+%               param.verbose (optional, verbosity level, false by default)<BR>
+%               param.precision (optional, by default a very large integer.<BR>
+%                 It returns approximate proximal operator by choosing a small integer,<BR>
+%                 for example, 100 or 1000.<BR>
+%               param.numThreads (optional, number of threads for exploiting<BR>
+%                 multi-core / multi-cpus. By default, it takes the value -1,<BR>
+%                 which automatically selects all the available CPUs/cores).<BR>
+%<BR>
+% Output: V: double 1 x n vector (values of the objective function)<BR>
+%         paths: optional, double sparse p x k matrix. selected paths for the <BR>
+%                first column of U<BR>
+%<BR>
+% Author: Julien Mairal, 2012</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
+<FONT COLOR="blue"><B>rand</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+<BR>
+p=100;<BR>
+G=sprand(p,p,0.05);<BR>
+G=mexRemoveCyclesGraph(G);<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\n'</FONT>);<BR>
+<BR>
+<FONT COLOR="#007F00">% input graph</FONT><BR>
+graph.weights=G;<BR>
+graph.stop_weights=<FONT COLOR="blue"><B>zeros</B></FONT>(1,p);<BR>
+graph.start_weights=10*ones(1,p);<BR>
+<BR>
+param.regul=<FONT COLOR="red">'graph-path-l0'</FONT>;<BR>
+U=<FONT COLOR="blue"><B>randn</B></FONT>(p,10);<BR>
+U=U-<FONT COLOR="blue"><B>mean</B></FONT>(U(:));<BR>
+U=mexNormalize(U);<BR>
+param.lambda=0.005;<BR>
+[V2 optim]=mexProximalPathCoding(U,graph,param);<BR>
+[vals paths]=mexEvalPathCoding(U,graph,param);</TD></TR>
+</TABLE><P>After having presented the regularization terms which our software can handle,
+we present the various formulations that we address
+</P><H3 CLASS="subsection"><A NAME="toc20"></A><A NAME="htoc25">5.7</A>  Problems Addressed</H3><P>
+We present here regression or classification formulations and their multi-task variants.
+</P><H4 CLASS="subsubsection"><A NAME="htoc26">5.7.1</A>  Regression Problems with the Square Loss</H4><P> Given a training set {<I><B>x</B><SUP>i</SUP></I>,<I>y<SUB>i</SUB></I>}<SUB><I>i</I>=1</SUB><I><SUP>n</SUP></I>, with <I><B>x</B><SUP>i</SUP></I> ∈ ℝ<I><SUP>p</SUP></I> and <I>y<SUB>i</SUB></I> ∈ ℝ for all <I>i</I> in [ 1;<I>n</I> ], we address
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>w</B></I> ∈ ℝ<I><SUP>p</SUP></I>, <I>b</I> ∈ ℝ</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">(<I>y<SUB>i</SUB></I>−<I><B>w</B></I><SUP>⊤</SUP><I><B>x</B><SUP>i</SUP></I>−<I>b</I>)<SUP>2</SUP> + λψ(<I><B>w</B></I>),
+</TD></TR>
+</TABLE><P>
+where <I>b</I> is an optional variable acting as an “intercept”, which is not regularized, and ψ
+can be any of the regularization functions presented above. 
+Let us consider the vector <I><B>y</B></I> in ℝ<I><SUP>n</SUP></I> that carries the entries <I>y<SUB>i</SUB></I>. 
+The problem without the intercept takes the following form, which we have already
+encountered in the previous toolbox, but with different notations:
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>w</B></I> ∈ ℝ<I><SUP>p</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">||<I><B>y</B></I>−<B><I>Xw</I></B>||<SUB>2</SUB><SUP>2</SUP> + λψ(<I><B>w</B></I>),
+</TD></TR>
+</TABLE><P>
+where the <I><B>X</B></I>=[<I><B>x</B><SUP>i</SUP></I>,…,<I><B>x</B><SUP>n</SUP></I>]<I><SUP>T</SUP></I> (the <I><B>x</B><SUP>i</SUP></I>’s are here the rows of <I><B>X</B></I>).
+</P><H4 CLASS="subsubsection"><A NAME="htoc27">5.7.2</A>  Classification Problems with the Logistic Loss</H4><P>
+The next formulation that our software can solve is the regularized logistic regression formulation.
+We are again given a training set {<I><B>x</B><SUP>i</SUP></I>,<I>y<SUB>i</SUB></I>}<SUB><I>i</I>=1</SUB><I><SUP>n</SUP></I>, with <I><B>x</B><SUP>i</SUP></I> ∈
+ℝ<I><SUP>p</SUP></I>, but the variables <I>y<SUB>i</SUB></I> are now in {−1,+1} for all <I>i</I> in
+[ 1;<I>n</I> ]. The optimization problem we address is
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">   </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>w</B></I> ∈ ℝ<I><SUP>p</SUP></I>, <I>b</I> ∈ ℝ</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> log(1+<I>e</I><SUP>−<I>y<SUB>i</SUB></I>(<B><I>w</I></B>⊤<I><B>x</B>i</I>+<I>b</I>)</SUP> + λψ(<I><B>w</B></I>),
+</TD></TR>
+</TABLE><P>
+with again ψ taken to be one of the regularization function presented above, and <I>b</I> is an optional intercept.
+</P><H4 CLASS="subsubsection"><A NAME="htoc28">5.7.3</A>  Multi-class Classification Problems with the Softmax Loss</H4><P>
+We have also implemented a multi-class logistic classifier (or softmax).
+For a classification problem with <I>r</I> classes, we are given a training set {<I><B>x</B><SUP>i</SUP></I>,<I>y<SUB>i</SUB></I>}<SUB><I>i</I>=1</SUB><I><SUP>n</SUP></I>, where the variables <I><B>x</B><SUP>i</SUP></I> are still vectors in ℝ<I><SUP>p</SUP></I>, but the <I>y<SUB>i</SUB></I>’s have integer values in {1,2,…,<I>r</I>}. The formulation we address is the following multi-class learning problem
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
+</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>W</B></I> ∈ ℝ<SUP><I>p</I> × <I>r</I></SUP>, <I><B>b</B></I> ∈ ℝ<I><SUP>r</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> log</TD><TD CLASS="dcell">⎛<BR>
+⎜<BR>
+⎝</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>r</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>j</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> <I>e</I><SUP> (<I><B>w</B>j</I>−<I><B>wy</B><SUB>i</SUB></I>)⊤<I><B>x</B>i</I> + <I><B>b</B><SUB>j</SUB></I>−<I><B>b</B><SUB><B>y</B>i</SUB></I></SUP></TD><TD CLASS="dcell">⎞<BR>
+⎟<BR>
+⎠</TD><TD CLASS="dcell">+ λ</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>r</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>j</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell">ψ(<I><B>w</B><SUP>j</SUP></I>),<A NAME="software:eq:class"></A>
+    (46)</TD></TR>
+</TABLE><P>
+where <I><B>W</B></I> = [<I><B>w</B></I><SUP>1</SUP>,…,<I><B>w</B><SUP>r</SUP></I>] and the optional vector <I><B>b</B></I> in ℝ<I><SUP>r</SUP></I> carries intercepts for each class.
+</P><H4 CLASS="subsubsection"><A NAME="htoc29">5.7.4</A>  Multi-task Regression Problems with the Square Loss</H4><P>
+We are now considering a problem with <I>r</I> tasks, and a training set
+{<I><B>x</B><SUP>i</SUP></I>,<I><B>y</B><SUP>i</SUP></I>}<SUB><I>i</I>=1</SUB><I><SUP>n</SUP></I>, where the variables <I><B>x</B><SUP>i</SUP></I> are still vectors in ℝ<I><SUP>p</SUP></I>, and <I><B>y</B><SUP>i</SUP></I>
+is a vector in ℝ<I><SUP>r</SUP></I>. We are looking for <I>r</I> regression vectors <I><B>w</B><SUP>j</SUP></I>, for <I>j</I>∈ [ 1;<I>r</I> ], or equivalently for a matrix <I><B>W</B></I>=[<I><B>w</B></I><SUP>1</SUP>,…,<I><B>w</B><SUP>r</SUP></I>] in ℝ<SUP><I>p</I> × <I>r</I></SUP>. The formulation we address is the following
+multi-task regression problem
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">         </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>W</B></I> ∈ ℝ<SUP><I>p</I> × <I>r</I></SUP>, <I><B>b</B></I> ∈ ℝ<I><SUP>r</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>r</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>j</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell">(<I><B>y</B><SUB>j</SUB><SUP>i</SUP></I>−<I><B>w</B></I><SUP>⊤</SUP><I><B>x</B><SUP>i</SUP></I>−<I><B>b</B><SUB>j</SUB></I>)<SUP>2</SUP> + λψ(<I><B>W</B></I>),
+</TD></TR>
+</TABLE><P>
+where ψ is any of the regularization function on matrices we have presented in the previous section.
+Note that by introducing the appropriate variables <I><B>Y</B></I>, the problem without intercept could be equivalently rewritten
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">   </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>W</B></I> ∈ ℝ<SUP><I>p</I> × <I>r</I></SUP></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">2</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> ||<I><B>Y</B></I>−<B><I>XW</I></B>||<SUB>F</SUB><SUP>2</SUP> + λψ(<I><B>W</B></I>).
+</TD></TR>
+</TABLE><H4 CLASS="subsubsection"><A NAME="htoc30">5.7.5</A>  Multi-task Classification Problems with the Logistic Loss</H4><P>
+The multi-task version of the logistic regression follows the same principle.
+We consider <I>r</I> tasks, and a training set
+{<I><B>x</B><SUP>i</SUP></I>,<I><B>y</B><SUP>i</SUP></I>}<SUB><I>i</I>=1</SUB><I><SUP>n</SUP></I>, with the <I><B>x</B><SUP>i</SUP></I>’s in ℝ<I><SUP>p</SUP></I>, and the <I><B>y</B><SUP>i</SUP></I>’s
+are vectors in {−1,+1}<I><SUP>r</SUP></I>. We look for a matrix <I><B>W</B></I>=[<I><B>w</B></I><SUP>1</SUP>,…,<I><B>w</B><SUP>r</SUP></I>] in ℝ<SUP><I>p</I> × <I>r</I></SUP>. The formulation is the following
+multi-task regression problem
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">   </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>W</B></I> ∈ ℝ<SUP><I>p</I> × <I>r</I></SUP>, <I><B>b</B></I> ∈ ℝ<I><SUP>r</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>r</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>j</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> log</TD><TD CLASS="dcell">⎛<BR>
+⎜<BR>
+⎝</TD><TD CLASS="dcell">1+<I>e</I><SUP>−<I><B>y</B><SUB>j</SUB>i</I>(<B><I>w</I></B>⊤<I><B>x</B>i</I>+<I><B>b</B><SUB>j</SUB></I>)</SUP></TD><TD CLASS="dcell">⎞<BR>
+⎟<BR>
+⎠</TD><TD CLASS="dcell">+ λψ(<I><B>W</B></I>).
+</TD></TR>
+</TABLE><H4 CLASS="subsubsection"><A NAME="htoc31">5.7.6</A>  Multi-task and Multi-class Classification Problems with the Softmax Loss</H4><P>
+The multi-task/multi-class version directly follows from the formulation of Eq. (<A HREF="#software:eq:class">46</A>), but associates with each class a task, and as a consequence, regularizes the matrix <I><B>W</B></I> in a particular way:
+</P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">   </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center">min</TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I><B>W</B></I> ∈ ℝ<SUP><I>p</I> × <I>r</I></SUP>, <I><B>b</B></I> ∈ ℝ<I><SUP>r</SUP></I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"> </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">1</TD></TR>
+<TR><TD CLASS="hbar"></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+</TABLE></TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>n</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>i</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> log</TD><TD CLASS="dcell">⎛<BR>
+⎜<BR>
+⎝</TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center"><I>r</I></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><FONT SIZE=6>∑</FONT></TD></TR>
+<TR><TD CLASS="dcell" ALIGN="center"><I>j</I>=1</TD></TR>
+</TABLE></TD><TD CLASS="dcell"> <I>e</I><SUP> (<I><B>w</B>j</I>−<I><B>wy</B><SUB>i</SUB></I>)⊤<I><B>x</B>i</I> + <I><B>b</B><SUB>j</SUB></I>−<I><B>b</B><SUB><B>y</B>i</SUB></I></SUP></TD><TD CLASS="dcell">⎞<BR>
+⎟<BR>
+⎠</TD><TD CLASS="dcell">+ λψ(<I><B>W</B></I>).
+</TD></TR>
+</TABLE><P>
+How duality gaps are computed for any of these formulations is presented in Appendix <A HREF="doc_spams008.html#appendix">A</A>.
+We now present the main functions for solving these problems</P><H3 CLASS="subsection"><A NAME="toc21"></A><A NAME="htoc32">5.8</A>  Function mexFistaFlat</H3><P>
+Given a matrix <I><B>X</B></I>=[<I><B>x</B></I><SUP>1</SUP>,…,<I><B>x</B><SUP>p</SUP></I>]<I><SUP>T</SUP></I> in ℝ<SUP><I>m</I> × <I>p</I></SUP>, and a matrix <I><B>Y</B></I>=[<I><B>y</B></I><SUP>1</SUP>,…,<I><B>y</B><SUP>n</SUP></I>], it solves the optimization problems presented in the previous section, with the same regularization functions as mexProximalFlat.
+see usage details below:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">% <BR>
+% Usage: [W [optim]]=mexFistaFlat(Y,X,W0,param);<BR>
+%<BR>
+% Name: mexFistaFlat<BR>
+%<BR>
+% Description: mexFistaFlat solves sparse regularized problems.<BR>
+%         X is a design matrix of size m x p<BR>
+%         X=[x^1,...,x^n]', where the x_i's are the rows of X<BR>
+%         Y=[y^1,...,y^n] is a matrix of size m x n<BR>
+%         It implements the algorithms FISTA, ISTA and subgradient descent.<BR>
+%         <BR>
+%           - if param.loss='square' and param.regul is a regularization function for vectors,<BR>
+%             the entries of Y are real-valued,  W = [w^1,...,w^n] is a matrix of size p x n<BR>
+%             For all column y of Y, it computes a column w of W such that<BR>
+%               w = argmin 0.5||y- X w||_2^2 + lambda psi(w)<BR>
+%<BR>
+%           - if param.loss='square' and param.regul is a regularization function for matrices<BR>
+%             the entries of Y are real-valued,  W is a matrix of size p x n. <BR>
+%             It computes the matrix W such that<BR>
+%               W = argmin 0.5||Y- X W||_F^2 + lambda psi(W)<BR>
+%            <BR>
+%           - param.loss='square-missing' : same as param.loss='square', but handles missing data<BR>
+%             represented by NaN (not a number) in the matrix Y<BR>
+%<BR>
+%           - if param.loss='logistic' and param.regul is a regularization function for vectors,<BR>
+%             the entries of Y are either -1 or +1, W = [w^1,...,w^n] is a matrix of size p x n<BR>
+%             For all column y of Y, it computes a column w of W such that<BR>
+%               w = argmin (1/m)sum_{j=1}^m log(1+e^(-y_j x^j' w)) + lambda psi(w),<BR>
+%             where x^j is the j-th row of X.<BR>
+%<BR>
+%           - if param.loss='logistic' and param.regul is a regularization function for matrices<BR>
+%             the entries of Y are either -1 or +1, W is a matrix of size p x n<BR>
+%               W = argmin sum_{i=1}^n(1/m)sum_{j=1}^m log(1+e^(-y^i_j x^j' w^i)) + lambda psi(W)<BR>
+%<BR>
+%           - if param.loss='multi-logistic' and param.regul is a regularization function for vectors,<BR>
+%             the entries of Y are in {0,1,...,N} where N is the total number of classes<BR>
+%             W = [W^1,...,W^n] is a matrix of size p x Nn, each submatrix W^i is of size p x N<BR>
+%             for all submatrix WW of W, and column y of Y, it computes<BR>
+%               WW = argmin (1/m)sum_{j=1}^m log(sum_{j=1}^r e^(x^j'(ww^j-ww^{y_j}))) + lambda sum_{j=1}^N psi(ww^j),<BR>
+%             where ww^j is the j-th column of WW.<BR>
+%<BR>
+%           - if param.loss='multi-logistic' and param.regul is a regularization function for matrices,<BR>
+%             the entries of Y are in {0,1,...,N} where N is the total number of classes<BR>
+%             W is a matrix of size p x N, it computes<BR>
+%               W = argmin (1/m)sum_{j=1}^m log(sum_{j=1}^r e^(x^j'(w^j-w^{y_j}))) + lambda psi(W)<BR>
+%             where ww^j is the j-th column of WW.<BR>
+%<BR>
+%           - param.loss='cur' : useful to perform sparse CUR matrix decompositions, <BR>
+%               W = argmin 0.5||Y-X*W*X||_F^2 + lambda psi(W)<BR>
+%<BR>
+%<BR>
+%         The function psi are those used by mexProximalFlat (see documentation)<BR>
+%<BR>
+%         This function can also handle intercepts (last row of W is not regularized),<BR>
+%         and/or non-negativity constraints on W, and sparse matrices for X<BR>
+%<BR>
+% Inputs: Y:  double dense m x n matrix<BR>
+%         X:  double dense or sparse m x p matrix   <BR>
+%         W0:  double dense p x n matrix or p x Nn matrix (for multi-logistic loss)<BR>
+%              initial guess<BR>
+%         param: struct<BR>
+%            param.loss (choice of loss, see above)<BR>
+%            param.regul (choice of regularization, see function mexProximalFlat)<BR>
+%            param.lambda (regularization parameter)<BR>
+%            param.lambda2 (optional, regularization parameter, 0 by default)<BR>
+%            param.lambda3 (optional, regularization parameter, 0 by default)<BR>
+%            param.verbose (optional, verbosity level, false by default)<BR>
+%            param.pos (optional, adds positivity constraints on the<BR>
+%                coefficients, false by default)<BR>
+%            param.transpose (optional, transpose the matrix in the regularization function)<BR>
+%            param.size_group (optional, for regularization functions assuming a group<BR>
+%                 structure)<BR>
+%            param.groups (int32, optional, for regularization functions assuming a group<BR>
+%                 structure, see mexProximalFlat)<BR>
+%            param.numThreads (optional, number of threads for exploiting<BR>
+%                multi-core / multi-cpus. By default, it takes the value -1,<BR>
+%                which automatically selects all the available CPUs/cores).<BR>
+%            param.max_it (optional, maximum number of iterations, 100 by default)<BR>
+%            param.it0 (optional, frequency for computing duality gap, every 10 iterations by default)<BR>
+%            param.tol (optional, tolerance for stopping criteration, which is a relative duality gap<BR>
+%                if it is available, or a relative change of parameters).<BR>
+%            param.gamma (optional, multiplier for increasing the parameter L in fista, 1.5 by default)<BR>
+%            param.L0 (optional, initial parameter L in fista, 0.1 by default, should be small enough)<BR>
+%            param.fixed_step (deactive the line search for L in fista and use param.L0 instead)<BR>
+%            param.compute_gram (optional, pre-compute X^TX, false by default).<BR>
+%            param.intercept (optional, do not regularize last row of W, false by default).<BR>
+%            param.ista (optional, use ista instead of fista, false by default).<BR>
+%            param.subgrad (optional, if not param.ista, use subradient descent instead of fista, false by default).<BR>
+%            param.a, param.b (optional, if param.subgrad, the gradient step is a/(t+b)<BR>
+%            also similar options as mexProximalFlat<BR>
+%<BR>
+%            the function also implements the ADMM algorithm via an option param.admm=true. It is not documented<BR>
+%            and you need to look at the source code to use it.<BR>
+%<BR>
+% Output:  W:  double dense p x n matrix or p x Nn matrix (for multi-logistic loss)<BR>
+%          optim: optional, double dense 4 x n matrix.<BR>
+%              first row: values of the objective functions.<BR>
+%              third row: values of the relative duality gap (if available)<BR>
+%              fourth row: number of iterations<BR>
+%<BR>
+% Author: Julien Mairal, 2010</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>format</B></FONT> compact;<BR>
+<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+param.numThreads=-1; <FONT COLOR="#007F00">% all cores (-1 by default)</FONT><BR>
+param.verbose=true;   <FONT COLOR="#007F00">% verbosity, false by default</FONT><BR>
+param.lambda=0.05; <FONT COLOR="#007F00">% regularization parameter</FONT><BR>
+param.it0=10;      <FONT COLOR="#007F00">% frequency for duality gap computations</FONT><BR>
+param.max_it=200; <FONT COLOR="#007F00">% maximum number of iterations</FONT><BR>
+param.L0=0.1;<BR>
+param.tol=1e-3;<BR>
+param.intercept=false;<BR>
+param.pos=false;<BR>
+<BR>
+X=<FONT COLOR="blue"><B>randn</B></FONT>(100,200);<BR>
+X=X-repmat(<FONT COLOR="blue"><B>mean</B></FONT>(X),[<FONT COLOR="blue"><B>size</B></FONT>(X,1) 1]);<BR>
+X=mexNormalize(X);<BR>
+Y=<FONT COLOR="blue"><B>randn</B></FONT>(100,1);<BR>
+Y=Y-repmat(<FONT COLOR="blue"><B>mean</B></FONT>(Y),[<FONT COLOR="blue"><B>size</B></FONT>(Y,1) 1]);<BR>
+Y=mexNormalize(Y);<BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+<FONT COLOR="#007F00">% Regression experiments <BR>
+% 100 regression problems with the same design matrix X.</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nVarious regression experiments\n'</FONT>);<BR>
+param.compute_gram=true;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression l1\n'</FONT>);<BR>
+param.loss=<FONT COLOR="red">'square'</FONT>;<BR>
+param.regul=<FONT COLOR="red">'l1'</FONT>;<BR>
+<FONT COLOR="#007F00">% param.regul='group-lasso-l2';<BR>
+% param.size_group=10;</FONT><BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nISTA + Regression l1\n'</FONT>);<BR>
+param.ista=true;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nSubgradient Descent + Regression l1\n'</FONT>);<BR>
+param.ista=false;<BR>
+param.subgrad=true;<BR>
+param.a=0.1;<BR>
+param.b=1000; <FONT COLOR="#007F00">% arbitrary parameters</FONT><BR>
+max_it=param.max_it;<BR>
+it0=param.it0;<BR>
+param.max_it=500;<BR>
+param.it0=50;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+param.subgrad=false;<BR>
+param.max_it=max_it;<BR>
+param.it0=it0;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression l2\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l2'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression l2 + sparse feature matrix\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l2'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,<FONT COLOR="blue"><B>sparse</B></FONT>(X),W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression Elastic-Net\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'elastic-net'</FONT>;<BR>
+param.lambda2=0.1;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Group Lasso L2\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'group-lasso-l2'</FONT>;<BR>
+param.size_group=2;  <FONT COLOR="#007F00">% all the groups are of size 2</FONT><BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Group Lasso L2 with variable size of groups \n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'group-lasso-l2'</FONT>;<BR>
+param2=param;<BR>
+param2.groups=int32(randi(5,1,<FONT COLOR="blue"><B>size</B></FONT>(X,2)));  <FONT COLOR="#007F00">% all the groups are of size 2</FONT><BR>
+param2.lambda=10*param2.lambda;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param2);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="blue"><B>return</B></FONT>;<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Trace Norm\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'trace-norm-vec'</FONT>;<BR>
+param.size_group=5;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression Fused-Lasso\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'fused-lasso'</FONT>;<BR>
+param.lambda2=0.1;<BR>
+param.lambda3=0.1; <FONT COLOR="#007F00">%</FONT><BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression no regularization\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'none'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression l1 with intercept \n'</FONT>);<BR>
+param.intercept=true;<BR>
+param.regul=<FONT COLOR="red">'l1'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,[X ones(<FONT COLOR="blue"><B>size</B></FONT>(X,1),1)],[W0; <FONT COLOR="blue"><B>zeros</B></FONT>(1,<FONT COLOR="blue"><B>size</B></FONT>(W0,2))],param); <FONT COLOR="#007F00">% adds a column of ones to X for the intercept</FONT><BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression l1 with intercept+ non-negative \n'</FONT>);<BR>
+param.pos=true;<BR>
+param.regul=<FONT COLOR="red">'l1'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,[X ones(<FONT COLOR="blue"><B>size</B></FONT>(X,1),1)],[W0; <FONT COLOR="blue"><B>zeros</B></FONT>(1,<FONT COLOR="blue"><B>size</B></FONT>(W0,2))],param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+param.pos=false;<BR>
+param.intercept=false;<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nISTA + Regression l0\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l0'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nOne classification experiment\n'</FONT>);<BR>
+Y=2*double(<FONT COLOR="blue"><B>randn</B></FONT>(100,1) &gt; 0)-1;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Logistic l1\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1'</FONT>;<BR>
+param.loss=<FONT COLOR="red">'logistic'</FONT>;<BR>
+param.lambda=0.01;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="#007F00">% can be used of course with other regularization functions, intercept,...</FONT><BR>
+param.regul=<FONT COLOR="red">'l1'</FONT>;<BR>
+param.loss=<FONT COLOR="red">'weighted-logistic'</FONT>;<BR>
+param.lambda=0.01;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + weighted Logistic l1 + sparse matrix\n'</FONT>);<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="#007F00">% can be used of course with other regularization functions, intercept,...</FONT><BR>
+<BR>
+param.loss=<FONT COLOR="red">'logistic'</FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Logistic l1 + sparse matrix\n'</FONT>);<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,<FONT COLOR="blue"><B>sparse</B></FONT>(X),W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="#007F00">% can be used of course with other regularization functions, intercept,...<BR>
+<BR>
+% Multi-Class classification</FONT><BR>
+Y=double(<FONT COLOR="blue"><B>ceil</B></FONT>(5*<FONT COLOR="blue"><B>rand</B></FONT>(100,1000))-1);<BR>
+param.loss=<FONT COLOR="red">'multi-logistic'</FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Multi-Class Logistic l1\n'</FONT>);<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+nclasses=<FONT COLOR="blue"><B>max</B></FONT>(Y(:))+1;<BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),nclasses*<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="#007F00">% can be used of course with other regularization functions, intercept,...<BR>
+<BR>
+% Multi-Task regression</FONT><BR>
+Y=<FONT COLOR="blue"><B>randn</B></FONT>(100,100);<BR>
+Y=Y-repmat(<FONT COLOR="blue"><B>mean</B></FONT>(Y),[<FONT COLOR="blue"><B>size</B></FONT>(Y,1) 1]);<BR>
+Y=mexNormalize(Y);<BR>
+param.compute_gram=false;<BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+param.loss=<FONT COLOR="red">'square'</FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression l1l2 \n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1l2'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+<FONT COLOR="blue"><B>toc<BR>
+fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression l1linf \n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1linf'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+<FONT COLOR="blue"><B>toc<BR>
+fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression l1l2 + l1 \n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1l2+l1'</FONT>;<BR>
+param.lambda2=0.1;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+<FONT COLOR="blue"><B>toc<BR>
+fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression l1linf + l1 \n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1linf+l1'</FONT>;<BR>
+param.lambda2=0.1;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+<FONT COLOR="blue"><B>toc<BR>
+fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression l1linf + row + columns \n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1linf-row-column'</FONT>;<BR>
+param.lambda2=0.1;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+<FONT COLOR="blue"><B>toc<BR>
+fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="#007F00">% Multi-Task Classification</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Logistic + l1l2 \n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'l1l2'</FONT>;<BR>
+param.loss=<FONT COLOR="red">'logistic'</FONT>;<BR>
+Y=2*double(<FONT COLOR="blue"><B>randn</B></FONT>(100,100) &gt; 0)-1;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+<FONT COLOR="blue"><B>toc<BR>
+fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="#007F00">% Multi-Class + Multi-Task Regularization</FONT><BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Multi-Class Logistic l1l2 \n'</FONT>);<BR>
+Y=double(<FONT COLOR="blue"><B>ceil</B></FONT>(5*<FONT COLOR="blue"><B>rand</B></FONT>(100,1000))-1);<BR>
+param.loss=<FONT COLOR="red">'multi-logistic'</FONT>;<BR>
+param.regul=<FONT COLOR="red">'l1l2'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+nclasses=<FONT COLOR="blue"><B>max</B></FONT>(Y(:))+1;<BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),nclasses*<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+[W optim_info]=mexFistaFlat(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="#007F00">% can be used of course with other regularization functions, intercept,...</FONT></TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc22"></A><A NAME="htoc33">5.9</A>  Function mexFistaTree</H3><P>
+Given a matrix <I><B>X</B></I>=[<I><B>x</B></I><SUP>1</SUP>,…,<I><B>x</B><SUP>p</SUP></I>]<I><SUP>T</SUP></I> in ℝ<SUP><I>m</I> × <I>p</I></SUP>, and a matrix <I><B>Y</B></I>=[<I><B>y</B></I><SUP>1</SUP>,…,<I><B>y</B><SUP>n</SUP></I>], it solves the optimization problems presented in the previous section, with the same regularization functions as mexProximalTree.
+see usage details below:</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">% <BR>
+% Usage: [W [optim]]=mexFistaTree(Y,X,W0,tree,param);<BR>
+%<BR>
+% Name: mexFistaTree<BR>
+%<BR>
+% Description: mexFistaTree solves sparse regularized problems.<BR>
+%         X is a design matrix of size m x p<BR>
+%         X=[x^1,...,x^n]', where the x_i's are the rows of X<BR>
+%         Y=[y^1,...,y^n] is a matrix of size m x n<BR>
+%         It implements the algorithms FISTA, ISTA and subgradient descent for solving<BR>
+%<BR>
+%           min_W  loss(W) + lambda psi(W)<BR>
+%          <BR>
+%         The function psi are those used by mexProximalTree (see documentation)<BR>
+%         for the loss functions, see the documentation of mexFistaFlat<BR>
+%<BR>
+%         This function can also handle intercepts (last row of W is not regularized),<BR>
+%         and/or non-negativity constraints on W and sparse matrices X<BR>
+%<BR>
+% Inputs: Y:  double dense m x n matrix<BR>
+%         X:  double dense or sparse m x p matrix   <BR>
+%         W0:  double dense p x n matrix or p x Nn matrix (for multi-logistic loss)<BR>
+%              initial guess<BR>
+%         tree: struct (see documentation of mexProximalTree)<BR>
+%         param: struct<BR>
+%            param.loss (choice of loss, see above)<BR>
+%            param.regul (choice of regularization, see function mexProximalFlat)<BR>
+%            param.lambda (regularization parameter)<BR>
+%            param.lambda2 (optional, regularization parameter, 0 by default)<BR>
+%            param.lambda3 (optional, regularization parameter, 0 by default)<BR>
+%            param.verbose (optional, verbosity level, false by default)<BR>
+%            param.pos (optional, adds positivity constraints on the<BR>
+%                coefficients, false by default)<BR>
+%            param.transpose (optional, transpose the matrix in the regularization function)<BR>
+%            param.size_group (optional, for regularization functions assuming a group<BR>
+%                 structure)<BR>
+%            param.numThreads (optional, number of threads for exploiting<BR>
+%                multi-core / multi-cpus. By default, it takes the value -1,<BR>
+%                which automatically selects all the available CPUs/cores).<BR>
+%            param.max_it (optional, maximum number of iterations, 100 by default)<BR>
+%            param.it0 (optional, frequency for computing duality gap, every 10 iterations by default)<BR>
+%            param.tol (optional, tolerance for stopping criteration, which is a relative duality gap<BR>
+%                if it is available, or a relative change of parameters).<BR>
+%            param.gamma (optional, multiplier for increasing the parameter L in fista, 1.5 by default)<BR>
+%            param.L0 (optional, initial parameter L in fista, 0.1 by default, should be small enough)<BR>
+%            param.fixed_step (deactive the line search for L in fista and use param.L0 instead)<BR>
+%            param.compute_gram (optional, pre-compute X^TX, false by default).<BR>
+%            param.intercept (optional, do not regularize last row of W, false by default).<BR>
+%            param.ista (optional, use ista instead of fista, false by default).<BR>
+%            param.subgrad (optional, if not param.ista, use subradient descent instead of fista, false by default).<BR>
+%            param.a, param.b (optional, if param.subgrad, the gradient step is a/(t+b)<BR>
+%            also similar options as mexProximalTree<BR>
+%<BR>
+%            the function also implements the ADMM algorithm via an option param.admm=true. It is not documented<BR>
+%            and you need to look at the source code to use it.<BR>
+%<BR>
+% Output:  W:  double dense p x n matrix or p x Nn matrix (for multi-logistic loss)<BR>
+%          optim: optional, double dense 4 x n matrix.<BR>
+%              first row: values of the objective functions.<BR>
+%              third row: values of the relative duality gap (if available)<BR>
+%              fourth row: number of iterations<BR>
+%<BR>
+% Author: Julien Mairal, 2010</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>format</B></FONT> compact;<BR>
+param.num_threads=-1; <FONT COLOR="#007F00">% all cores (-1 by default)</FONT><BR>
+param.verbose=false;   <FONT COLOR="#007F00">% verbosity, false by default</FONT><BR>
+param.lambda=0.001; <FONT COLOR="#007F00">% regularization parameter</FONT><BR>
+param.it0=10;      <FONT COLOR="#007F00">% frequency for duality gap computations</FONT><BR>
+param.max_it=200; <FONT COLOR="#007F00">% maximum number of iterations</FONT><BR>
+param.L0=0.1;<BR>
+param.tol=1e-5;<BR>
+param.intercept=false;<BR>
+param.pos=false;<BR>
+<BR>
+<FONT COLOR="#007F00">% Example 2 of tree structure<BR>
+% tree structured groups:<BR>
+% g1= {0 1 2 3 4 5 6 7 8 9}    root(g1) = { };<BR>
+% g2= {0 1 2 3 4 5}            root(g2) = {0 1 2};<BR>
+% g3= {3 4}                    root(g3) = {3 4};<BR>
+% g4= {5}                      root(g4) = {5};<BR>
+% g5= {6 7 8 9}                root(g5) = { };<BR>
+% g6= {6 7}                    root(g6) = {6 7};<BR>
+% g7= {8 9}                    root(g7) = {8};<BR>
+% g8 = {9}                     root(g8) = {9};</FONT><BR>
+tree.own_variables=  int32([0 0 3 5 6 6 8 9]);   <FONT COLOR="#007F00">% pointer to the first variable of each group</FONT><BR>
+tree.N_own_variables=int32([0 3 2 1 0 2 1 1]); <FONT COLOR="#007F00">% number of "root" variables in each group</FONT><BR>
+tree.eta_g=[1 1 1 2 2 2 2.5 2.5];<BR>
+tree.groups=<FONT COLOR="blue"><B>sparse</B></FONT>([0 0 0 0 0 0 0 0; ...<BR>
+                    1 0 0 0 0 0 0 0; ...<BR>
+                    0 1 0 0 0 0 0 0; ...<BR>
+                    0 1 0 0 0 0 0 0; ...<BR>
+                    1 0 0 0 0 0 0 0; ...<BR>
+                    0 0 0 0 1 0 0 0; ...<BR>
+                    0 0 0 0 1 0 0 0; ...<BR>
+                    0 0 0 0 0 0 1 0]);  <FONT COLOR="#007F00">% first group should always be the root of the tree</FONT><BR>
+<BR>
+X=<FONT COLOR="blue"><B>randn</B></FONT>(100,10);<BR>
+X=X-repmat(<FONT COLOR="blue"><B>mean</B></FONT>(X),[<FONT COLOR="blue"><B>size</B></FONT>(X,1) 1]);<BR>
+X=mexNormalize(X);<BR>
+Y=<FONT COLOR="blue"><B>randn</B></FONT>(100,100);<BR>
+Y=Y-repmat(<FONT COLOR="blue"><B>mean</B></FONT>(Y),[<FONT COLOR="blue"><B>size</B></FONT>(Y,1) 1]);<BR>
+Y=mexNormalize(Y);<BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+<FONT COLOR="#007F00">% Regression experiments <BR>
+% 100 regression problems with the same design matrix X.</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nVarious regression experiments\n'</FONT>);<BR>
+param.compute_gram=true;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression tree-l2\n'</FONT>);<BR>
+param.loss=<FONT COLOR="red">'square'</FONT>;<BR>
+param.regul=<FONT COLOR="red">'tree-l2'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaTree(Y,X,W0,tree,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression tree-linf\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'tree-linf'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaTree(Y,X,W0,tree,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="#007F00">% works also with non tree-structured regularization. tree is ignored</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression Fused-Lasso\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'fused-lasso'</FONT>;<BR>
+param.lambda2=0.001;<BR>
+param.lambda3=0.001; <FONT COLOR="#007F00">%</FONT><BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaTree(Y,X,W0,tree,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nISTA + Regression tree-l0\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'tree-l0'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaTree(Y,X,W0,tree,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression tree-l2 with intercept \n'</FONT>);<BR>
+param.intercept=true;<BR>
+param.regul=<FONT COLOR="red">'tree-l2'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaTree(Y,[X ones(<FONT COLOR="blue"><B>size</B></FONT>(X,1),1)],[W0; <FONT COLOR="blue"><B>zeros</B></FONT>(1,<FONT COLOR="blue"><B>size</B></FONT>(W0,2))],tree,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+param.intercept=false;<BR>
+<BR>
+<FONT COLOR="#007F00">% Classification</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nOne classification experiment\n'</FONT>);<BR>
+Y=2*double(<FONT COLOR="blue"><B>randn</B></FONT>(100,<FONT COLOR="blue"><B>size</B></FONT>(Y,2)) &gt; 0)-1;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Logistic + tree-linf\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'tree-linf'</FONT>;<BR>
+param.loss=<FONT COLOR="red">'logistic'</FONT>;<BR>
+param.lambda=0.001;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaTree(Y,X,W0,tree,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="#007F00">% can be used of course with other regularization functions, intercept,...<BR>
+<BR>
+% Multi-Class classification</FONT><BR>
+Y=double(<FONT COLOR="blue"><B>ceil</B></FONT>(5*<FONT COLOR="blue"><B>rand</B></FONT>(100,<FONT COLOR="blue"><B>size</B></FONT>(Y,2)))-1);<BR>
+param.loss=<FONT COLOR="red">'multi-logistic'</FONT>;<BR>
+param.regul=<FONT COLOR="red">'tree-l2'</FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Multi-Class Logistic + tree-l2 \n'</FONT>);<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+nclasses=<FONT COLOR="blue"><B>max</B></FONT>(Y(:))+1;<BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),nclasses*<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+[W optim_info]=mexFistaTree(Y,X,W0,tree,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="#007F00">% can be used of course with other regularization functions, intercept,...<BR>
+<BR>
+% Multi-Task regression</FONT><BR>
+Y=<FONT COLOR="blue"><B>randn</B></FONT>(100,<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+Y=Y-repmat(<FONT COLOR="blue"><B>mean</B></FONT>(Y),[<FONT COLOR="blue"><B>size</B></FONT>(Y,1) 1]);<BR>
+Y=mexNormalize(Y);<BR>
+param.compute_gram=false;<BR>
+param.verbose=true;   <FONT COLOR="#007F00">% verbosity, false by default</FONT><BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+param.loss=<FONT COLOR="red">'square'</FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression multi-task-tree \n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'multi-task-tree'</FONT>;<BR>
+param.lambda2=0.001;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaTree(Y,X,W0,tree,param);<BR>
+<FONT COLOR="blue"><B>toc<BR>
+fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="#007F00">% Multi-Task Classification</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Logistic + multi-task-tree \n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'multi-task-tree'</FONT>;<BR>
+param.lambda2=0.001;<BR>
+param.loss=<FONT COLOR="red">'logistic'</FONT>;<BR>
+Y=2*double(<FONT COLOR="blue"><B>randn</B></FONT>(100,<FONT COLOR="blue"><B>size</B></FONT>(Y,2)) &gt; 0)-1;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaTree(Y,X,W0,tree,param);<BR>
+<FONT COLOR="blue"><B>toc<BR>
+fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="#007F00">% Multi-Class + Multi-Task Regularization</FONT><BR>
+param.verbose=false;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Multi-Class Logistic +multi-task-tree \n'</FONT>);<BR>
+Y=double(<FONT COLOR="blue"><B>ceil</B></FONT>(5*<FONT COLOR="blue"><B>rand</B></FONT>(100,<FONT COLOR="blue"><B>size</B></FONT>(Y,2)))-1);<BR>
+param.loss=<FONT COLOR="red">'multi-logistic'</FONT>;<BR>
+param.regul=<FONT COLOR="red">'multi-task-tree'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+nclasses=<FONT COLOR="blue"><B>max</B></FONT>(Y(:))+1;<BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),nclasses*<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+[W optim_info]=mexFistaTree(Y,X,W0,tree,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="#007F00">% can be used of course with other regularization functions, intercept,...</FONT><BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Multi-Class Logistic +multi-task-tree + sparse matrix \n'</FONT>);<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+nclasses=<FONT COLOR="blue"><B>max</B></FONT>(Y(:))+1;<BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),nclasses*<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+[W optim_info]=mexFistaTree(Y,<FONT COLOR="blue"><B>sparse</B></FONT>(X),W0,tree,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc23"></A><A NAME="htoc34">5.10</A>  Function mexFistaGraph</H3><P>
+Given a matrix <I><B>X</B></I>=[<I><B>x</B></I><SUP>1</SUP>,…,<I><B>x</B><SUP>p</SUP></I>]<I><SUP>T</SUP></I> in ℝ<SUP><I>m</I> × <I>p</I></SUP>, and a matrix <I><B>Y</B></I>=[<I><B>y</B></I><SUP>1</SUP>,…,<I><B>y</B><SUP>n</SUP></I>], it solves the optimization problems presented in the previous section, with the same regularization functions as mexProximalGraph.
+see usage details below:</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">% <BR>
+% Usage: [W [optim]]=mexFistaGraph(Y,X,W0,graph,param);<BR>
+%<BR>
+% Name: mexFistaGraph<BR>
+%<BR>
+% Description: mexFistaGraph solves sparse regularized problems.<BR>
+%         X is a design matrix of size m x p<BR>
+%         X=[x^1,...,x^n]', where the x_i's are the rows of X<BR>
+%         Y=[y^1,...,y^n] is a matrix of size m x n<BR>
+%         It implements the algorithms FISTA, ISTA and subgradient descent.<BR>
+%<BR>
+%         It implements the algorithms FISTA, ISTA and subgradient descent for solving<BR>
+%<BR>
+%           min_W  loss(W) + lambda psi(W)<BR>
+%          <BR>
+%         The function psi are those used by mexProximalGraph (see documentation)<BR>
+%         for the loss functions, see the documentation of mexFistaFlat<BR>
+%         <BR>
+%         This function can also handle intercepts (last row of W is not regularized),<BR>
+%         and/or non-negativity constraints on W.<BR>
+%<BR>
+% Inputs: Y:  double dense m x n matrix<BR>
+%         X:  double dense or sparse m x p matrix   <BR>
+%         W0:  double dense p x n matrix or p x Nn matrix (for multi-logistic loss)<BR>
+%              initial guess<BR>
+%         graph: struct (see documentation of mexProximalGraph)<BR>
+%         param: struct<BR>
+%            param.loss (choice of loss, see above)<BR>
+%            param.regul (choice of regularization, see function mexProximalFlat)<BR>
+%            param.lambda (regularization parameter)<BR>
+%            param.lambda2 (optional, regularization parameter, 0 by default)<BR>
+%            param.lambda3 (optional, regularization parameter, 0 by default)<BR>
+%            param.verbose (optional, verbosity level, false by default)<BR>
+%            param.pos (optional, adds positivity constraints on the<BR>
+%                coefficients, false by default)<BR>
+%            param.numThreads (optional, number of threads for exploiting<BR>
+%                multi-core / multi-cpus. By default, it takes the value -1,<BR>
+%                which automatically selects all the available CPUs/cores).<BR>
+%            param.max_it (optional, maximum number of iterations, 100 by default)<BR>
+%            param.it0 (optional, frequency for computing duality gap, every 10 iterations by default)<BR>
+%            param.tol (optional, tolerance for stopping criteration, which is a relative duality gap<BR>
+%                if it is available, or a relative change of parameters).<BR>
+%            param.gamma (optional, multiplier for increasing the parameter L in fista, 1.5 by default)<BR>
+%            param.L0 (optional, initial parameter L in fista, 0.1 by default, should be small enough)<BR>
+%            param.fixed_step (deactive the line search for L in fista and use param.L0 instead)<BR>
+%            param.compute_gram (optional, pre-compute X^TX, false by default).<BR>
+%            param.intercept (optional, do not regularize last row of W, false by default).<BR>
+%            param.ista (optional, use ista instead of fista, false by default).<BR>
+%            param.subgrad (optional, if not param.ista, use subradient descent instead of fista, false by default).<BR>
+%            param.a, param.b (optional, if param.subgrad, the gradient step is a/(t+b)<BR>
+%            also similar options as mexProximalTree<BR>
+%<BR>
+%            the function also implements the ADMM algorithm via an option param.admm=true. It is not documented<BR>
+%            and you need to look at the source code to use it.<BR>
+%<BR>
+%<BR>
+% Output:  W:  double dense p x n matrix or p x Nn matrix (for multi-logistic loss)<BR>
+%          optim: optional, double dense 4 x n matrix.<BR>
+%              first row: values of the objective functions.<BR>
+%              third row: values of the relative duality gap (if available)<BR>
+%              fourth row: number of iterations<BR>
+%<BR>
+% Author: Julien Mairal, 2010</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
+<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+<FONT COLOR="blue"><B>format</B></FONT> compact;<BR>
+param.num_threads=-1; <FONT COLOR="#007F00">% all cores (-1 by default)</FONT><BR>
+param.verbose=false;   <FONT COLOR="#007F00">% verbosity, false by default</FONT><BR>
+param.lambda=0.1; <FONT COLOR="#007F00">% regularization parameter</FONT><BR>
+param.it0=1;      <FONT COLOR="#007F00">% frequency for duality gap computations</FONT><BR>
+param.max_it=100; <FONT COLOR="#007F00">% maximum number of iterations</FONT><BR>
+param.L0=0.1;<BR>
+param.tol=1e-5;<BR>
+param.intercept=false;<BR>
+param.pos=false;<BR>
+<BR>
+graph.eta_g=[1 1 1 1 1];<BR>
+graph.groups=<FONT COLOR="blue"><B>sparse</B></FONT>([0 0 0 1 0;<BR>
+                     0 0 0 0 0;<BR>
+                     0 0 0 0 0;<BR>
+                     0 0 0 0 0;<BR>
+                     0 0 1 0 0]);   <FONT COLOR="#007F00">% g5 is included in g3, and g2 is included in g4</FONT><BR>
+graph.groups_var=<FONT COLOR="blue"><B>sparse</B></FONT>([1 0 0 0 0;<BR>
+                         1 0 0 0 0;<BR>
+                         1 0 0 0 0 ;<BR>
+                         1 1 0 0 0;<BR>
+                         0 1 0 1 0;<BR>
+                         0 1 0 1 0;<BR>
+                         0 1 0 0 1;<BR>
+                         0 0 0 0 1;<BR>
+                         0 0 0 0 1;<BR>
+                         0 0 1 0 0]); <FONT COLOR="#007F00">% represents direct inclusion relations </FONT><BR>
+<BR>
+X=<FONT COLOR="blue"><B>randn</B></FONT>(100,10);<BR>
+param.verbose=true;<BR>
+<FONT COLOR="#007F00">%X=eye(10);</FONT><BR>
+X=X-repmat(<FONT COLOR="blue"><B>mean</B></FONT>(X),[<FONT COLOR="blue"><B>size</B></FONT>(X,1) 1]);<BR>
+X=mexNormalize(X);<BR>
+Y=<FONT COLOR="blue"><B>randn</B></FONT>(100,1);<BR>
+Y=Y-repmat(<FONT COLOR="blue"><B>mean</B></FONT>(Y),[<FONT COLOR="blue"><B>size</B></FONT>(Y,1) 1]);<BR>
+Y=mexNormalize(Y);<BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+<FONT COLOR="#007F00">% Regression experiments <BR>
+% 100 regression problems with the same design matrix X.</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nVarious regression experiments\n'</FONT>);<BR>
+param.compute_gram=true;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression graph\n'</FONT>);<BR>
+param.loss=<FONT COLOR="red">'square'</FONT>;<BR>
+param.regul=<FONT COLOR="red">'graph'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaGraph(Y,X,W0,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nADMM + Regression graph\n'</FONT>);<BR>
+param.admm=true;<BR>
+param.lin_admm=true;<BR>
+param.c=1;<BR>
+param.delta=1;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaGraph(Y,X,W0,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, stopping criterion: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+param.admm=false;<BR>
+param.max_it=5;<BR>
+param.it0=1;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaGraph(Y,X,W,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="#007F00">% works also with non graph-structured regularization. graph is ignored</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression Fused-Lasso\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'fused-lasso'</FONT>;<BR>
+param.lambda2=0.01;<BR>
+param.lambda3=0.01; <FONT COLOR="#007F00">%</FONT><BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaGraph(Y,X,W0,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression graph with intercept \n'</FONT>);<BR>
+param.intercept=true;<BR>
+param.regul=<FONT COLOR="red">'graph'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaGraph(Y,[X ones(<FONT COLOR="blue"><B>size</B></FONT>(X,1),1)],[W0; <FONT COLOR="blue"><B>zeros</B></FONT>(1,<FONT COLOR="blue"><B>size</B></FONT>(W0,2))],graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+param.intercept=false;<BR>
+<BR>
+<FONT COLOR="#007F00">% Classification</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nOne classification experiment\n'</FONT>);<BR>
+Y=2*double(<FONT COLOR="blue"><B>randn</B></FONT>(100,<FONT COLOR="blue"><B>size</B></FONT>(Y,2)) &gt; 0)-1;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Logistic + graph-linf\n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'graph'</FONT>;<BR>
+param.loss=<FONT COLOR="red">'logistic'</FONT>;<BR>
+param.lambda=0.01;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaGraph(Y,X,W0,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="#007F00">% can be used of course with other regularization functions, intercept,...<BR>
+<BR>
+% Multi-Class classification</FONT><BR>
+Y=double(<FONT COLOR="blue"><B>ceil</B></FONT>(5*<FONT COLOR="blue"><B>rand</B></FONT>(100,<FONT COLOR="blue"><B>size</B></FONT>(Y,2)))-1);<BR>
+param.loss=<FONT COLOR="red">'multi-logistic'</FONT>;<BR>
+param.regul=<FONT COLOR="red">'graph'</FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Multi-Class Logistic + graph \n'</FONT>);<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+nclasses=<FONT COLOR="blue"><B>max</B></FONT>(Y(:))+1;<BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),nclasses*<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+[W optim_info]=mexFistaGraph(Y,X,W0,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="#007F00">% can be used of course with other regularization functions, intercept,...<BR>
+<BR>
+% Multi-Task regression</FONT><BR>
+Y=<FONT COLOR="blue"><B>randn</B></FONT>(100,<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+Y=Y-repmat(<FONT COLOR="blue"><B>mean</B></FONT>(Y),[<FONT COLOR="blue"><B>size</B></FONT>(Y,1) 1]);<BR>
+Y=mexNormalize(Y);<BR>
+param.compute_gram=false;<BR>
+param.verbose=true;   <FONT COLOR="#007F00">% verbosity, false by default</FONT><BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+param.loss=<FONT COLOR="red">'square'</FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Regression multi-task-graph \n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'multi-task-graph'</FONT>;<BR>
+param.lambda2=0.01;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaGraph(Y,X,W0,graph,param);<BR>
+<FONT COLOR="blue"><B>toc<BR>
+fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<BR>
+<FONT COLOR="#007F00">% Multi-Task Classification</FONT><BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Logistic + multi-task-graph \n'</FONT>);<BR>
+param.regul=<FONT COLOR="red">'multi-task-graph'</FONT>;<BR>
+param.lambda2=0.01;<BR>
+param.loss=<FONT COLOR="red">'logistic'</FONT>;<BR>
+Y=2*double(<FONT COLOR="blue"><B>randn</B></FONT>(100,<FONT COLOR="blue"><B>size</B></FONT>(Y,2)) &gt; 0)-1;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W optim_info]=mexFistaGraph(Y,X,W0,graph,param);<BR>
+<FONT COLOR="blue"><B>toc<BR>
+fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="#007F00">% Multi-Class + Multi-Task Regularization</FONT><BR>
+<BR>
+param.verbose=false;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\nFISTA + Multi-Class Logistic +multi-task-graph \n'</FONT>);<BR>
+Y=double(<FONT COLOR="blue"><B>ceil</B></FONT>(5*<FONT COLOR="blue"><B>rand</B></FONT>(100,<FONT COLOR="blue"><B>size</B></FONT>(Y,2)))-1);<BR>
+param.loss=<FONT COLOR="red">'multi-logistic'</FONT>;<BR>
+param.regul=<FONT COLOR="red">'multi-task-graph'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+nclasses=<FONT COLOR="blue"><B>max</B></FONT>(Y(:))+1;<BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),nclasses*<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+[W optim_info]=mexFistaGraph(Y,X,W0,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+<FONT COLOR="#007F00">% can be used of course with other regularization functions, intercept,...</FONT></TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc24"></A><A NAME="htoc35">5.11</A>  Function mexFistaPathCoding</H3><P>
+Similarly, the toolbox handles the penalties of [<A >23</A>] with the following function
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">% <BR>
+% Usage: [W [optim]]=mexFistaPathCoding(Y,X,W0,DAG,param);<BR>
+%<BR>
+% Name: mexFistaPathCoding<BR>
+%<BR>
+% Description: mexFistaPathCoding solves sparse regularized problems for the <BR>
+%         path coding penalties of http://arxiv.org/abs/1204.4539<BR>
+%         X is a design matrix of size m x p<BR>
+%         X=[x^1,...,x^n]', where the x_i's are the rows of X<BR>
+%         Y=[y^1,...,y^n] is a matrix of size m x n<BR>
+%         It implements the algorithms FISTA, ISTA and subgradient descent.<BR>
+%<BR>
+%         It implements the algorithms FISTA, ISTA and subgradient descent for solving<BR>
+%<BR>
+%           min_W  loss(W) + lambda psi(W)<BR>
+%          <BR>
+%         The function psi are those used by mexProximalPathCoding (see documentation)<BR>
+%         for the loss functions, see the documentation of mexFistaFlat<BR>
+%         <BR>
+%         This function can also handle intercepts (last row of W is not regularized),<BR>
+%         and/or non-negativity constraints on W.<BR>
+%<BR>
+% Inputs: Y:  double dense m x n matrix<BR>
+%         X:  double dense or sparse m x p matrix   <BR>
+%         W0:  double dense p x n matrix or p x Nn matrix (for multi-logistic loss)<BR>
+%              initial guess<BR>
+%         DAG: struct (see documentation of mexProximalPathCoding)<BR>
+%         param: struct<BR>
+%            param.loss (choice of loss, see above)<BR>
+%            param.regul (choice of regularization, see function mexProximalPathCoding)<BR>
+%            param.lambda (regularization parameter)<BR>
+%            param.lambda2 (optional, regularization parameter, 0 by default)<BR>
+%            param.lambda3 (optional, regularization parameter, 0 by default)<BR>
+%            param.verbose (optional, verbosity level, false by default)<BR>
+%            param.pos (optional, adds positivity constraints on the<BR>
+%                coefficients, false by default)<BR>
+%            param.numThreads (optional, number of threads for exploiting<BR>
+%                multi-core / multi-cpus. By default, it takes the value -1,<BR>
+%                which automatically selects all the available CPUs/cores).<BR>
+%            param.max_it (optional, maximum number of iterations, 100 by default)<BR>
+%            param.it0 (optional, frequency for computing duality gap, every 10 iterations by default)<BR>
+%            param.tol (optional, tolerance for stopping criteration, which is a relative duality gap<BR>
+%                if it is available, or a relative change of parameters).<BR>
+%            param.gamma (optional, multiplier for increasing the parameter L in fista, 1.5 by default)<BR>
+%            param.L0 (optional, initial parameter L in fista, 0.1 by default, should be small enough)<BR>
+%            param.fixed_step (deactive the line search for L in fista and use param.L0 instead)<BR>
+%            param.compute_gram (optional, pre-compute X^TX, false by default).<BR>
+%            param.intercept (optional, do not regularize last row of W, false by default).<BR>
+%            param.ista (optional, use ista instead of fista, false by default).<BR>
+%            param.subgrad (optional, if not param.ista, use subradient descent instead of fista, false by default).<BR>
+%            param.a, param.b (optional, if param.subgrad, the gradient step is a/(t+b)<BR>
+%            also similar options as mexProximalPathCoding<BR>
+%<BR>
+%<BR>
+% Output:  W:  double dense p x n matrix or p x Nn matrix (for multi-logistic loss)<BR>
+%          optim: optional, double dense 4 x n matrix.<BR>
+%              first row: values of the objective functions.<BR>
+%              third row: values of the relative duality gap (if available)<BR>
+%              fourth row: number of iterations<BR>
+%<BR>
+% Author: Julien Mairal, 2012</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
+<FONT COLOR="blue"><B>rand</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'test mexFistaPathCoding\n'</FONT>);<BR>
+p=100;<BR>
+n=1000;<BR>
+<FONT COLOR="#007F00">% generate a DAG</FONT><BR>
+G=sprand(p,p,0.05);<BR>
+G=mexRemoveCyclesGraph(G);<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\n'</FONT>);<BR>
+<BR>
+<FONT COLOR="#007F00">% generate a data matrix</FONT><BR>
+X=<FONT COLOR="blue"><B>randn</B></FONT>(n,p);<BR>
+X=X-repmat(<FONT COLOR="blue"><B>mean</B></FONT>(X),[<FONT COLOR="blue"><B>size</B></FONT>(X,1) 1]);<BR>
+X=mexNormalize(X);<BR>
+Y=<FONT COLOR="blue"><B>randn</B></FONT>(n,2);<BR>
+Y=Y-repmat(<FONT COLOR="blue"><B>mean</B></FONT>(Y),[<FONT COLOR="blue"><B>size</B></FONT>(Y,1) 1]);<BR>
+Y=mexNormalize(Y);<BR>
+W0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(X,2),<FONT COLOR="blue"><B>size</B></FONT>(Y,2));<BR>
+<BR>
+<FONT COLOR="#007F00">% input graph</FONT><BR>
+graph.weights=G;<BR>
+graph.stop_weights=<FONT COLOR="blue"><B>zeros</B></FONT>(1,p);<BR>
+graph.start_weights=10*ones(1,p);<BR>
+<BR>
+<FONT COLOR="#007F00">% FISTA parameters</FONT><BR>
+param.num_threads=-1; <FONT COLOR="#007F00">% all cores (-1 by default)</FONT><BR>
+param.verbose=true;   <FONT COLOR="#007F00">% verbosity, false by default</FONT><BR>
+param.lambda=0.005; <FONT COLOR="#007F00">% regularization parameter</FONT><BR>
+param.it0=1;      <FONT COLOR="#007F00">% frequency for duality gap computations</FONT><BR>
+param.max_it=100; <FONT COLOR="#007F00">% maximum number of iterations</FONT><BR>
+param.L0=0.01;<BR>
+param.tol=1e-4;<BR>
+param.precision=10000000;<BR>
+param.pos=false;<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Square Loss + convex path penalty\n'</FONT>);<BR>
+param.loss=<FONT COLOR="red">'square'</FONT>;<BR>
+param.regul=<FONT COLOR="red">'graph-path-conv'</FONT>;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W1 optim_info]=mexFistaPathCoding(Y,X,W0,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'mean loss: %f, mean relative duality_gap: %f, time: %f, number of iterations: %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(1,:)),<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(3,:)),t,<FONT COLOR="blue"><B>mean</B></FONT>(optim_info(4,:)));<BR>
+num=mexCountConnexComponents(graph.weights,W1(:,1));<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Num of connected components: %d\n'</FONT>,num);<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\n'</FONT>);<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Square Loss + non-convex path penalty\n'</FONT>);<BR>
+param.loss=<FONT COLOR="red">'square'</FONT>;<BR>
+param.regul=<FONT COLOR="red">'graph-path-l0'</FONT>;<BR>
+param.lambda=0.0001; <FONT COLOR="#007F00">% regularization parameter</FONT><BR>
+param.ista=true;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+[W2 optim_info]=mexFistaPathCoding(Y,X,W0,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+num=mexCountConnexComponents(graph.weights,W2(:,1));<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Num of connected components: %d\n'</FONT>,num);<BR>
+<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'\n'</FONT>);<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Note that for non-convex penalties, continuation strategies sometimes perform better:\n'</FONT>);<BR>
+tablambda=param.lambda*<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sqrt</B></FONT>(2))).^(20:-1:0);<BR>
+lambda_orig=param.lambda;<BR>
+<FONT COLOR="blue"><B>tic</B></FONT><BR>
+W2=W0;<BR>
+<FONT COLOR="blue"><B>for</B></FONT> ii = 1:<FONT COLOR="blue"><B>length</B></FONT>(tablambda)<BR>
+   param.lambda=tablambda(ii);<BR>
+   param.verbose=false;<BR>
+   [W2]=mexFistaPathCoding(Y,X,W2,graph,param);<BR>
+<FONT COLOR="blue"><B>end</B></FONT><BR>
+param.verbose=true;<BR>
+param.lambda=lambda_orig;<BR>
+[W2 optim_info]=mexFistaPathCoding(Y,X,W2,graph,param);<BR>
+t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
+num=mexCountConnexComponents(graph.weights,W2(:,1));<BR>
+param.ista=false;<BR>
+<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Num of connected components: %d\n'</FONT>,num);</TD></TR>
+</TABLE><HR>
+<A HREF="doc_spams005.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="doc_spams007.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

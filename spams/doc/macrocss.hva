@@ -1,0 +1,8 @@
+\let\oldmeta=\@meta
+\renewcommand{\@meta}{%
+\oldmeta
+\begin{rawhtml}
+<META name="Author" content="Julien Mairal">
+<link rel="stylesheet" href="doc_spams.css">
+\end{rawhtml}}
+

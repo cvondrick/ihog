@@ -1,0 +1,182 @@
+\begin{thebibliography}{10}
+
+\bibitem{beck}
+A.~Beck and M.~Teboulle.
+\newblock {A fast iterative shrinkage-thresholding algorithm for linear inverse
+  problems}.
+\newblock {\em SIAM Journal on Imaging Sciences}, 2(1):183--202, 2009.
+
+\bibitem{borwein}
+J.~M. Borwein and A.~S. Lewis.
+\newblock {\em Convex analysis and nonlinear optimization: {T}heory and
+  examples}.
+\newblock Springer, 2006.
+
+\bibitem{brucker}
+P.~Brucker.
+\newblock An {O}(n) algorithm for quadratic knapsack problems.
+\newblock 3:163--166, 1984.
+
+\bibitem{candes4}
+E.~J. Cand\`es, M.~Wakin, and S.~Boyd.
+\newblock Enhancing sparsity by reweighted l1 minimization.
+\newblock {\em Journal of Fourier Analysis and Applications}, 14:877--905,
+  2008.
+
+\bibitem{cherkassky}
+B.~V. Cherkassky and A.~V. Goldberg.
+\newblock On implementing the push-relabel method for the maximum flow problem.
+\newblock {\em Algorithmica}, 19(4):390--410, 1997.
+
+\bibitem{cotter}
+S.~F. Cotter, J.~Adler, B.~Rao, and K.~Kreutz-Delgado.
+\newblock Forward sequential algorithms for best basis selection.
+\newblock In {\em IEEE Proceedings of Vision Image and Signal Processing},
+  pages 235--244, 1999.
+
+\bibitem{duchi}
+J.~Duchi, S.~Shalev-Shwartz, Y.~Singer, and T.~Chandra.
+\newblock Efficient projections onto the $\ell_1$-ball for learning in high
+  dimensions.
+\newblock In {\em Proceedings of the International Conference on Machine
+  Learning (ICML)}, 2008.
+
+\bibitem{efron}
+B.~Efron, T.~Hastie, I.~Johnstone, and R.~Tibshirani.
+\newblock Least angle regression.
+\newblock {\em Annals of statistics}, 32(2):407--499, 2004.
+
+\bibitem{friedman}
+J.~Friedman, T.~Hastie, H.~H\"olfling, and R.~Tibshirani.
+\newblock Pathwise coordinate optimization.
+\newblock {\em Annals of statistics}, 1(2):302--332, 2007.
+
+\bibitem{fu}
+W.~J. Fu.
+\newblock Penalized regressions: The bridge versus the {L}asso.
+\newblock {\em Journal of computational and graphical statistics}, 7:397--416,
+  1998.
+
+\bibitem{goldberg}
+A.~V. Goldberg and R.~E. Tarjan.
+\newblock A new approach to the maximum flow problem.
+\newblock In {\em Proc. of ACM Symposium on Theory of Computing}, pages
+  136--146, 1986.
+
+\bibitem{hoyer}
+P.~O. Hoyer.
+\newblock Non-negative sparse coding.
+\newblock In {\em Proc. IEEE Workshop on Neural Networks for Signal
+  Processing}, 2002.
+
+\bibitem{jenatton3}
+R.~Jenatton, J.~Mairal, G.~Obozinski, and F.~Bach.
+\newblock Proximal methods for sparse hierarchical dictionary learning.
+\newblock In {\em Proceedings of the International Conference on Machine
+  Learning (ICML)}, 2010.
+
+\bibitem{jenatton4}
+R.~Jenatton, J.~Mairal, G.~Obozinski, and F.~Bach.
+\newblock Proximal methods for hierarchical sparse coding.
+\newblock {\em Journal of Machine Learning Research}, 12:2297--2334, 2011.
+
+\bibitem{lee2}
+D.~D. Lee and H.~S. Seung.
+\newblock Algorithms for non-negative matrix factorization.
+\newblock In {\em Advances in Neural Information Processing Systems}, 2001.
+
+\bibitem{maculan}
+N.~Maculan and J.~R. G.~Galdino de~Paula.
+\newblock A linear-time median-finding algorithm for projecting a vector on the
+  simplex of {R}n.
+\newblock {\em Operations research letters}, 8(4):219--222, 1989.
+
+\bibitem{mairal11}
+J.~Mairal.
+\newblock {\em Sparse coding for machine learning, image processing and
+  computer vision}.
+\newblock PhD thesis, Ecole Normale Sup\'erieure, Cachan, 2010.
+
+\bibitem{mairal7}
+J.~Mairal, F.~Bach, J.~Ponce, and G.~Sapiro.
+\newblock Online dictionary learning for sparse coding.
+\newblock In {\em Proceedings of the International Conference on Machine
+  Learning (ICML)}, 2009.
+
+\bibitem{mairal9}
+J.~Mairal, F.~Bach, J.~Ponce, and G.~Sapiro.
+\newblock Online learning for matrix factorization and sparse coding.
+\newblock {\em Journal of Machine Learning Research}, 11:19--60, 2010.
+
+\bibitem{mairal10}
+J.~Mairal, R.~Jenatton, G.~Obozinski, and F.~Bach.
+\newblock Network flow algorithms for structured sparsity.
+\newblock In {\em Advances in Neural Information Processing Systems}, 2010.
+
+\bibitem{mallat4}
+S.~Mallat and Z.~Zhang.
+\newblock Matching pursuit in a time-frequency dictionary.
+\newblock {\em IEEE Transactions on Signal Processing}, 41(12):3397--3415,
+  1993.
+
+\bibitem{meinshausen}
+N.~Meinshausen and P.~Buehlmann.
+\newblock Stability selection.
+\newblock Technical report.
+\newblock ArXiv:0809.2932.
+
+\bibitem{obozinski}
+G.~Obozinski, B.~Taskar, and M.I. Jordan.
+\newblock {Joint covariate selection and joint subspace selection for multiple
+  classification problems}.
+\newblock {\em Statistics and Computing}, pages 1--22.
+
+\bibitem{sprechmann}
+P.~Sprechmann, I.~Ramirez, G.~Sapiro, and Y.~C. Eldar.
+\newblock Collaborative hierarchical sparse modeling.
+\newblock Technical report, 2010.
+\newblock Preprint arXiv:1003.0400v1.
+
+\bibitem{tibshirani2}
+R.~Tibshirani, M.~Saunders, S.~Rosset, J.~Zhu, and K.~Knight.
+\newblock Sparsity and smoothness via the fused lasso.
+\newblock {\em Journal of the Royal Statistical Society Series B},
+  67(1):91--108, 2005.
+
+\bibitem{tropp3}
+J.~A. Tropp.
+\newblock Algorithms for simultaneous sparse approximation. part ii: Convex
+  relaxation.
+\newblock {\em Signal Processing, special issue "Sparse approximations in
+  signal and image processing"}, 86:589--602, April 2006.
+
+\bibitem{tropp2}
+J.~A. Tropp, A.~C. Gilbert, and M.~J. Strauss.
+\newblock Algorithms for simultaneous sparse approximation. part i: Greedy
+  pursuit.
+\newblock {\em Signal Processing, special issue "sparse approximations in
+  signal and image processing"}, 86:572--588, April 2006.
+
+\bibitem{weisberg}
+S.~Weisberg.
+\newblock {\em Applied Linear Regression}.
+\newblock Wiley, New York, 1980.
+
+\bibitem{wu}
+T.~T. Wu and K.~Lange.
+\newblock Coordinate descent algorithms for {L}asso penalized regression.
+\newblock {\em Annals of Applied Statistics}, 2(1):224--244, 2008.
+
+\bibitem{yuan}
+M.~Yuan and Y.~Lin.
+\newblock Model selection and estimation in regression with grouped variables.
+\newblock {\em Journal of the Royal Statistical Society Series B}, 68:49--67,
+  2006.
+
+\bibitem{zou}
+H.~Zou and T.~Hastie.
+\newblock Regularization and variable selection via the elastic net.
+\newblock {\em Journal of the Royal Statistical Society Series B},
+  67(2):301--320, 2005.
+
+\end{thebibliography}

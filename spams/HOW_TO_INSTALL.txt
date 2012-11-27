@@ -1,0 +1,25 @@
+This is the source code of the software SPAMS, which needs to be compiled before begin used.
+
+There are several possible configurations. In particular, 
+   - it should work with 32 and 64 bits operating systems.
+   - Linux, Windows and Mac OS.
+   - it can use either the netlib blas/lapack library, or the intel mkl
+     library, or your favorite BLAS library (ACML for instance).
+   - it can be compiled using either gcc for Linux and Mac (a recent gcc >= 4.5
+     is recommended), Microsoft visual studio compiler for Windows and the
+     intel compiler for all platforms.
+   - it can either be used as an C++ library, or interfaced with Matlab, and it now
+     comes with a preliminary R/Python interface.
+
+
+Thei best way to compile the library is to open the file compile.m and follow instructions.
+
+After all the mex-files are compiled, a script run_matlab.sh is also created,
+at least for the Linux and/or Mac OS version. Depending on your configuration,
+it might be necessary to launch matlab with the script in order to use the
+toolbox (in order to preload multi-threading libraries).
+Otherwise, just type "start_spams;" and use the SPAMS library.
+
+
+For R/Python users, an interface with some instructions are available in the folder "swig"
+

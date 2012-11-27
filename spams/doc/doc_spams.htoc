@@ -1,0 +1,63 @@
+\begin{tocenv}
+\tocitem \@locref{htoc1}{\begin{@norefs}\@print{1}\quad{}Introduction{}\end{@norefs}}
+\tocitem \@locref{htoc2}{\begin{@norefs}\@print{2}\quad{}Installation{}\end{@norefs}}
+\tocitem \@locref{htoc3}{\begin{@norefs}\@print{3}\quad{}Dictionary Learning and Matrix Factorization Toolbox{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc4}{\begin{@norefs}\@print{3.1}\quad{}Function mexTrainDL{}\end{@norefs}}
+\tocitem \@locref{htoc5}{\begin{@norefs}\@print{3.2}\quad{}Function mexTrainDL\_Memory{}\end{@norefs}}
+\tocitem \@locref{htoc6}{\begin{@norefs}\@print{3.3}\quad{}Function nmf{}\end{@norefs}}
+\tocitem \@locref{htoc7}{\begin{@norefs}\@print{3.4}\quad{}Function nnsc{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc8}{\begin{@norefs}\@print{4}\quad{}Sparse Decomposition Toolbox{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc9}{\begin{@norefs}\@print{4.1}\quad{}Function mexOMP{}\end{@norefs}}
+\tocitem \@locref{htoc10}{\begin{@norefs}\@print{4.2}\quad{}Function mexOMPMask{}\end{@norefs}}
+\tocitem \@locref{htoc11}{\begin{@norefs}\@print{4.3}\quad{}Function mexLasso{}\end{@norefs}}
+\tocitem \@locref{htoc12}{\begin{@norefs}\@print{4.4}\quad{}Function mexLassoWeighted{}\end{@norefs}}
+\tocitem \@locref{htoc13}{\begin{@norefs}\@print{4.5}\quad{}Function mexLassoMask{}\end{@norefs}}
+\tocitem \@locref{htoc14}{\begin{@norefs}\@print{4.6}\quad{}Function mexCD{}\end{@norefs}}
+\tocitem \@locref{htoc15}{\begin{@norefs}\@print{4.7}\quad{}Function mexSOMP{}\end{@norefs}}
+\tocitem \@locref{htoc16}{\begin{@norefs}\@print{4.8}\quad{}Function mexL1L2BCD{}\end{@norefs}}
+\tocitem \@locref{htoc17}{\begin{@norefs}\@print{4.9}\quad{}Function mexSparseProject{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc18}{\begin{@norefs}\@print{5}\quad{}Proximal Toolbox{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc19}{\begin{@norefs}\@print{5.1}\quad{}Regularization Functions{}\end{@norefs}}
+\tocitem \@locref{htoc20}{\begin{@norefs}\@print{5.2}\quad{}Function mexProximalFlat{}\end{@norefs}}
+\tocitem \@locref{htoc21}{\begin{@norefs}\@print{5.3}\quad{}Function mexProximalTree{}\end{@norefs}}
+\tocitem \@locref{htoc22}{\begin{@norefs}\@print{5.4}\quad{}Function mexProximalGraph{}\end{@norefs}}
+\tocitem \@locref{htoc23}{\begin{@norefs}\@print{5.5}\quad{}Problems Addressed{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc24}{\begin{@norefs}\@print{5.5.1}\quad{}Regression Problems with the Square Loss{}\end{@norefs}}
+\tocitem \@locref{htoc25}{\begin{@norefs}\@print{5.5.2}\quad{}Classification Problems with the Logistic Loss{}\end{@norefs}}
+\tocitem \@locref{htoc26}{\begin{@norefs}\@print{5.5.3}\quad{}Multi-class Classification Problems with the Softmax Loss{}\end{@norefs}}
+\tocitem \@locref{htoc27}{\begin{@norefs}\@print{5.5.4}\quad{}Multi-task Regression Problems with the Square Loss{}\end{@norefs}}
+\tocitem \@locref{htoc28}{\begin{@norefs}\@print{5.5.5}\quad{}Multi-task Classification Problems with the Logistic Loss{}\end{@norefs}}
+\tocitem \@locref{htoc29}{\begin{@norefs}\@print{5.5.6}\quad{}Multi-task and Multi-class Classification Problems with the Softmax Loss{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc30}{\begin{@norefs}\@print{5.6}\quad{}Function mexFistaFlat{}\end{@norefs}}
+\tocitem \@locref{htoc31}{\begin{@norefs}\@print{5.7}\quad{}Function mexFistaTree{}\end{@norefs}}
+\tocitem \@locref{htoc32}{\begin{@norefs}\@print{5.8}\quad{}Function mexFistaGraph{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc33}{\begin{@norefs}\@print{6}\quad{}Miscellaneous Functions{}\end{@norefs}}
+\begin{tocenv}
+\tocitem \@locref{htoc34}{\begin{@norefs}\@print{6.1}\quad{}Function mexConjGrad{}\end{@norefs}}
+\tocitem \@locref{htoc35}{\begin{@norefs}\@print{6.2}\quad{}Function mexBayer{}\end{@norefs}}
+\tocitem \@locref{htoc36}{\begin{@norefs}\@print{6.3}\quad{}Function mexCalcAAt{}\end{@norefs}}
+\tocitem \@locref{htoc37}{\begin{@norefs}\@print{6.4}\quad{}Function mexCalcXAt{}\end{@norefs}}
+\tocitem \@locref{htoc38}{\begin{@norefs}\@print{6.5}\quad{}Function mexCalcXY{}\end{@norefs}}
+\tocitem \@locref{htoc39}{\begin{@norefs}\@print{6.6}\quad{}Function mexCalcXYt{}\end{@norefs}}
+\tocitem \@locref{htoc40}{\begin{@norefs}\@print{6.7}\quad{}Function mexCalcXtY{}\end{@norefs}}
+\tocitem \@locref{htoc41}{\begin{@norefs}\@print{6.8}\quad{}Function mexInvSym{}\end{@norefs}}
+\tocitem \@locref{htoc42}{\begin{@norefs}\@print{6.9}\quad{}Function mexNormalize{}\end{@norefs}}
+\tocitem \@locref{htoc43}{\begin{@norefs}\@print{6.10}\quad{}Function mexSort{}\end{@norefs}}
+\tocitem \@locref{htoc44}{\begin{@norefs}\@print{6.11}\quad{}Function mexDisplayPatches{}\end{@norefs}}
+\end{tocenv}
+\tocitem \@locref{htoc45}{\begin{@norefs}\@print{A}\quad{}Duality Gaps with Fenchel Duality{}\end{@norefs}}
+\begin{tocenv}
+\begin{tocenv}
+\tocitem \@locref{htoc46}{\begin{@norefs}\@print{A.0.1}\quad{}Duality Gaps without Intercepts{}\end{@norefs}}
+\tocitem \@locref{htoc47}{\begin{@norefs}\@print{A.0.2}\quad{}Duality Gaps with Intercepts{}\end{@norefs}}
+\end{tocenv}
+\end{tocenv}
+\end{tocenv}

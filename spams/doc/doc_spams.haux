@@ -1,0 +1,153 @@
+\@addtocsec{htoc}{1}{0}{\@print{1}\quad{}Introduction{}}
+\citation{mairal7}
+\citation{mairal9}
+\citation{weisberg}
+\citation{mallat4}
+\citation{efron}
+\citation{fu}
+\citation{friedman}
+\citation{wu}
+\citation{tropp2}
+\citation{tropp3}
+\citation{friedman}
+\citation{mairal9}
+\citation{brucker}
+\citation{maculan}
+\citation{duchi}
+\citation{mairal9}
+\citation{beck}
+\citation{zou}
+\citation{tibshirani2}
+\citation{jenatton3}
+\citation{jenatton4}
+\citation{jenatton3}
+\citation{jenatton4}
+\citation{mairal10}
+\citation{yuan}
+\citation{obozinski}
+\citation{yuan}
+\citation{obozinski}
+\citation{sprechmann}
+\citation{mairal10}
+\@addtocsec{htoc}{2}{0}{\@print{2}\quad{}Installation{}}
+\@addtocsec{htoc}{3}{0}{\@print{3}\quad{}Dictionary Learning and Matrix Factorization Toolbox{}}
+\citation{mairal7}
+\citation{mairal9}
+\@addtocsec{htoc}{4}{1}{\@print{3.1}\quad{}Function mexTrainDL{}}
+\citation{mairal9}
+\citation{mairal9}
+\citation{mairal7}
+\citation{mairal9}
+\@addtocsec{htoc}{5}{1}{\@print{3.2}\quad{}Function mexTrainDL\_Memory{}}
+\@addtocsec{htoc}{6}{1}{\@print{3.3}\quad{}Function nmf{}}
+\citation{lee2}
+\@addtocsec{htoc}{7}{1}{\@print{3.4}\quad{}Function nnsc{}}
+\citation{hoyer}
+\@addtocsec{htoc}{8}{0}{\@print{4}\quad{}Sparse Decomposition Toolbox{}}
+\@addtocsec{htoc}{9}{1}{\@print{4.1}\quad{}Function mexOMP{}}
+\citation{mallat4}
+\citation{weisberg}
+\citation{cotter}
+\@addtocsec{htoc}{10}{1}{\@print{4.2}\quad{}Function mexOMPMask{}}
+\@addtocsec{htoc}{11}{1}{\@print{4.3}\quad{}Function mexLasso{}}
+\citation{efron}
+\newlabel{eq:lasso2}{{7}{X}}
+\newlabel{eq:lasso}{{8}{X}}
+\citation{efron}
+\@addtocsec{htoc}{12}{1}{\@print{4.4}\quad{}Function mexLassoWeighted{}}
+\citation{efron}
+\citation{meinshausen}
+\citation{candes4}
+\@addtocsec{htoc}{13}{1}{\@print{4.5}\quad{}Function mexLassoMask{}}
+\@addtocsec{htoc}{14}{1}{\@print{4.6}\quad{}Function mexCD{}}
+\@addtocsec{htoc}{15}{1}{\@print{4.7}\quad{}Function mexSOMP{}}
+\@addtocsec{htoc}{16}{1}{\@print{4.8}\quad{}Function mexL1L2BCD{}}
+\@addtocsec{htoc}{17}{1}{\@print{4.9}\quad{}Function mexSparseProject{}}
+\citation{mairal9}
+\@addtocsec{htoc}{18}{0}{\@print{5}\quad{}Proximal Toolbox{}}
+\citation{beck}
+\citation{jenatton3}
+\citation{mairal10}
+\citation{goldberg}
+\citation{cherkassky}
+\@addtocsec{htoc}{19}{1}{\@print{5.1}\quad{}Regularization Functions{}}
+\citation{jenatton3}
+\citation{jenatton3}
+\newlabel{software:eq:struct}{{23}{X}}
+\@addtocsec{htoc}{20}{1}{\@print{5.2}\quad{}Function mexProximalFlat{}}
+\citation{jenatton4}
+\@addtocsec{htoc}{21}{1}{\@print{5.3}\quad{}Function mexProximalTree{}}
+\citation{jenatton3}
+\citation{jenatton4}
+\citation{mairal10}
+\@addtocsec{htoc}{22}{1}{\@print{5.4}\quad{}Function mexProximalGraph{}}
+\citation{mairal10}
+\@addtocsec{htoc}{23}{1}{\@print{5.5}\quad{}Problems Addressed{}}
+\@addtocsec{htoc}{24}{2}{\@print{5.5.1}\quad{}Regression Problems with the Square Loss{}}
+\@addtocsec{htoc}{25}{2}{\@print{5.5.2}\quad{}Classification Problems with the Logistic Loss{}}
+\@addtocsec{htoc}{26}{2}{\@print{5.5.3}\quad{}Multi-class Classification Problems with the Softmax Loss{}}
+\newlabel{software:eq:class}{{44}{X}}
+\@addtocsec{htoc}{27}{2}{\@print{5.5.4}\quad{}Multi-task Regression Problems with the Square Loss{}}
+\@addtocsec{htoc}{28}{2}{\@print{5.5.5}\quad{}Multi-task Classification Problems with the Logistic Loss{}}
+\@addtocsec{htoc}{29}{2}{\@print{5.5.6}\quad{}Multi-task and Multi-class Classification Problems with the Softmax Loss{}}
+\@addtocsec{htoc}{30}{1}{\@print{5.6}\quad{}Function mexFistaFlat{}}
+\@addtocsec{htoc}{31}{1}{\@print{5.7}\quad{}Function mexFistaTree{}}
+\@addtocsec{htoc}{32}{1}{\@print{5.8}\quad{}Function mexFistaGraph{}}
+\@addtocsec{htoc}{33}{0}{\@print{6}\quad{}Miscellaneous Functions{}}
+\@addtocsec{htoc}{34}{1}{\@print{6.1}\quad{}Function mexConjGrad{}}
+\@addtocsec{htoc}{35}{1}{\@print{6.2}\quad{}Function mexBayer{}}
+\@addtocsec{htoc}{36}{1}{\@print{6.3}\quad{}Function mexCalcAAt{}}
+\@addtocsec{htoc}{37}{1}{\@print{6.4}\quad{}Function mexCalcXAt{}}
+\@addtocsec{htoc}{38}{1}{\@print{6.5}\quad{}Function mexCalcXY{}}
+\@addtocsec{htoc}{39}{1}{\@print{6.6}\quad{}Function mexCalcXYt{}}
+\@addtocsec{htoc}{40}{1}{\@print{6.7}\quad{}Function mexCalcXtY{}}
+\@addtocsec{htoc}{41}{1}{\@print{6.8}\quad{}Function mexInvSym{}}
+\@addtocsec{htoc}{42}{1}{\@print{6.9}\quad{}Function mexNormalize{}}
+\@addtocsec{htoc}{43}{1}{\@print{6.10}\quad{}Function mexSort{}}
+\@addtocsec{htoc}{44}{1}{\@print{6.11}\quad{}Function mexDisplayPatches{}}
+\@addtocsec{htoc}{45}{0}{\@print{A}\quad{}Duality Gaps with Fenchel Duality{}}
+\newlabel{appendix}{{A}{X}}
+\citation{mairal11}
+\citation{borwein}
+\newlabel{software:eq:prb}{{45}{X}}
+\newlabel{software:eq:prb2}{{46}{X}}
+\citation{borwein}
+\newlabel{software:eq:kappab}{{47}{X}}
+\citation{borwein}
+\@addtocsec{htoc}{46}{2}{\@print{A.0.1}\quad{}Duality Gaps without Intercepts{}}
+\@addtocsec{htoc}{47}{2}{\@print{A.0.2}\quad{}Duality Gaps with Intercepts{}}
+\citation{brucker}
+\citation{hochbaum}
+\bibstyle{plain}
+\bibdata{main}
+\bibcite{beck}{1}
+\bibcite{borwein}{2}
+\bibcite{brucker}{3}
+\bibcite{candes4}{4}
+\bibcite{cherkassky}{5}
+\bibcite{cotter}{6}
+\bibcite{duchi}{7}
+\bibcite{efron}{8}
+\bibcite{friedman}{9}
+\bibcite{fu}{10}
+\bibcite{goldberg}{11}
+\bibcite{hoyer}{12}
+\bibcite{jenatton3}{13}
+\bibcite{jenatton4}{14}
+\bibcite{lee2}{15}
+\bibcite{maculan}{16}
+\bibcite{mairal11}{17}
+\bibcite{mairal7}{18}
+\bibcite{mairal9}{19}
+\bibcite{mairal10}{20}
+\bibcite{mallat4}{21}
+\bibcite{meinshausen}{22}
+\bibcite{obozinski}{23}
+\bibcite{sprechmann}{24}
+\bibcite{tibshirani2}{25}
+\bibcite{tropp3}{26}
+\bibcite{tropp2}{27}
+\bibcite{weisberg}{28}
+\bibcite{wu}{29}
+\bibcite{yuan}{30}
+\bibcite{zou}{31}
