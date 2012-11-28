@@ -7,10 +7,10 @@ function visualizeHOG(feat),
 
 im = invertHOG(feat);
 
-subplot(211);
+subplot(121);
 showHOG(feat);
 
-subplot(212):
+subplot(122);
 imagesc(im);
 axis image;
 colormap gray;

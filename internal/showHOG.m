@@ -20,5 +20,4 @@ else
 end
 imagesc(im); 
 colormap gray;
-axis equal;
-axis off;
+axis image;
