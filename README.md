@@ -11,8 +11,10 @@ To invert a HOG point, use the 'invertHOG()' function:
 
     >> feat = features(im, 8);
     >> ihog = invertHOG(feat);
+    >> imagesc(ihog); axis image;
 
-Our library handles all dependencies for you.
+Our library will automatically load the necessary data files to perform
+the inversion and caches them into memory to reduce IO.
 
 Installation
 ------------
@@ -22,7 +24,14 @@ script in MATLAB:
 
     >> compile
 
-which will compile the HOG cod
+This command will compile the HOG feature extraction code and the sparse coding
+SPAMS toolbox.
+
+When you use iHOG, remember to adjust your MATLAB path:
+
+    >> addpath(genpath('/path/to/ihog'))
+
+Otherwise, iHOG will be unable to find relevant libraries.
 
 Learning
 --------
@@ -31,10 +40,11 @@ We provide a prelearned dictionary in 'pd.mat', but you can learn your own if
 you wish. Simply call the 'learnpairdict()' function and pass it a directory of
 images:
 
-    >> pd = learnpairdict('/path/to/images', 1000000, 1000, 5, 5);
+    >> pd = learnpairdict('/path/to/images/', 1000000, 1000, 5, 5);
 
 The above learns a 5x5 HOG patch paired dictionary with 1000 elements and a training
-set size of one million window patches.
+set size of one million window patches. Depending on the size of the problem, it may
+take minutes or hours to complete.
 
 Questions and Comments
 ----------------------
