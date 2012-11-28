@@ -60,7 +60,7 @@ pd.ny = ny;
 pd.nx = nx;
 pd.sbin = sbin;
 pd.iters = iters;
-pd.lambda = 0.1;
+pd.lambda = lambda;
 pd.gamma = gamma;
 
 fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
