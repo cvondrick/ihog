@@ -7,8 +7,8 @@ if ~exist('sx', 'var'),
   sx = 10;
 end
 
-hny = pd.dim(1);
-hnx = pd.dim(2);
+hny = pd.ny;
+hnx = pd.nx;
 sbin = pd.sbin;
 
 gny = (hny+2)*sbin;

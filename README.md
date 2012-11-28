@@ -7,7 +7,7 @@ It implements the Paired Dictionary Learning algorithm described in [1].
 Usage
 -----
 
-To invert a HOG point, use the `invertHOG()' function:
+To invert a HOG point, use the 'invertHOG()' function:
 
     >> feat = features(im, 8);
     >> ihog = invertHOG(feat);
@@ -17,7 +17,7 @@ Our library handles all dependencies for you.
 Installation
 ------------
 
-Before you can use this tool, you must compile iHOG. Execute the `compile'
+Before you can use this tool, you must compile iHOG. Execute the 'compile'
 script in MATLAB:
 
     >> compile
@@ -41,5 +41,11 @@ Questions and Comments
 
 Please direct all feedback to:
 
-    Carl Vondrick
-    vondrick@mit.edu
+Carl Vondrick
+vondrick@mit.edu
+
+References
+----------
+
+[1] Vondrick, Khosla, Malisiewicz, Torralba. "Inverting and Visualizing
+Features for Object Detection." Technical Report.
