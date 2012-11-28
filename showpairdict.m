@@ -1,9 +1,9 @@
-function im = showpairdict(pd, w, h),
+function im = showpairdict(pd, sy, sx),
 
-if ~exist('w', 'var'),
+if ~exist('sy', 'var'),
   sy = 10;
 end
-if ~exist('h', 'var'),
+if ~exist('sx', 'var'),
   sx = 10;
 end
 
@@ -18,10 +18,10 @@ bord = 10;
 cy = (gny+bord);
 cx = (gnx*2+bord);
 
-im = zeros(cy, cx);
+im = ones(cy*sy, cx*sx);
 
 iii = randperm(size(pd.dgray,2));
-for i=1:sy*sx,
+for i=1:min(sy*sx, pd.k),
   row = mod(i-1, sx)+1;
   col = floor((i-1) / sx)+1;
 

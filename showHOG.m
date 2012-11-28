@@ -1,6 +1,6 @@
 % Visualize HOG features/weights.
 %   visualizeHOG(w)
-function visualizeHOG(w)
+function showHOG(w)
 
 % Make pictures of positive and negative weights
 bs = 20;
