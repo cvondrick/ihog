@@ -1,3 +1,7 @@
+% showpairdict(pd, sy, sx)
+%
+% Visualizes a few random elements from the paired dictionaries 'pd'. The
+% parameters sy and sx are optional and specify the number of elements to show.
 function im = showpairdict(pd, sy, sx),
 
 if ~exist('sy', 'var'),
@@ -14,7 +18,7 @@ sbin = pd.sbin;
 gny = (hny+2)*sbin;
 gnx = (hnx+2)*sbin;
 
-bord = 10;
+bord = 5;
 cy = (gny+bord);
 cx = (gnx*2+bord);
 
@@ -43,3 +47,5 @@ for i=1:min(sy*sx, pd.k),
 end
 
 im = im(1:end-bord, 1:end-bord);
+
+imagesc(im); axis image;

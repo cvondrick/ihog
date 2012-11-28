@@ -2,7 +2,6 @@
 %
 % This function recovers the natural image that may have generated the HOG
 % feature 'feat'.
-
 function im = invertHOG(feat),
 global ihog_pd
 if isempty(ihog_pd),
@@ -11,6 +10,11 @@ end
 im = invertHOGdo(feat, ihog_pd);
 
 
+
+% invertHOGdo(feat, pd)
+%
+% This function uses 'pd' to invert 'feat'. It does most of the heavy lifting
+% of inversion, including the sparse coding.
 function im = invertHOGdo(feat, pd),
 
 [ny, nx, ~] = size(feat);

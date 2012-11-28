@@ -47,17 +47,13 @@ end
 t = tic;
 
 stream = resolvestream(stream);
+data = getdata(stream, n, [ny nx], sbin);
+data = whiten(data);
+dict = lasso(data, k, iters, lambda, gamma);
 
-[datagray, datahog] = getdata(stream, n, [ny nx], sbin);
-
-fprintf('ihog: whiten data\n');
-datagray = whiten(datagray);
-datahog = whiten(datahog);
-
-[dgray, dhog] = lasso(datagray, datahog, k, iters, lambda, gamma);
-
-pd.dgray = dgray;
-pd.dhog = dhog;
+graysize = (ny+2)*(nx+2)*sbin^2;
+pd.dgray = dict(1:graysize, :);
+pd.dhog = dict(graysize+1:end, :);
 pd.n = n;
 pd.k = k;
 pd.ny = ny;
@@ -74,9 +70,7 @@ fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 % lasso(data)
 %
 % Learns the pair of dictionaries for the data terms.
-function [dgray, dhog] = lasso(datagray, datahog, k, iters, lambda, gamma),
-
-data = single([datagray; datahog]);
+function dict = lasso(data, k, iters, lambda, gamma),
 
 param.K = k;
 param.lambda = lambda;
@@ -92,14 +86,11 @@ fprintf('ihog: lasso: ');
 model = struct();
 for i=1:(iters/param.iter),
   fprintf('.');
-  [dbig, model] = mexTrainDL(data, param, model);
+  [dict, model] = mexTrainDL(data, param, model);
   model.iter = i*param.iter;
-  param.D = dbig;
+  param.D = dict;
 end
 fprintf('\n');
-
-dgray = dbig(1:size(datagray,1), :);
-dhog  = dbig(size(datagray,1)+1:end, :);
 
 
 
@@ -107,6 +98,7 @@ dhog  = dbig(size(datagray,1)+1:end, :);
 %
 % Whitens the input feature with zero mean and unit variance
 function out = whiten(in),
+fprintf('ihog: whiten data\n');
 out=bsxfun(@minus, in, mean(in)); 
 out=bsxfun(@rdivide, out, sqrt(sum(out.^2) + 1));
 
@@ -115,14 +107,13 @@ out=bsxfun(@rdivide, out, sqrt(sum(out.^2) + 1));
 % getdata(stream, n, dim, sbin)
 %
 % Reads in the stream and extracts windows along with their HOG features.
-function [datagray, datahog] = getdata(stream, n, dim, sbin),
+function data = getdata(stream, n, dim, sbin),
 
 ny = dim(1);
 nx = dim(2);
 
 fprintf('ihog: initializing data stores\n');
-datahog = single(zeros(ny*nx*32, n));
-datagray = single(zeros((ny+2)*(nx+2)*sbin^2, n));
+data = zeros((ny+2)*(nx+2)*sbin^2+ny*nx*32, n, 'single');
 c = 1;
 
 fprintf('ihog: loading data: ');
@@ -143,8 +134,7 @@ while true,
                          j:j+ny-1, :);
         graypoint = im((i-1)*sbin+1:(i+1+ny)*sbin, ...
                        (j-1)*sbin+1:(j+1+nx)*sbin);
-        datahog(:, c) = single(featpoint(:));
-        datagray(:, c) = single(graypoint(:));
+        data(:, c) = single([graypoint(:); featpoint(:)]);
 
         c = c + 1;
         if c >= n,
@@ -168,6 +158,7 @@ end
 function stream = resolvestream(stream),
 
 if isstr(stream),
+  fprintf('ihog: reading images from directory: %s\n', stream);
   directory = stream;
   files = dir(stream);
   clear stream;
