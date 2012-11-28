@@ -7,14 +7,17 @@
 %   stream    List of filepaths where images are located
 %   n         Number of window patches to extract in total
 %   k         The size of the dictionary
-%   size      The size of the template patch to invert
+%   dim       The size of the template patch to invert
+%   lambda    Sparsity regularization parameter on alpha
+%   gamma     Dictionary L2 regularization parameter
+%   iters     Number of iterations 
 %   sbin      The HOG bin size
 % 
 % Returns a struct with fields:
 %   dgray     A dictionary of gray elements
 %   dhog      A dictionary of HOG elements
 
-function pd = learnpairdict(stream, n, k, dim, lambda, gamma, iterations, sbin),
+function pd = learnpairdict(stream, n, k, ny, nx, lambda, gamma, iters, sbin),
 
 if ~exist('n', 'var'),
    n = 100000;
@@ -22,8 +25,11 @@ end
 if ~exist('k', 'var'),
   k = 100;
 end
-if ~exist('dim', 'var'),
-  dim = [3 3];
+if ~exist('ny', 'var'),
+  ny = 3;
+end
+if ~exist('nx', 'var'),
+  nx = 3;
 end
 if ~exist('lambda', 'var'),
   lambda = 0.1;
@@ -31,8 +37,8 @@ end
 if ~exist('gamma', 'var'),
   gamma = 0.05;
 end
-if ~exist('iterations', 'var'),
-  iterations = 2000;
+if ~exist('iters', 'var'),
+  iters = 2000;
 end
 if ~exist('sbin', 'var'),
   sbin = 8;
@@ -42,21 +48,22 @@ t = tic;
 
 stream = resolvestream(stream);
 
-[datagray, datahog] = getdata(stream, n, dim, sbin);
+[datagray, datahog] = getdata(stream, n, [ny nx], sbin);
 
 fprintf('ihog: whiten data\n');
 datagray = whiten(datagray);
 datahog = whiten(datahog);
 
-[dgray, dhog] = lasso(datagray, datahog, k, iterations, lambda, gamma);
+[dgray, dhog] = lasso(datagray, datahog, k, iters, lambda, gamma);
 
 pd.dgray = dgray;
 pd.dhog = dhog;
 pd.n = n;
 pd.k = k;
-pd.dim = dim;
+pd.ny = ny;
+pd.nx = nx;
 pd.sbin = sbin;
-pd.iterations = iterations;
+pd.iters = iters;
 pd.lambda = 0.1;
 pd.gamma = gamma;
 
@@ -67,9 +74,9 @@ fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 % lasso(data)
 %
 % Learns the pair of dictionaries for the data terms.
-function [dgray, dhog] = lasso(datagray, datahog, k, iterations, lambda, gamma),
+function [dgray, dhog] = lasso(datagray, datahog, k, iters, lambda, gamma),
 
-data = [datagray; datahog];
+data = single([datagray; datahog]);
 
 param.K = k;
 param.lambda = lambda;
@@ -83,7 +90,7 @@ param.batchsize = 400;
 
 fprintf('ihog: lasso: ');
 model = struct();
-for i=1:(iterations/param.iter),
+for i=1:(iters/param.iter),
   fprintf('.');
   [dbig, model] = mexTrainDL(data, param, model);
   model.iter = i*param.iter;
@@ -114,8 +121,8 @@ ny = dim(1);
 nx = dim(2);
 
 fprintf('ihog: initializing data stores\n');
-datahog = zeros(ny*nx*32, n);
-datagray = zeros((ny+2)*(nx+2)*sbin^2, n);
+datahog = single(zeros(ny*nx*32, n));
+datagray = single(zeros((ny+2)*(nx+2)*sbin^2, n));
 c = 1;
 
 fprintf('ihog: loading data: ');
@@ -136,8 +143,8 @@ while true,
                          j:j+ny-1, :);
         graypoint = im((i-1)*sbin+1:(i+1+ny)*sbin, ...
                        (j-1)*sbin+1:(j+1+nx)*sbin);
-        datahog(:, c) = featpoint(:);
-        datagray(:, c) = graypoint(:);
+        datahog(:, c) = single(featpoint(:));
+        datagray(:, c) = single(graypoint(:));
 
         c = c + 1;
         if c >= n,
