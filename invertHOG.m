@@ -1,13 +1,31 @@
 % invertHOG(feat)
 %
 % This function recovers the natural image that may have generated the HOG
-% feature 'feat'.
-function im = invertHOG(feat),
-global ihog_pd
-if isempty(ihog_pd),
-  ihog_pd = load('pd.mat');
+% feature 'feat'. Usage is simple:
+%
+%   >> feat = features(im, 8);
+%   >> ihog = invertHOG(feat);
+%   >> imagesc(ihog); axis image;
+%
+% By default, invertHOG() will load a prelearned paired dictionary to perform
+% the inversion. However, if you want to pass your own, you can specify the
+% optional second parameter to use your own parameters:
+% 
+%   >> pd = learnpairdict('/path/to/images');
+%   >> ihog = invertHOG(feat, pd);
+%
+% This function should take no longer than a second to invert any reasonably sized
+% HOG feature point on a 12 core machine.
+function im = invertHOG(feat, pd),
+if ~exist('pd', 'var'),
+  global ihog_pd
+  if isempty(ihog_pd),
+    ihog_pd = load('pd.mat');
+  end
+  im = invertHOGdo(feat, ihog_pd);
+else
+  im = invertHOGdo(feat, pd);
 end
-im = invertHOGdo(feat, ihog_pd);
 
 
 
