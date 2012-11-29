@@ -5,8 +5,8 @@ This software package contains tools to invert and visualize HOG features.
 It implements the Paired Dictionary Learning algorithm described in our
 paper "Inverting and Visualizing Features for Object Detection."
 
-Usage
------
+Inverting HOG
+-------------
 
 To invert a HOG point, use the 'invertHOG()' function:
 
@@ -16,6 +16,24 @@ To invert a HOG point, use the 'invertHOG()' function:
 
 Our library will automatically load the necessary data files to perform
 the inversion and caches them into memory to reduce IO.
+
+
+Visualizing HOG
+---------------
+
+In addition to 'invertHOG()', we provide a 'visualizeHOG()' function that
+automatically shows a figure with a few visualizations of the HOG feature point:
+
+    >> feat = features(im, 8);
+    >> visualizeHOG(feat);
+
+'visualizeHOG()' can also show you more visualizations. Specify an optional second
+parameter to increase the verbosity level:
+
+    >> visualizeHOG(feat, 1);
+    >> visualizeHOG(feat, 2);
+    >> visualizeHOG(feat, 3);
+
 
 Installation
 ------------
@@ -46,14 +64,6 @@ images:
 The above learns a 5x5 HOG patch paired dictionary with 1000 elements and a training
 set size of one million window patches. Depending on the size of the problem, it may
 take minutes or hours to complete.
-
-Questions and Comments
-----------------------
-
-Please direct all feedback to:
-
-Carl Vondrick
-vondrick@mit.edu
 
 References
 ----------
