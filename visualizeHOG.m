@@ -9,8 +9,10 @@ im = invertHOG(feat);
 
 subplot(121);
 showHOG(feat);
+title('HOG');
 
 subplot(122);
 imagesc(im);
 axis image;
 colormap gray;
+title('Inverse');
