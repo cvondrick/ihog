@@ -43,7 +43,7 @@ SPAMS toolbox:
 
     >> compile
     
-Everytime you use iHOG, remember to adjust your MATLAB path:
+Remember to also adjust your path so MATLAB can find iHOG:
 
     >> addpath(genpath('/path/to/ihog'))
 
