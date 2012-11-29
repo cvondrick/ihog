@@ -1,16 +1,16 @@
-figure(1);
-
-subplot(131);
 im = double(imread('2007_000272.jpg')) / 255.;
+feat = features(im, 8);
+ihog = invertHOG(feat);
+
+figure(1);
+subplot(131);
 imagesc(im); axis image;
-title('Original Image');
+title('Original Image', 'FontSize', 20);
 
 subplot(132);
-feat = features(im, 8);
 showHOG(feat);
-title('HOG Features');
+title('HOG Features', 'FontSize', 20);
 
 subplot(133);
-ihog = invertHOG(feat);
 imagesc(ihog); axis image;
-title('HOG Inverse');
+title('HOG Inverse', 'FontSize', 20);
