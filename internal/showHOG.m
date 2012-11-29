@@ -5,7 +5,7 @@ function showHOG(w)
 % Make pictures of positive and negative weights
 bs = 20;
 %w = w(:,:,19:28);
-scale = max(max(w(:)),max(-w(:))) * 2;
+scale = max(max(w(:)),max(-w(:)));
 pos = HOGpicture(w, bs) * 255/scale;
 neg = HOGpicture(-w, bs) * 255/scale;
 
@@ -50,5 +50,3 @@ bim_ = reshape(bim,[],18);
 B = im2col( zeros(bs*s(1), bs*s(2)),[bs bs],'distinct');
 w_ = reshape(w(:,:,1:18),[],18);
 im = col2im(bim_*w_',[bs bs],[bs*s(1), bs*s(2)],'distinct');
-
-end
