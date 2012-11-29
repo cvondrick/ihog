@@ -2,7 +2,7 @@
 %
 % This function shows the HOG inverse for different HOG channels: unsigned
 % gradients, signed gradients, and texture gradients. 
-function dissectHOG(feat),
+function out = dissectHOG(feat),
 
 fprintf('ihog: dissect: ');
 
@@ -36,34 +36,38 @@ texture = invertHOG(texture);
 
 fprintf('\n');
 
-subplot(231);
-imagesc(ihog);
-axis image;
-title('Full HOG');
+if nargout == 0,
+  subplot(231);
+  imagesc(ihog);
+  axis image;
+  title('Full HOG');
 
-subplot(232);
-imagesc(unsigned);
-axis image;
-title('Unsigned HOG');
+  subplot(232);
+  imagesc(unsigned);
+  axis image;
+  title('Unsigned HOG');
 
-subplot(233);
-imagesc(signed);
-axis image;
-title('Signed HOG');
+  subplot(233);
+  imagesc(signed);
+  axis image;
+  title('Signed HOG');
 
-subplot(234);
-imagesc(texture);
-axis image;
-title('Texture HOG');
+  subplot(234);
+  imagesc(texture);
+  axis image;
+  title('Texture HOG');
 
-subplot(235);
-imagesc(positive);
-axis image;
-title('Positive Signed HOG');
+  subplot(235);
+  imagesc(positive);
+  axis image;
+  title('Positive Signed HOG');
 
-subplot(236);
-imagesc(negative);
-axis image;
-title('Negative Signed HOG');
+  subplot(236);
+  imagesc(negative);
+  axis image;
+  title('Negative Signed HOG');
 
-colormap gray;
+  colormap gray;
+else,
+  out = [ihog unsigned signed; texture positive negative];
+end

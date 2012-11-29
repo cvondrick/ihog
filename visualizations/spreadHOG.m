@@ -1,7 +1,7 @@
 % spreadHOG(feat)
 %
 % Shows the HOG channels seperately.
-function vis = spreadHOG(feat),
+function out = spreadHOG(feat),
 bord = 10;
 ny = size(feat,1)*8+16+2*bord;
 nx = (size(feat,2)*8+16+bord)*2;
@@ -36,6 +36,10 @@ for i=1:nf,
 end
 fprintf('\n');
 
-imagesc(bigfig);
-axis image;
-colormap gray;
+if nargout == 0,
+  imagesc(bigfig);
+  axis image;
+  colormap gray;
+else,
+  out = bigfig;
+end

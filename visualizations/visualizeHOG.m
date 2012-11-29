@@ -12,7 +12,7 @@
 %
 % If 'feat' has negative values, a second row will appear of the negatives.
 
-function visualizeHOG(feat),
+function out = visualizeHOG(feat),
 
 s = [size(feat,1)*8+16 size(feat,2)*8+16];
 
@@ -42,7 +42,11 @@ end
 
 im = [im hog];
 
-imagesc(im);
-axis image;
-axis off;
-colormap gray;
+if nargout == 0,
+  imagesc(im);
+  axis image;
+  axis off;
+  colormap gray;
+else,
+  out = im;
+end
