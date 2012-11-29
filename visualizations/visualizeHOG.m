@@ -10,8 +10,10 @@
 % and the current figure will contain both the standard HOG glyph visualization as well
 % as the inverse.  This function has extra verbosity outputs you can use too:
 %
-%   >> visualizeHOG(feat, 0);
+%   >> visualizeHOG(feat, 1)
 %
+% which will show a zero-mean HOG glyph and as well a spatial histogram of the texture
+% features for HOG.
 
 function visualizeHOG(feat, verbosity),
 

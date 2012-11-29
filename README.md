@@ -21,18 +21,10 @@ Visualizing HOG
 ---------------
 
 In addition to 'invertHOG()', we provide a 'visualizeHOG()' function that
-automatically shows a figure with a few visualizations of the HOG feature point:
+pops up a figure with a few visualizations of the HOG feature point:
 
     >> feat = features(im, 8);
     >> visualizeHOG(feat);
-
-'visualizeHOG()' can also show you more visualizations. Specify an optional second
-parameter to increase the verbosity level:
-
-    >> visualizeHOG(feat, 1);
-    >> visualizeHOG(feat, 2);
-    >> visualizeHOG(feat, 3);
-
 
 Installation
 ------------
