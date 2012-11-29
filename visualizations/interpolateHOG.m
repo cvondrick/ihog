@@ -8,8 +8,9 @@ if ~exist('n', 'var'),
   n = 10;
 end
 
-ny = size(left,1)*8+16;
-nx = size(left,2)*8+16;
+bord = 5;
+ny = size(left,1)*8+16+2*bord;
+nx = size(left,2)*8+16+2*bord;
 
 bigfig = zeros(ny, nx * n);
 
@@ -19,6 +20,7 @@ for i=0:1./n:1,
   fprintf('.');
   x = (1-i)*left + i*right;
   ihog = invertHOG(x);
+  ihog = padarray(ihog, [bord bord], 0.5);
   bigfig(:, (c-1)*nx+1:c*nx) = ihog;
   c = c + 1;
 end
