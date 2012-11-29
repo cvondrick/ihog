@@ -17,6 +17,7 @@
 % This function should take no longer than a second to invert any reasonably sized
 % HOG feature point on a 12 core machine.
 function im = invertHOG(feat, pd),
+
 if ~exist('pd', 'var'),
   global ihog_pd
   if isempty(ihog_pd),
@@ -24,15 +25,6 @@ if ~exist('pd', 'var'),
   end
   pd = ihog_pd;
 end
-im = invertHOGdo(feat, pd);
-
-
-
-% invertHOGdo(feat, pd)
-%
-% This function uses 'pd' to invert 'feat'. It does most of the heavy lifting
-% of inversion, including the sparse coding.
-function im = invertHOGdo(feat, pd),
 
 [ny, nx, ~] = size(feat);
 
