@@ -2,7 +2,7 @@
 %
 % Interpolates between 'left' and 'right' in HOG space, inverting the path.
 % Uses 'n' steps between endpoints. If 'n' is not specified, show 10 steps.
-function interpolateHOG(left, right, n),
+function out = interpolateHOG(left, right, n),
 
 if ~exist('n', 'var'),
   n = 10;
@@ -26,5 +26,9 @@ for i=0:1./n:1,
 end
 fprintf('\n');
 
-imagesc(bigfig);
-axis image;
+if nargout == 0,
+  imagesc(bigfig);
+  axis image;
+else,
+  out = bigfig;
+end
