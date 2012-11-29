@@ -12,11 +12,16 @@ Before you can use this tool, you must compile iHOG. Execute the 'compile'
 script in MATLAB to compile the HOG feature extraction code and sparse coding
 SPAMS toolbox:
 
+    $ cd /path/to/ihog
+    $ matlab
     >> compile
     
 Remember to also adjust your path so MATLAB can find iHOG:
 
     >> addpath(genpath('/path/to/ihog'))
+
+If you want to use iHOG in your own project, you can simply drop the iHOG
+directory into the root of your project.
 
 Inverting HOG
 -------------
