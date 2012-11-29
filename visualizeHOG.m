@@ -91,12 +91,14 @@ end
 subplot(nfigs,2,7);
 imagesc(HOGspread(feat, 0));
 axis image;
+title('Spread of Unsigned Orientation Channels');
 
 subplot(nfigs,2,8);
 vis1 = HOGspread(feat, 9);
 vis2 = HOGspread(feat, 18);
 imagesc([vis1; vis2]);
 axis image;
+title('Spread of Signed Orientation Channels (+/-)');
 
 
 
