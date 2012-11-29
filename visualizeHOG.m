@@ -13,8 +13,10 @@ if verbosity == 0,
   nfigs = 1;
 elseif verbosity == 1,
   nfigs = 2;
-else,
+elseif verbosity == 2,
   nfigs = 3;
+else,
+  nfigs = 4;
 end
 
 im = invertHOG(max(feat, 0));
@@ -71,14 +73,31 @@ end
 subplot(nfigs,2,5);
 f = zeros(size(feat));
 f(:, :, 19:27) = feat(:, :, 1:9);
-showHOG(f);
+r = f(:, :, 19:27);
+showHOG(f - mean(r(:)));
 title('Positive Signed HOG');
 
 subplot(nfigs,2,6);
 f = zeros(size(feat));
 f(:, :, 19:27) = feat(:, :, 10:18);
-showHOG(f);
+r = f(:, :, 19:27);
+showHOG(f - mean(r(:)));
 title('Negative Signed HOG');
+
+if nfigs == 3,
+  return;
+end
+
+subplot(nfigs,2,7);
+imagesc(HOGspread(feat, 0));
+axis image;
+
+subplot(nfigs,2,8);
+vis1 = HOGspread(feat, 9);
+vis2 = HOGspread(feat, 18);
+imagesc([vis1; vis2]);
+axis image;
+
 
 
 
@@ -116,4 +135,17 @@ for i=1:ny,
       end
     end
   end
+end
+
+
+
+% HOGspread(feat)
+function vis = HOGspread(feat, o),
+vis = zeros(0, 0);
+for i=o+1:o+9,
+  f = zeros(size(feat));
+  f(:, :, i-o) = feat(:, :, i);
+  f = HOGpicture(f);
+  f = padarray(f, [5 5], 0.5, 'both');
+  vis = [vis f];
 end
