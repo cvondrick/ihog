@@ -1,10 +1,10 @@
-% pickapartHOG(feat)
+% dissectHOG(feat)
 %
 % This function shows the HOG inverse for different HOG channels: unsigned
 % gradients, signed gradients, and texture gradients. 
-function pickapartHOG(feat),
+function dissectHOG(feat),
 
-fprintf('ihog: pick apart: ');
+fprintf('ihog: dissect: ');
 
 fprintf('.');
 ihog = invertHOG(feat);

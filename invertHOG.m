@@ -22,10 +22,9 @@ if ~exist('pd', 'var'),
   if isempty(ihog_pd),
     ihog_pd = load('pd.mat');
   end
-  im = invertHOGdo(feat, ihog_pd);
-else
-  im = invertHOGdo(feat, pd);
+  pd = ihog_pd;
 end
+im = invertHOGdo(feat, pd);
 
 
 
