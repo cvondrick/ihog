@@ -4,27 +4,37 @@
 % gradients, signed gradients, and texture gradients. 
 function pickapartHOG(feat),
 
+fprintf('ihog: pick apart: ');
+
+fprintf('.');
 ihog = invertHOG(feat);
 
+fprintf('.');
 unsigned = zeros(size(feat));
 unsigned(:, :, 19:27) = feat(:, :, 19:27);
 unsigned = invertHOG(unsigned);
 
+fprintf('.');
 signed = zeros(size(feat));
 signed(:, :, 1:18) = feat(:, :, 1:18);
 signed = invertHOG(signed);
 
+fprintf('.');
 positive = zeros(size(feat));
 positive(:, :, 1:9) = feat(:, :, 1:9);
 positive = invertHOG(positive);
 
+fprintf('.');
 negative = zeros(size(feat));
 negative(:, :, 10:19) = feat(:, :, 10:19);
 negative = invertHOG(negative);
 
+fprintf('.');
 texture = zeros(size(feat));
 texture(:, :, 28:end) = feat(:, :, 28:end);
 texture = invertHOG(texture);
+
+fprintf('\n');
 
 subplot(231);
 imagesc(ihog);
