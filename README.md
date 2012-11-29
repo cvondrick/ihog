@@ -26,12 +26,8 @@ We also provide a variety of visualization functions for HOG. The most basic is
     >> feat = features(im, 8);
     >> visualizeHOG(feat);
 
-which will display a figure with the HOG glyph and the HOG inverse. You can optionally
-pass a verbose flag to 'visualizeHOG()' to show more:
-
-    >>> visualizeHOG(feat, true);
-
-which will display a figure with a zero meaned HOG visualization and a 
+which will display a figure with the HOG glyph and the HOG inverse. This
+visualization is a drop-in replacement for more standard visualizations.
 
 Installation
 ------------

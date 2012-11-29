@@ -8,68 +8,41 @@
 %   >> visualizeHOG(feat);
 %
 % and the current figure will contain both the standard HOG glyph visualization as well
-% as the inverse.  This function has extra verbosity outputs you can use too:
+% as the inverse. 
 %
-%   >> visualizeHOG(feat, 1)
-%
-% which will show a zero-mean HOG glyph and as well a spatial histogram of the texture
-% features for HOG.
+% If 'feat' has negative values, a second row will appear of the negatives.
 
-function visualizeHOG(feat, verbosity),
+function visualizeHOG(feat),
 
-if ~exist('verbosity', 'var'),
-  verbosity = 0;
-end
-
-if verbosity == 0,
-  nfigs = 1;
-else,
-  nfigs = 2;
-end
+s = [size(feat,1)*8+16 size(feat,2)*8+16];
 
 im = invertHOG(max(feat, 0));
+hog = HOGpicture(feat);
+hog = imresize(hog, s);
+hog(hog > 1) = 1;
+hog(hog < 0) = 0;
+
+buff = 5;
+im = padarray(im, [buff buff], 0.5, 'both');
+hog = padarray(hog, [buff buff], 0.5, 'both');
 
 if min(feat(:)) < 0,
-  buff = 5;
+  hogneg = HOGpicture(-feat);
+  hogneg = imresize(hogneg, s);
+  hogneg(hogneg > 1) = 1;
+  hogneg(hogneg < 0) = 0;
+  hogneg = padarray(hogneg, [buff buff], 0.5, 'both');
+
   neg = invertHOG(max(-feat, 0));
   neg = padarray(neg, [buff buff], 0.5, 'both');
-  im = padarray(im, [buff buff], 0.5, 'both');
 
-  im = [im neg];
+  im = [im; neg];
+  hog = [hog; hogneg];
 end
 
-clf;
+im = [im hog];
 
-subplot(nfigs,2,1);
-showHOG(feat);
-title('HOG');
-
-subplot(nfigs,2,2);
 imagesc(im);
 axis image;
+axis off;
 colormap gray;
-title('Inverse');
-
-if nfigs == 1,
-  return;
-end
-
-subplot(nfigs,2,3);
-showHOG(feat - mean(feat(:)));
-title('0-mean HOG');
-
-subplot(nfigs,2,4);
-
-if min(feat(:)) < 0,
-  buff = 5;
-  pos = HOGtexture(max(feat, 0));
-  pos = padarray(pos, [buff buff], 0.5, 'both');
-  neg = HOGtexture(max(-feat, 0));
-  neg = padarray(neg, [buff buff], 0.5, 'both');
-  imagesc([pos neg]);
-else,
-  imagesc(HOGtexture(feat));
-end
-
-axis image;
-title('HOG Texture');
