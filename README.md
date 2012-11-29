@@ -39,18 +39,14 @@ Installation
 ------------
 
 Before you can use this tool, you must compile iHOG. Execute the 'compile'
-script in MATLAB:
+script in MATLAB to compile the HOG feature extraction code and sparse coding
+SPAMS toolbox:
 
     >> compile
-
-This command will compile the HOG feature extraction code and the sparse coding
-SPAMS toolbox.
-
-When you use iHOG, remember to adjust your MATLAB path:
+    
+Everytime you use iHOG, remember to adjust your MATLAB path:
 
     >> addpath(genpath('/path/to/ihog'))
-
-Otherwise, iHOG will be unable to find relevant libraries.
 
 Learning
 --------
