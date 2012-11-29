@@ -33,9 +33,21 @@ showHOG(feat - mean(feat(:)));
 title('0-mean HOG');
 
 subplot(224);
-imagesc(HOGtexture(feat));
+
+if min(feat(:)) < 0,
+  buff = 5;
+  pos = HOGtexture(max(feat, 0));
+  pos = padarray(pos, [buff buff], 0.5, 'both');
+  neg = HOGtexture(max(-feat, 0));
+  neg = padarray(neg, [buff buff], 0.5, 'both');
+  imagesc([pos neg]);
+else,
+  imagesc(HOGtexture(feat));
+end
+
 axis image;
 title('HOG Texture');
+
 
 
 function bigfig = HOGtexture(feat),
@@ -52,19 +64,20 @@ for k=1:nf,
   end
 end
 
-h = 8;
-w = round(8 / nf);
-bigfig = ones(ny*(h+1), nx*w*nf, 3) * 0.75;
-cc = hsv(nf);
+b = 1;
+h = 8 * 3;
+w = round(8 / nf) * 3;
+bigfig = ones(ny*(h+b), nx*(w*nf+b), 3) * 0.75;
+cc = prism(nf);
 
 for i=1:ny,
   for j=1:nx,
     for k=1:nf,
-      val = texture(i, j, k);
-      val = round(val * h);
-      color = cc(k, :);
+      val = round(texture(i, j, k) * h);
       for z=1:3,
-        bigfig((i-1)*(h+1)+1+(h+1-val):i*(h+1), ((j-1)*nf+k-1)*w+1:((j-1)*nf+k)*w, z) = color(z);
+        bigfig((i-1)*(h+b)+1+(h+b-val) : i*(h+b), ...
+               (j-1)*(w*nf+b)+1+(k-1)*w+1 : (j-1)*(w*nf+b)+1+k*w, z) = cc(k, z);
+               %((j-1)*nf+k-1)*w+1:((j-1)*nf+k)*w, z) = cc(k, z);
       end
     end
   end

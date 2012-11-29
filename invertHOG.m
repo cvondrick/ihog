@@ -47,7 +47,7 @@ end
 
 % pad feat if dim lacks occlusion feature
 if size(feat,3) == 31,
-  x(:, :, end+1) = 0;
+  feat(:, :, end+1) = 0;
 end
 
 % extract every window 
