@@ -5,6 +5,19 @@ This software package contains tools to invert and visualize HOG features.
 It implements the Paired Dictionary Learning algorithm described in our
 paper "Inverting and Visualizing Features for Object Detection" [1].
 
+Installation
+------------
+
+Before you can use this tool, you must compile iHOG. Execute the 'compile'
+script in MATLAB to compile the HOG feature extraction code and sparse coding
+SPAMS toolbox:
+
+    >> compile
+    
+Remember to also adjust your path so MATLAB can find iHOG:
+
+    >> addpath(genpath('/path/to/ihog'))
+
 Inverting HOG
 -------------
 
@@ -20,27 +33,17 @@ image on a modern computer.
 Visualizing HOG
 ---------------
 
-We also provide a variety of visualization functions for HOG. The most basic is
-'visualizeHOG()':
+iHOG has functions to visualize HOG. The most basic is 'visualizeHOG()':
 
     >> feat = features(im, 8);
     >> visualizeHOG(feat);
 
-which will display a figure with the HOG glyph and the HOG inverse. This
-visualization is a drop-in replacement for more standard visualizations.
+The above displays a figure with the HOG glyph and the HOG inverse. This
+visualization is a drop-in replacement for more standard visualizations, and
+should work with existing code bases.
 
-Installation
-------------
-
-Before you can use this tool, you must compile iHOG. Execute the 'compile'
-script in MATLAB to compile the HOG feature extraction code and sparse coding
-SPAMS toolbox:
-
-    >> compile
-    
-Remember to also adjust your path so MATLAB can find iHOG:
-
-    >> addpath(genpath('/path/to/ihog'))
+Other visualizations are available. Check out the 'visualizations/' folder and
+read the comments for more.
 
 Learning
 --------

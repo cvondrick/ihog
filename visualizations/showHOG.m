@@ -17,6 +17,9 @@ else
   im = pos;
 end
 
+im(im < 0) = 0;
+im(im > 1) = 1;
+
 if nargout == 0,
   imagesc(im); 
   colormap gray;

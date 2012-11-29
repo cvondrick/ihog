@@ -1,7 +1,7 @@
 % HOGtexture(feat)
 %
-% Creates a visualization of the HOG texture features. For each HOG cell, it builds a histogram
-% and attempts to visualize it spatially.
+% Creates a visualization of the HOG texture features. For each HOG cell, it
+% builds a histogram and attempts to visualize it spatially.
 function bigfig = HOGtexture(feat),
 texture = feat(:, :, 9*3+1:end);
 [ny,nx,nf] = size(texture);
