@@ -11,10 +11,10 @@ neg = HOGpicture(-w, bs) * 255/scale;
 
 % Put pictures together and draw
 buff = 10;
-pos = padarray(pos, [buff buff], 128, 'both');
 if min(w(:)) < 0
+  pos = padarray(pos, [buff buff], 128, 'both');
   neg = padarray(neg, [buff buff], 128, 'both');
-  im = uint8([pos; neg]);
+  im = uint8([pos neg]);
 else
   im = uint8(pos);
 end

@@ -5,14 +5,31 @@
 
 function visualizeHOG(feat),
 
-im = invertHOG(feat);
+im = invertHOG(max(feat, 0));
 
-subplot(121);
+if min(feat(:)) < 0,
+  buff = 5;
+  neg = invertHOG(max(-feat, 0));
+  neg = padarray(neg, [buff buff], 0.5, 'both');
+  im = padarray(im, [buff buff], 0.5, 'both');
+
+  im = [im neg];
+end
+
+subplot(221);
 showHOG(feat);
 title('HOG');
 
-subplot(122);
+subplot(222);
 imagesc(im);
 axis image;
 colormap gray;
 title('Inverse');
+
+subplot(223);
+showHOG(feat - mean(feat(:)));
+title('0-mean HOG');
+
+subplot(224);
+hist(feat(:));
+title('HOG distribution');
