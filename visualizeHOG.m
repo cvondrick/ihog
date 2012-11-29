@@ -11,8 +11,10 @@ end
 
 if verbosity == 0,
   nfigs = 1;
-else,
+elseif verbosity == 1,
   nfigs = 2;
+else,
+  nfigs = 3;
 end
 
 im = invertHOG(max(feat, 0));
@@ -62,8 +64,28 @@ end
 axis image;
 title('HOG Texture');
 
+if nfigs == 2,
+  return;
+end
+
+subplot(nfigs,2,5);
+f = zeros(size(feat));
+f(:, :, 19:27) = feat(:, :, 1:9);
+showHOG(f);
+title('Positive Signed HOG');
+
+subplot(nfigs,2,6);
+f = zeros(size(feat));
+f(:, :, 19:27) = feat(:, :, 10:18);
+showHOG(f);
+title('Negative Signed HOG');
 
 
+
+% HOGtexture(feat)
+%
+% Creates a visualization of the HOG texture features. For each HOG cell, it builds a histogram
+% and attempts to visualize it spatially.
 function bigfig = HOGtexture(feat),
 texture = feat(:, :, 9*3+1:end);
 [ny,nx,nf] = size(texture);
