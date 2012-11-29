@@ -1,0 +1,2542 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>SPAMS’s python interface documentation &mdash; SPAMS v1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="SPAMS v1 documentation" href="#" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="#">SPAMS v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="spams-s-python-interface-documentation">
+<h1>SPAMS&#8217;s python interface documentation<a class="headerlink" href="#spams-s-python-interface-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="70%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a title="spams.sort" class="reference internal" href="#spams.sort"><tt class="xref docutils literal"><span class="pre">sort</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.calcAAt" class="reference internal" href="#spams.calcAAt"><tt class="xref docutils literal"><span class="pre">calcAAt</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.calcXAt" class="reference internal" href="#spams.calcXAt"><tt class="xref docutils literal"><span class="pre">calcXAt</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.calcXY" class="reference internal" href="#spams.calcXY"><tt class="xref docutils literal"><span class="pre">calcXY</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.calcXYt" class="reference internal" href="#spams.calcXYt"><tt class="xref docutils literal"><span class="pre">calcXYt</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.calcXtY" class="reference internal" href="#spams.calcXtY"><tt class="xref docutils literal"><span class="pre">calcXtY</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.bayer" class="reference internal" href="#spams.bayer"><tt class="xref docutils literal"><span class="pre">bayer</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.conjGrad" class="reference internal" href="#spams.conjGrad"><tt class="xref docutils literal"><span class="pre">conjGrad</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.invSym" class="reference internal" href="#spams.invSym"><tt class="xref docutils literal"><span class="pre">invSym</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.normalize" class="reference internal" href="#spams.normalize"><tt class="xref docutils literal"><span class="pre">normalize</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.sparseProject" class="reference internal" href="#spams.sparseProject"><tt class="xref docutils literal"><span class="pre">sparseProject</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.lasso" class="reference internal" href="#spams.lasso"><tt class="xref docutils literal"><span class="pre">lasso</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.lassoMask" class="reference internal" href="#spams.lassoMask"><tt class="xref docutils literal"><span class="pre">lassoMask</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.lassoWeighted" class="reference internal" href="#spams.lassoWeighted"><tt class="xref docutils literal"><span class="pre">lassoWeighted</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.omp" class="reference internal" href="#spams.omp"><tt class="xref docutils literal"><span class="pre">omp</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.ompMask" class="reference internal" href="#spams.ompMask"><tt class="xref docutils literal"><span class="pre">ompMask</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.cd" class="reference internal" href="#spams.cd"><tt class="xref docutils literal"><span class="pre">cd</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.somp" class="reference internal" href="#spams.somp"><tt class="xref docutils literal"><span class="pre">somp</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.l1L2BCD" class="reference internal" href="#spams.l1L2BCD"><tt class="xref docutils literal"><span class="pre">l1L2BCD</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.fistaFlat" class="reference internal" href="#spams.fistaFlat"><tt class="xref docutils literal"><span class="pre">fistaFlat</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.fistaTree" class="reference internal" href="#spams.fistaTree"><tt class="xref docutils literal"><span class="pre">fistaTree</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.fistaGraph" class="reference internal" href="#spams.fistaGraph"><tt class="xref docutils literal"><span class="pre">fistaGraph</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.proximalFlat" class="reference internal" href="#spams.proximalFlat"><tt class="xref docutils literal"><span class="pre">proximalFlat</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.proximalTree" class="reference internal" href="#spams.proximalTree"><tt class="xref docutils literal"><span class="pre">proximalTree</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.proximalGraph" class="reference internal" href="#spams.proximalGraph"><tt class="xref docutils literal"><span class="pre">proximalGraph</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.trainDL" class="reference internal" href="#spams.trainDL"><tt class="xref docutils literal"><span class="pre">trainDL</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.trainDL_Memory" class="reference internal" href="#spams.trainDL_Memory"><tt class="xref docutils literal"><span class="pre">trainDL_Memory</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.nmf" class="reference internal" href="#spams.nmf"><tt class="xref docutils literal"><span class="pre">nmf</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a title="spams.nnsc" class="reference internal" href="#spams.nnsc"><tt class="xref docutils literal"><span class="pre">nnsc</span></tt></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="sort">
+<h2>sort<a class="headerlink" href="#sort" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.sort">
+<tt class="descclassname">spams.</tt><tt class="descname">sort</tt><big>(</big><em>X</em>, <em>mode=True</em><big>)</big><a class="headerlink" href="#spams.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>sort the elements of X using quicksort</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double vector of size n</li>
+<li><em>mode</em> &#8211; false for decreasing order (true by default)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>Y</strong>: double  vector of size n</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2010 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="calcaat">
+<h2>calcAAt<a class="headerlink" href="#calcaat" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.calcAAt">
+<tt class="descclassname">spams.</tt><tt class="descname">calcAAt</tt><big>(</big><em>A</em><big>)</big><a class="headerlink" href="#spams.calcAAt" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Compute efficiently AAt = A*A&#8217;, when A is sparse </dt>
+<dd>and has a lot more columns than rows. In some cases, it is
+up to 20 times faster than the equivalent python expression
+AAt=A*A&#8217;;</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameter:</th><td class="field-body"><p class="first"><em>A</em> &#8211; double sparse m x n matrix</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>AAt</strong>: double m x m matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="calcxat">
+<h2>calcXAt<a class="headerlink" href="#calcxat" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.calcXAt">
+<tt class="descclassname">spams.</tt><tt class="descname">calcXAt</tt><big>(</big><em>X</em>, <em>A</em><big>)</big><a class="headerlink" href="#spams.calcXAt" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Compute efficiently XAt = X*A&#8217;, when A is sparse and has a </dt>
+<dd>lot more columns than rows. In some cases, it is up to 20 times 
+faster than the equivalent python expression;</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix</li>
+<li><em>A</em> &#8211; double sparse p x n matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>XAt</strong>: double m x p matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="calcxy">
+<h2>calcXY<a class="headerlink" href="#calcxy" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.calcXY">
+<tt class="descclassname">spams.</tt><tt class="descname">calcXY</tt><big>(</big><em>X</em>, <em>Y</em><big>)</big><a class="headerlink" href="#spams.calcXY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Z=XY using the BLAS library used by SPAMS.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix</li>
+<li><em>Y</em> &#8211; double n x p matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>Z</strong>: double m x p matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="calcxyt">
+<h2>calcXYt<a class="headerlink" href="#calcxyt" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.calcXYt">
+<tt class="descclassname">spams.</tt><tt class="descname">calcXYt</tt><big>(</big><em>X</em>, <em>Y</em><big>)</big><a class="headerlink" href="#spams.calcXYt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Z=XY&#8217; using the BLAS library used by SPAMS.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix</li>
+<li><em>Y</em> &#8211; double p x n matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>Z</strong>: double m x p matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="calcxty">
+<h2>calcXtY<a class="headerlink" href="#calcxty" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.calcXtY">
+<tt class="descclassname">spams.</tt><tt class="descname">calcXtY</tt><big>(</big><em>X</em>, <em>Y</em><big>)</big><a class="headerlink" href="#spams.calcXtY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Z=X&#8217;Y using the BLAS library used by SPAMS.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double n x m matrix</li>
+<li><em>Y</em> &#8211; double n x p matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>Z</strong>: double m x p matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="bayer">
+<h2>bayer<a class="headerlink" href="#bayer" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.bayer">
+<tt class="descclassname">spams.</tt><tt class="descname">bayer</tt><big>(</big><em>X</em>, <em>offset</em><big>)</big><a class="headerlink" href="#spams.bayer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>bayer applies a Bayer pattern to an image X.</dt>
+<dd>There are four possible offsets.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix</li>
+<li><em>offset</em> &#8211; scalar, 0,1,2 or 3</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>Y</strong>: double m x m matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="conjgrad">
+<h2>conjGrad<a class="headerlink" href="#conjgrad" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.conjGrad">
+<tt class="descclassname">spams.</tt><tt class="descname">conjGrad</tt><big>(</big><em>A</em>, <em>b</em>, <em>x0=None</em>, <em>tol=1e-10</em>, <em>itermax=None</em><big>)</big><a class="headerlink" href="#spams.conjGrad" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Conjugate gradient algorithm, sometimes faster than the </dt>
+<dd>equivalent python function solve. In order to solve Ax=b;</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>A</em> &#8211; double square n x n matrix. HAS TO BE POSITIVE DEFINITE</li>
+<li><em>b</em> &#8211; double vector of length n.</li>
+<li><em>x0</em> &#8211; double vector of length n. (optional) initial guess.</li>
+<li><em>tol</em> &#8211; (optional) tolerance.</li>
+<li><em>itermax</em> &#8211; (optional) maximum number of iterations.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong>: double vector of length n.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="invsym">
+<h2>invSym<a class="headerlink" href="#invsym" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.invSym">
+<tt class="descclassname">spams.</tt><tt class="descname">invSym</tt><big>(</big><em>A</em><big>)</big><a class="headerlink" href="#spams.invSym" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the inverse of a symmetric matrix A</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameter:</th><td class="field-body"><p class="first"><em>A</em> &#8211; double n x n matrix</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>B</strong>: double n x n matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="normalize">
+<h2>normalize<a class="headerlink" href="#normalize" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.normalize">
+<tt class="descclassname">spams.</tt><tt class="descname">normalize</tt><big>(</big><em>A</em><big>)</big><a class="headerlink" href="#spams.normalize" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>rescale the columns of X so that they have</dt>
+<dd>unit l2-norm.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameter:</th><td class="field-body"><p class="first"><em>X</em> &#8211; double m x n matrix</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>Y</strong>: double m x n matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2010 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="sparseproject">
+<h2>sparseProject<a class="headerlink" href="#sparseproject" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.sparseProject">
+<tt class="descclassname">spams.</tt><tt class="descname">sparseProject</tt><big>(</big><em>U</em>, <em>thrs=1.0</em>, <em>mode=1</em>, <em>lambda1=0.0</em>, <em>lambda2=0.0</em>, <em>lambda3=0.0</em>, <em>pos=0</em>, <em>numThreads=-1</em><big>)</big><a class="headerlink" href="#spams.sparseProject" title="Permalink to this definition">¶</a></dt>
+<dd><p>sparseProject solves various optimization 
+problems, including projections on a few convex sets.</p>
+<blockquote>
+<p>It aims at addressing the following problems
+for all columns u of U in parallel</p>
+<blockquote>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>when mode=1 (projection on the l1-ball)</dt>
+<dd><p class="first last">min_v ||u-v||_2^2  s.t.  ||v||_1 &lt;= thrs</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>when mode=2</dt>
+<dd><p class="first last">min_v ||u-v||_2^2  s.t. ||v||_2^2 + lamuda1||v||_1 &lt;= thrs</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>when mode=3</dt>
+<dd><p class="first last">min_v ||u-v||_2^2  s.t  ||v||_1 + 0.5lamuda1||v||_2^2 &lt;= thrs</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>when mode=4</dt>
+<dd><p class="first last">min_v 0.5||u-v||_2^2 + lamuda1||v||_1  s.t  ||v||_2^2 &lt;= thrs</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>when mode=5</dt>
+<dd><dl class="first last docutils">
+<dt>min_v 0.5||u-v||_2^2 + lamuda1||v||_1 +lamuda2 FL(v) + ... </dt>
+<dd><p class="first last">0.5lamuda_3 ||v||_2^2</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>where FL denotes a &#8220;fused lasso&#8221; regularization term.</p>
+</li>
+<li><p class="first">when mode=6
+min_v ||u-v||_2^2 s.t lamuda1||v||_1 +lamuda2 FL(v) + ...</p>
+<blockquote>
+<p>0.5lamuda3||v||_2^2 &lt;= thrs</p>
+</blockquote>
+</li>
+</ol>
+<blockquote>
+When pos=true and mode &lt;= 4,
+it solves the previous problems with positivity constraints</blockquote>
+</blockquote>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>U</em> &#8211; double m x n matrix   (input signals)
+m is the signal size
+n is the number of signals to project</li>
+<li><em>thrs</em> &#8211; (parameter)</li>
+<li><em>lambda1</em> &#8211; (parameter)</li>
+<li><em>lambda2</em> &#8211; (parameter)</li>
+<li><em>lambda3</em> &#8211; (parameter)</li>
+<li><em>mode</em> &#8211; (see above)</li>
+<li><em>pos</em> &#8211; (optional, false by default)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>V</strong>: double m x n matrix (output matrix)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function admits a few experimental usages, which have not
+been extensively tested:
+- single precision setting</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="lasso">
+<h2>lasso<a class="headerlink" href="#lasso" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.lasso">
+<tt class="descclassname">spams.</tt><tt class="descname">lasso</tt><big>(</big><em>X</em>, <em>D=None</em>, <em>Q=None</em>, <em>q=None</em>, <em>return_reg_path=False</em>, <em>L=-1</em>, <em>lambda1=None</em>, <em>lambda2=0.0</em>, <em>mode=2</em>, <em>pos=False</em>, <em>ols=False</em>, <em>numThreads=-1</em>, <em>max_length_path=-1</em>, <em>verbose=False</em>, <em>cholesky=False</em><big>)</big><a class="headerlink" href="#spams.lasso" title="Permalink to this definition">¶</a></dt>
+<dd><p>lasso is an efficient implementation of the
+homotopy-LARS algorithm for solving the Lasso.</p>
+<blockquote>
+<p>If the function is called this way spams.lasso(X,D = D, Q = None,...),
+it aims at addressing the following problems
+for all columns x of X, it computes one column alpha of A
+that solves</p>
+<blockquote>
+<ol class="arabic simple">
+<li>when mode=0</li>
+</ol>
+<blockquote>
+min_{alpha} ||x-Dalpha||_2^2 s.t. ||alpha||_1 &lt;= lambda1</blockquote>
+<ol class="arabic simple" start="2">
+<li>when mode=1</li>
+</ol>
+<blockquote>
+min_{alpha} ||alpha||_1 s.t. ||x-Dalpha||_2^2 &lt;= lambda1</blockquote>
+<ol class="arabic simple" start="3">
+<li>when mode=2</li>
+</ol>
+<blockquote>
+min_{alpha} 0.5||x-Dalpha||_2^2 + lambda1||alpha||_1 +0.5 lambda2||alpha||_2^2</blockquote>
+</blockquote>
+<p>If the function is called this way spams.lasso(X,D = None, Q = Q, q = q,...),
+it solves the above optimisation problem, when Q=D&#8217;D and q=D&#8217;x.</p>
+<p>Possibly, when pos=true, it solves the previous problems
+with positivity constraints on the vectors alpha</p>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix   (input signals)
+m is the signal size
+n is the number of signals to decompose</li>
+<li><em>D</em> &#8211; double m x p matrix   (dictionary)
+p is the number of elements in the dictionary</li>
+<li><em>Q</em> &#8211; p x p double matrix (Q = D&#8217;D)</li>
+<li><em>q</em> &#8211; p x n double matrix (q = D&#8217;X)</li>
+<li><em>verbose</em> &#8211; verbose mode</li>
+<li><em>return_reg_path</em> &#8211; if true the function will return a tuple of matrices.</li>
+<li><em>lambda1</em> &#8211; (parameter)</li>
+<li><em>lambda2</em> &#8211; (optional parameter for solving the Elastic-Net)
+for mode=0 and mode=1, it adds a ridge on the Gram Matrix</li>
+<li><em>L</em> &#8211; (optional), maximum number of steps of the homotopy algorithm (can
+be used as a stopping criterion)</li>
+<li><em>pos</em> &#8211; (optional, adds non-negativity constraints on the
+coefficients, false by default)</li>
+<li><em>mode</em> &#8211; (see above, by default: 2)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+<li><em>cholesky</em> &#8211; (optional, default false),  choose between Cholesky 
+implementation or one based on the matrix inversion Lemma</li>
+<li><em>ols</em> &#8211; (optional, default false), perform an orthogonal projection
+before returning the solution.</li>
+<li><em>max_length_path</em> &#8211; (optional) maximum length of the path, by default 4*p</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>A</strong>: double sparse p x n matrix (output coefficients)</li>
+<li><strong>path</strong>: optional,  returns the regularisation path for the first signal
+A = spams.lasso(X,return_reg_path = False,...)
+(A,path) = spams.lasso(X,return_reg_path = True,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function admits a few experimental usages, which have not
+been extensively tested:
+- single precision setting (even though the output alpha is double 
+precision)</p>
+</div>
+<dl class="docutils">
+<dt><strong>Examples</strong>:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span><span class="n">n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span><span class="n">nD</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">)))</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">X</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">X</span><span class="o">*</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)),(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">1</span><span class="p">)))</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">200</span><span class="p">)))</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">D</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">D</span><span class="o">*</span><span class="n">D</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)),(</span><span class="n">D</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">1</span><span class="p">)))</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="n">spams</span><span class="o">.</span><span class="n">lasso</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">D</span> <span class="o">=</span> <span class="n">D</span><span class="p">,</span><span class="n">return_reg_path</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">,</span><span class="n">lambda1</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="lassomask">
+<h2>lassoMask<a class="headerlink" href="#lassomask" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.lassoMask">
+<tt class="descclassname">spams.</tt><tt class="descname">lassoMask</tt><big>(</big><em>X</em>, <em>D</em>, <em>B</em>, <em>L=-1</em>, <em>lambda1=None</em>, <em>lambda2=0.0</em>, <em>mode=2</em>, <em>pos=False</em>, <em>numThreads=-1</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#spams.lassoMask" title="Permalink to this definition">¶</a></dt>
+<dd><p>lasso is a variant of lasso that handles
+binary masks. It aims at addressing the following problems
+for all columns x of X, and beta of B, it computes one column alpha of A
+that solves</p>
+<blockquote>
+<ol class="arabic simple">
+<li>when mode=0</li>
+</ol>
+<blockquote>
+min_{alpha} ||diag(beta)(x-Dalpha)||_2^2 s.t. ||alpha||_1 &lt;= lambda1</blockquote>
+<ol class="arabic simple" start="2">
+<li>when mode=1</li>
+</ol>
+<blockquote>
+<dl class="docutils">
+<dt>min_{alpha} ||alpha||_1 s.t. ||diag(beta)(x-Dalpha)||_2^2 </dt>
+<dd>&lt;= lambda1*||beta||_0/m</dd>
+</dl>
+</blockquote>
+<ol class="arabic simple" start="3">
+<li>when mode=2</li>
+</ol>
+<blockquote>
+<dl class="docutils">
+<dt>min_{alpha} 0.5||diag(beta)(x-Dalpha)||_2^2 +</dt>
+<dd>lambda1*(||beta||_0/m)*||alpha||_1 +
+(lambda2/2)||alpha||_2^2</dd>
+</dl>
+</blockquote>
+</blockquote>
+<p>Possibly, when pos=true, it solves the previous problems
+with positivity constraints on the vectors alpha</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix   (input signals)
+m is the signal size
+n is the number of signals to decompose</li>
+<li><em>D</em> &#8211; double m x p matrix   (dictionary)
+p is the number of elements in the dictionary</li>
+<li><em>B</em> &#8211; boolean m x n matrix   (mask)
+p is the number of elements in the dictionary</li>
+<li><em>verbose</em> &#8211; verbose mode</li>
+<li><em>lambda1</em> &#8211; (parameter)</li>
+<li><em>L</em> &#8211; (optional, maximum number of elements of each 
+decomposition)</li>
+<li><em>pos</em> &#8211; (optional, adds positivity constraints on the
+coefficients, false by default)</li>
+<li><em>mode</em> &#8211; (see above, by default: 2)</li>
+<li><em>lambda2</em> &#8211; (optional parameter for solving the Elastic-Net)
+for mode=0 and mode=1, it adds a ridge on the Gram Matrix</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>A</strong>: double sparse p x n matrix (output coefficients)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2010 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function admits a few experimental usages, which have not
+been extensively tested:
+- single precision setting (even though the output alpha is double 
+precision)</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="lassoweighted">
+<h2>lassoWeighted<a class="headerlink" href="#lassoweighted" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.lassoWeighted">
+<tt class="descclassname">spams.</tt><tt class="descname">lassoWeighted</tt><big>(</big><em>X</em>, <em>D</em>, <em>W</em>, <em>L=-1</em>, <em>lambda1=None</em>, <em>mode=2</em>, <em>pos=False</em>, <em>numThreads=-1</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#spams.lassoWeighted" title="Permalink to this definition">¶</a></dt>
+<dd><p>lassoWeighted is an efficient implementation of the
+LARS algorithm for solving the weighted Lasso. It is optimized
+for solving a large number of small or medium-sized 
+decomposition problem (and not for a single large one).</p>
+<blockquote>
+<p>It first computes the Gram matrix D&#8217;D and then perform
+a Cholesky-based OMP of the input signals in parallel.
+For all columns x of X, and w of W, it computes one column alpha of A
+which is the solution of</p>
+<blockquote>
+<ol class="arabic simple">
+<li>when mode=0</li>
+</ol>
+<blockquote>
+<dl class="docutils">
+<dt>min_{alpha} ||x-Dalpha||_2^2   s.t.  </dt>
+<dd>||diag(w)alpha||_1 &lt;= lambda1</dd>
+</dl>
+</blockquote>
+<ol class="arabic simple" start="2">
+<li>when mode=1</li>
+</ol>
+<blockquote>
+<dl class="docutils">
+<dt>min_{alpha} ||diag(w)alpha||_1  s.t.</dt>
+<dd>||x-Dalpha||_2^2 &lt;= lambda1</dd>
+</dl>
+</blockquote>
+<ol class="arabic simple" start="3">
+<li>when mode=2</li>
+</ol>
+<blockquote>
+<dl class="docutils">
+<dt>min_{alpha} 0.5||x-Dalpha||_2^2  +  </dt>
+<dd>lambda1||diag(w)alpha||_1</dd>
+</dl>
+</blockquote>
+</blockquote>
+<p>Possibly, when pos=true, it solves the previous problems
+with positivity constraints on the vectors alpha</p>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix   (input signals)
+m is the signal size
+n is the number of signals to decompose</li>
+<li><em>D</em> &#8211; double m x p matrix   (dictionary)
+p is the number of elements in the dictionary</li>
+<li><em>W</em> &#8211; double p x n matrix   (weights)</li>
+<li><em>verbose</em> &#8211; verbose mode</li>
+<li><em>lambda1</em> &#8211; (parameter)</li>
+<li><em>L</em> &#8211; (optional, maximum number of elements of each 
+decomposition)</li>
+<li><em>pos</em> &#8211; (optional, adds positivity constraints on the
+coefficients, false by default)</li>
+<li><em>mode</em> &#8211; (see above, by default: 2)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>A</strong>: double sparse p x n matrix (output coefficients)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function admits a few experimental usages, which have not
+been extensively tested:
+- single precision setting (even though the output alpha is double 
+precision)</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="omp">
+<h2>omp<a class="headerlink" href="#omp" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.omp">
+<tt class="descclassname">spams.</tt><tt class="descname">omp</tt><big>(</big><em>X</em>, <em>D</em>, <em>L=None</em>, <em>eps=None</em>, <em>lambda1=None</em>, <em>return_reg_path=False</em>, <em>numThreads=-1</em><big>)</big><a class="headerlink" href="#spams.omp" title="Permalink to this definition">¶</a></dt>
+<dd><p>omp is an efficient implementation of the
+Orthogonal Matching Pursuit algorithm. It is optimized
+for solving a large number of small or medium-sized 
+decomposition problem (and not for a single large one).</p>
+<blockquote>
+<p>It first computes the Gram matrix D&#8217;D and then perform
+a Cholesky-based OMP of the input signals in parallel.
+X=[x^1,...,x^n] is a matrix of signals, and it returns
+a matrix A=[alpha^1,...,alpha^n] of coefficients.</p>
+<dl class="docutils">
+<dt>it addresses for all columns x of X, </dt>
+<dd>min_{alpha} ||alpha||_0  s.t  ||x-Dalpha||_2^2 &lt;= eps
+or
+min_{alpha} ||x-Dalpha||_2^2  s.t. ||alpha||_0 &lt;= L
+or
+min_{alpha} 0.5||x-Dalpha||_2^2 + lambda1||alpha||_0</dd>
+</dl>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix   (input signals)
+m is the signal size
+n is the number of signals to decompose</li>
+<li><em>D</em> &#8211; double m x p matrix   (dictionary)
+p is the number of elements in the dictionary
+All the columns of D should have unit-norm !</li>
+<li><em>return_reg_path</em> &#8211; if true the function will return a tuple of matrices.</li>
+<li><em>L</em> &#8211; (optional, maximum number of elements in each decomposition, 
+min(m,p) by default)</li>
+<li><em>eps</em> &#8211; (optional, threshold on the squared l2-norm of the residual,
+0 by default</li>
+<li><em>lambda1</em> &#8211; (optional, penalty parameter, 0 by default</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>A</strong>: double sparse p x n matrix (output coefficients)
+path (optional): double dense p x L matrix (regularization path of the first signal)
+A = spams.omp(X,D,L,eps,return_reg_path = False,...)
+(A,path) = spams.omp(X,D,L,eps,return_reg_path = True,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function admits a few experimental usages, which have not
+been extensively tested:
+- single precision setting (even though the output alpha is double 
+precision)
+- Passing an int32 vector of length n to L provides
+a different parameter L for each input signal x_i
+- Passing a double vector of length n to eps and or lambda1 
+provides a different parameter eps (or lambda1) for each input signal x_i</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="ompmask">
+<h2>ompMask<a class="headerlink" href="#ompmask" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.ompMask">
+<tt class="descclassname">spams.</tt><tt class="descname">ompMask</tt><big>(</big><em>X</em>, <em>D</em>, <em>B</em>, <em>L=None</em>, <em>eps=None</em>, <em>lambda1=None</em>, <em>return_reg_path=False</em>, <em>numThreads=-1</em><big>)</big><a class="headerlink" href="#spams.ompMask" title="Permalink to this definition">¶</a></dt>
+<dd><p>ompMask is a variant of mexOMP that allow using
+a binary mask B</p>
+<blockquote>
+<dl class="docutils">
+<dt>for all columns x of X, and columns beta of B, it computes a column </dt>
+<dd><p class="first">alpha of A by addressing
+min_{alpha} ||alpha||_0  s.t  ||diag(beta)*(x-Dalpha)||_2^2</p>
+<blockquote>
+&lt;= eps*||beta||_0/m</blockquote>
+<p class="last">or
+min_{alpha} ||diag(beta)*(x-Dalpha)||_2^2  s.t. ||alpha||_0 &lt;= L
+or
+min_{alpha} 0.5||diag(beta)*(x-Dalpha)||_2^2  + lambda1||alpha||_0</p>
+</dd>
+</dl>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix   (input signals)
+m is the signal size
+n is the number of signals to decompose</li>
+<li><em>D</em> &#8211; double m x p matrix   (dictionary)
+p is the number of elements in the dictionary
+All the columns of D should have unit-norm !</li>
+<li><em>B</em> &#8211; boolean m x n matrix   (mask)
+p is the number of elements in the dictionary</li>
+<li><em>return_reg_path</em> &#8211; if true the function will return a tuple of matrices.</li>
+<li><em>L</em> &#8211; (optional, maximum number of elements in each decomposition, 
+min(m,p) by default)</li>
+<li><em>eps</em> &#8211; (optional, threshold on the squared l2-norm of the residual,
+0 by default</li>
+<li><em>lambda1</em> &#8211; (optional, penalty parameter, 0 by default</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>A</strong>: double sparse p x n matrix (output coefficients)
+path (optional): double dense p x L matrix 
+(regularization path of the first signal)
+A = spams.ompMask(X,D,B,L,eps,return_reg_path = False,...)
+(A,path) = spams.ompMask(X,D,B,L,eps,return_reg_path = True,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2010 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function admits a few experimental usages, which have not
+been extensively tested:
+- single precision setting (even though the output alpha is double 
+precision)
+- Passing an int32 vector of length n to L provides
+a different parameter L for each input signal x_i
+- Passing a double vector of length n to eps and or lambda1 
+provides a different parameter eps (or lambda1) for each input signal x_i</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="cd">
+<h2>cd<a class="headerlink" href="#cd" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.cd">
+<tt class="descclassname">spams.</tt><tt class="descname">cd</tt><big>(</big><em>X</em>, <em>D</em>, <em>A0</em>, <em>lambda1=None</em>, <em>mode=2</em>, <em>itermax=100</em>, <em>tol=0.001</em>, <em>numThreads=-1</em><big>)</big><a class="headerlink" href="#spams.cd" title="Permalink to this definition">¶</a></dt>
+<dd><p>cd addresses l1-decomposition problem with a 
+coordinate descent type of approach.</p>
+<blockquote>
+<p>It is optimized for solving a large number of small or medium-sized 
+decomposition problem (and not for a single large one).
+It first computes the Gram matrix D&#8217;D.
+This method is particularly well adapted when there is low 
+correlation between the dictionary elements and when one can benefit 
+from a warm restart.
+It aims at addressing the two following problems
+for all columns x of X, it computes a column alpha of A such that</p>
+<blockquote>
+<ol class="arabic simple" start="2">
+<li>when mode=1</li>
+</ol>
+<blockquote>
+min_{alpha} ||alpha||_1 s.t. ||x-Dalpha||_2^2 &lt;= lambda1
+For this constraint setting, the method solves a sequence of 
+penalized problems (corresponding to mode=2) and looks
+for the corresponding Lagrange multplier with a simple but
+efficient heuristic.</blockquote>
+<ol class="arabic simple" start="3">
+<li>when mode=2</li>
+</ol>
+<blockquote>
+min_{alpha} 0.5||x-Dalpha||_2^2 + lambda1||alpha||_1</blockquote>
+</blockquote>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix   (input signals)
+m is the signal size
+n is the number of signals to decompose</li>
+<li><em>D</em> &#8211; double m x p matrix   (dictionary)
+p is the number of elements in the dictionary
+All the columns of D should have unit-norm !</li>
+<li><em>A0</em> &#8211; double sparse p x n matrix   (initial guess)</li>
+<li><em>lambda1</em> &#8211; (parameter)</li>
+<li><em>mode</em> &#8211; (optional, see above, by default 2)</li>
+<li><em>itermax</em> &#8211; (maximum number of iterations)</li>
+<li><em>tol</em> &#8211; (tolerance parameter)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>A</strong>: double sparse p x n matrix (output coefficients)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function admits a few experimental usages, which have not
+been extensively tested:
+- single precision setting (even though the output alpha 
+is double precision)</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="somp">
+<h2>somp<a class="headerlink" href="#somp" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.somp">
+<tt class="descclassname">spams.</tt><tt class="descname">somp</tt><big>(</big><em>X</em>, <em>D</em>, <em>list_groups</em>, <em>L=None</em>, <em>eps=0.0</em>, <em>numThreads=-1</em><big>)</big><a class="headerlink" href="#spams.somp" title="Permalink to this definition">¶</a></dt>
+<dd><p>somp is an efficient implementation of a
+Simultaneous Orthogonal Matching Pursuit algorithm. It is optimized
+for solving a large number of small or medium-sized 
+decomposition problem (and not for a single large one).</p>
+<blockquote>
+<p>It first computes the Gram matrix D&#8217;D and then perform
+a Cholesky-based OMP of the input signals in parallel.
+It aims at addressing the following NP-hard problem</p>
+<p>X is a matrix structured in groups of signals, which we denote
+by X=[X_1,...,X_n]</p>
+<dl class="docutils">
+<dt>for all matrices X_i of X, </dt>
+<dd><p class="first">min_{A_i} ||A_i||_{0,infty}  s.t  ||X_i-D A_i||_2^2 &lt;= eps*n_i
+where n_i is the number of columns of X_i</p>
+<p>or</p>
+<p class="last">min_{A_i} ||X_i-D A_i||_2^2  s.t. ||A_i||_{0,infty} &lt;= L</p>
+</dd>
+</dl>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x N matrix   (input signals)
+m is the signal size
+N is the total number of signals</li>
+<li><em>D</em> &#8211; double m x p matrix   (dictionary)
+p is the number of elements in the dictionary
+All the columns of D should have unit-norm !</li>
+<li><em>list_groups</em> &#8211; int32 vector containing the indices (starting at 0)
+of the first elements of each groups.</li>
+<li><em>L</em> &#8211; (maximum number of elements in each decomposition)</li>
+<li><em>eps</em> &#8211; (threshold on the squared l2-norm of the residual</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>alpha</strong>: double sparse p x N matrix (output coefficients)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2010 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function admits a few experimental usages, which have not
+been extensively tested:
+- single precision setting (even though the output alpha is double 
+precision)</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="l1l2bcd">
+<h2>l1L2BCD<a class="headerlink" href="#l1l2bcd" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.l1L2BCD">
+<tt class="descclassname">spams.</tt><tt class="descname">l1L2BCD</tt><big>(</big><em>X</em>, <em>D</em>, <em>alpha0</em>, <em>list_groups</em>, <em>lambda1=None</em>, <em>mode=2</em>, <em>itermax=100</em>, <em>tol=0.001</em>, <em>numThreads=-1</em><big>)</big><a class="headerlink" href="#spams.l1L2BCD" title="Permalink to this definition">¶</a></dt>
+<dd><p>l1L2BCD is a solver for a 
+Simultaneous signal decomposition formulation based on block 
+coordinate descent.</p>
+<blockquote>
+<p>X is a matrix structured in groups of signals, which we denote
+by X=[X_1,...,X_n]</p>
+<dl class="docutils">
+<dt>if mode=2, it solves</dt>
+<dd>for all matrices X_i of X, 
+min_{A_i} 0.5||X_i-D A_i||_2^2 + lambda1/sqrt(n_i)||A_i||_{1,2}  
+where n_i is the number of columns of X_i</dd>
+<dt>if mode=1, it solves</dt>
+<dd>min_{A_i} ||A_i||_{1,2} s.t. ||X_i-D A_i||_2^2  &lt;= n_i lambda1</dd>
+</dl>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x N matrix   (input signals)
+m is the signal size
+N is the total number of signals</li>
+<li><em>D</em> &#8211; double m x p matrix   (dictionary)
+p is the number of elements in the dictionary</li>
+<li><em>alpha0</em> &#8211; double dense p x N matrix (initial solution)</li>
+<li><em>list_groups</em> &#8211; int32 vector containing the indices (starting at 0)
+of the first elements of each groups.</li>
+<li><em>lambda1</em> &#8211; (regularization parameter)</li>
+<li><em>mode</em> &#8211; (see above, by default 2)</li>
+<li><em>itermax</em> &#8211; (maximum number of iterations, by default 100)</li>
+<li><em>tol</em> &#8211; (tolerance parameter, by default 0.001)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>alpha</strong>: double sparse p x N matrix (output coefficients)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2010 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function admits a few experimental usages, which have not
+been extensively tested:
+- single precision setting (even though the output alpha is double 
+precision)</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="fistaflat">
+<h2>fistaFlat<a class="headerlink" href="#fistaflat" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.fistaFlat">
+<tt class="descclassname">spams.</tt><tt class="descname">fistaFlat</tt><big>(</big><em>Y</em>, <em>X</em>, <em>W0</em>, <em>return_optim_info=False</em>, <em>numThreads=-1</em>, <em>max_it=1000</em>, <em>L0=1.0</em>, <em>fixed_step=False</em>, <em>gamma=1.5</em>, <em>lambda1=1.0</em>, <em>delta=1.0</em>, <em>lambda2=0.0</em>, <em>lambda3=0.0</em>, <em>a=1.0</em>, <em>b=0.0</em>, <em>c=1.0</em>, <em>tol=9.9999999999999995e-07</em>, <em>it0=100</em>, <em>max_iter_backtracking=1000</em>, <em>compute_gram=False</em>, <em>lin_admm=False</em>, <em>admm=False</em>, <em>intercept=False</em>, <em>resetflow=False</em>, <em>regul=''</em>, <em>loss=''</em>, <em>verbose=False</em>, <em>pos=False</em>, <em>clever=False</em>, <em>log=False</em>, <em>ista=False</em>, <em>subgrad=False</em>, <em>logName=''</em>, <em>is_inner_weights=False</em>, <em>inner_weights=array(</em><span class="optional">[</span>, <em>0.</em><span class="optional">]</span>, <em>)</em>, <em>size_group=1</em>, <em>groups=None</em>, <em>sqrt_step=True</em>, <em>transpose=False</em><big>)</big><a class="headerlink" href="#spams.fistaFlat" title="Permalink to this definition">¶</a></dt>
+<dd><p>fistaFlat solves sparse regularized problems.</p>
+<blockquote>
+<p>X is a design matrix of size m x p
+X=[x^1,...,x^n]&#8217;, where the x_i&#8217;s are the rows of X
+Y=[y^1,...,y^n] is a matrix of size m x n
+It implements the algorithms FISTA, ISTA and subgradient descent.</p>
+<blockquote>
+<ul>
+<li><p class="first">if loss=&#8217;square&#8217; and regul is a regularization function for vectors,
+the entries of Y are real-valued,  W = [w^1,...,w^n] is a matrix of size p x n
+For all column y of Y, it computes a column w of W such that</p>
+<blockquote>
+<p>w = argmin 0.5||y- X w||_2^2 + lambda1 psi(w)</p>
+</blockquote>
+</li>
+<li><p class="first">if loss=&#8217;square&#8217; and regul is a regularization function for matrices
+the entries of Y are real-valued,  W is a matrix of size p x n. 
+It computes the matrix W such that</p>
+<blockquote>
+<p>W = argmin 0.5||Y- X W||_F^2 + lambda1 psi(W)</p>
+</blockquote>
+</li>
+<li><p class="first">loss=&#8217;square-missing&#8217; same as loss=&#8217;square&#8217;, but handles missing data
+represented by NaN (not a number) in the matrix Y</p>
+</li>
+<li><p class="first">if loss=&#8217;logistic&#8217; and regul is a regularization function for vectors,
+the entries of Y are either -1 or +1, W = [w^1,...,w^n] is a matrix of size p x n
+For all column y of Y, it computes a column w of W such that</p>
+<blockquote>
+<p>w = argmin (1/m)sum_{j=1}^m log(1+e^(-y_j x^j&#8217; w)) + lambda1 psi(w),</p>
+</blockquote>
+<p>where x^j is the j-th row of X.</p>
+</li>
+<li><p class="first">if loss=&#8217;logistic&#8217; and regul is a regularization function for matrices
+the entries of Y are either -1 or +1, W is a matrix of size p x n</p>
+<blockquote>
+<p>W = argmin sum_{i=1}^n(1/m)sum_{j=1}^m log(1+e^(-y^i_j x^j&#8217; w^i)) + lambda1 psi(W)</p>
+</blockquote>
+</li>
+<li><p class="first">if loss=&#8217;multi-logistic&#8217; and regul is a regularization function for vectors,
+the entries of Y are in {0,1,...,N} where N is the total number of classes
+W = [W^1,...,W^n] is a matrix of size p x Nn, each submatrix W^i is of size p x N
+for all submatrix WW of W, and column y of Y, it computes</p>
+<blockquote>
+<p>WW = argmin (1/m)sum_{j=1}^m log(sum_{j=1}^r e^(x^j&#8217;(ww^j-ww^{y_j}))) + lambda1 sum_{j=1}^N psi(ww^j),</p>
+</blockquote>
+<p>where ww^j is the j-th column of WW.</p>
+</li>
+<li><p class="first">if loss=&#8217;multi-logistic&#8217; and regul is a regularization function for matrices,
+the entries of Y are in {0,1,...,N} where N is the total number of classes
+W is a matrix of size p x N, it computes</p>
+<blockquote>
+<p>W = argmin (1/m)sum_{j=1}^m log(sum_{j=1}^r e^(x^j&#8217;(w^j-w^{y_j}))) + lambda1 psi(W)</p>
+</blockquote>
+<p>where ww^j is the j-th column of WW.</p>
+</li>
+<li><dl class="first docutils">
+<dt>loss=&#8217;cur&#8217; useful to perform sparse CUR matrix decompositions, </dt>
+<dd><p class="first last">W = argmin 0.5||Y-X*W*X||_F^2 + lambda1 psi(W)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</blockquote>
+<p>The function psi are those used by proximalFlat (see documentation)</p>
+<p>This function can also handle intercepts (last row of W is not regularized),
+and/or non-negativity constraints on W, and sparse matrices for X</p>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>Y</em> &#8211; double dense m x n matrix</li>
+<li><em>X</em> &#8211; double dense or sparse m x p matrix</li>
+<li><em>W0</em> &#8211; double dense p x n matrix or p x Nn matrix (for multi-logistic loss)
+initial guess</li>
+<li><em>return_optim_info</em> &#8211; if true the function will return a tuple of matrices.</li>
+<li><em>loss</em> &#8211; (choice of loss, see above)</li>
+<li><em>regul</em> &#8211; (choice of regularization, see function proximalFlat)</li>
+<li><em>lambda1</em> &#8211; (regularization parameter)</li>
+<li><em>lambda2</em> &#8211; (optional, regularization parameter, 0 by default)</li>
+<li><em>lambda3</em> &#8211; (optional, regularization parameter, 0 by default)</li>
+<li><em>verbose</em> &#8211; (optional, verbosity level, false by default)</li>
+<li><em>pos</em> &#8211; (optional, adds positivity constraints on the
+coefficients, false by default)</li>
+<li><em>transpose</em> &#8211; (optional, transpose the matrix in the regularization function)</li>
+<li><em>size_group</em> &#8211; (optional, for regularization functions assuming a group
+structure)</li>
+<li><em>groups</em> &#8211; (int32, optional, for regularization functions assuming a group
+structure, see proximalFlat)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+<li><em>max_it</em> &#8211; (optional, maximum number of iterations, 100 by default)</li>
+<li><em>it0</em> &#8211; (optional, frequency for computing duality gap, every 10 iterations by default)</li>
+<li><em>tol</em> &#8211; (optional, tolerance for stopping criteration, which is a relative duality gap
+if it is available, or a relative change of parameters).</li>
+<li><em>gamma</em> &#8211; (optional, multiplier for increasing the parameter L in fista, 1.5 by default)</li>
+<li><em>L0</em> &#8211; (optional, initial parameter L in fista, 0.1 by default, should be small enough)</li>
+<li><em>fixed_step</em> &#8211; (deactive the line search for L in fista and use L0 instead)</li>
+<li><em>compute_gram</em> &#8211; (optional, pre-compute X^TX, false by default).</li>
+<li><em>intercept</em> &#8211; (optional, do not regularize last row of W, false by default).</li>
+<li><em>ista</em> &#8211; (optional, use ista instead of fista, false by default).</li>
+<li><em>subgrad</em> &#8211; (optional, if not ista, use subradient descent instead of fista, false by default).</li>
+<li><em>a</em> &#8211; </li>
+<li><em>b</em> &#8211; <p>(optional, if subgrad, the gradient step is a/(t+b)
+also similar options as proximalFlat</p>
+<p>the function also implements the ADMM algorithm via an option admm=true. It is not documented
+and you need to look at the source code to use it.</p>
+</li>
+<li><em>delta</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>c</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>max_iter_backtracking</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>lin_admm</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>admm</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>resetflow</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>clever</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>log</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>logName</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>is_inner_weights</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>inner_weights</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>sqrt_step</em> &#8211; undocumented; modify at your own risks!</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>W</strong>: double dense p x n matrix or p x Nn matrix (for multi-logistic loss)</li>
+<li><strong>optim</strong>: optional, double dense 4 x n matrix.
+first row: values of the objective functions.
+third row: values of the relative duality gap (if available)
+fourth row: number of iterations</li>
+<li><strong>optim_info</strong>: vector of size 4, containing information of the optimization.
+W = spams.fistaFlat(Y,X,W0,return_optim_info = False,...)
+(W,optim_info) = spams.fistaFlat(Y,X,W0,return_optim_info = True,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2010 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Valid values for the regularization parameter (regul) are:
+&#8220;l0&#8221;, &#8220;l1&#8221;, &#8220;l2&#8221;, &#8220;linf&#8221;, &#8220;l2-not-squared&#8221;, &#8220;elastic-net&#8221;, &#8220;fused-lasso&#8221;,
+&#8220;group-lasso-l2&#8221;, &#8220;group-lasso-linf&#8221;, &#8220;sparse-group-lasso-l2&#8221;,
+&#8220;sparse-group-lasso-linf&#8221;, &#8220;l1l2&#8221;, &#8220;l1linf&#8221;, &#8220;l1l2+l1&#8221;, &#8220;l1linf+l1&#8221;,
+&#8220;tree-l0&#8221;, &#8220;tree-l2&#8221;, &#8220;tree-linf&#8221;, &#8220;graph&#8221;, &#8220;graph-ridge&#8221;, &#8220;graph-l2&#8221;,
+&#8220;multi-task-tree&#8221;, &#8220;multi-task-graph&#8221;, &#8220;l1linf-row-column&#8221;, &#8220;trace-norm&#8221;,
+&#8220;trace-norm-vec&#8221;, &#8220;rank&#8221;, &#8220;rank-vec&#8221;, &#8220;none&#8221;</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="fistatree">
+<h2>fistaTree<a class="headerlink" href="#fistatree" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.fistaTree">
+<tt class="descclassname">spams.</tt><tt class="descname">fistaTree</tt><big>(</big><em>Y</em>, <em>X</em>, <em>W0</em>, <em>tree</em>, <em>return_optim_info=False</em>, <em>numThreads=-1</em>, <em>max_it=1000</em>, <em>L0=1.0</em>, <em>fixed_step=False</em>, <em>gamma=1.5</em>, <em>lambda1=1.0</em>, <em>delta=1.0</em>, <em>lambda2=0.0</em>, <em>lambda3=0.0</em>, <em>a=1.0</em>, <em>b=0.0</em>, <em>c=1.0</em>, <em>tol=9.9999999999999995e-07</em>, <em>it0=100</em>, <em>max_iter_backtracking=1000</em>, <em>compute_gram=False</em>, <em>lin_admm=False</em>, <em>admm=False</em>, <em>intercept=False</em>, <em>resetflow=False</em>, <em>regul=''</em>, <em>loss=''</em>, <em>verbose=False</em>, <em>pos=False</em>, <em>clever=False</em>, <em>log=False</em>, <em>ista=False</em>, <em>subgrad=False</em>, <em>logName=''</em>, <em>is_inner_weights=False</em>, <em>inner_weights=array(</em><span class="optional">[</span>, <em>0.</em><span class="optional">]</span>, <em>)</em>, <em>size_group=1</em>, <em>sqrt_step=True</em>, <em>transpose=False</em><big>)</big><a class="headerlink" href="#spams.fistaTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>fistaTree solves sparse regularized problems.</p>
+<blockquote>
+<p>X is a design matrix of size m x p
+X=[x^1,...,x^n]&#8217;, where the x_i&#8217;s are the rows of X
+Y=[y^1,...,y^n] is a matrix of size m x n
+It implements the algorithms FISTA, ISTA and subgradient descent for solving</p>
+<blockquote>
+min_W  loss(W) + lambda1 psi(W)</blockquote>
+<p>The function psi are those used by proximalTree (see documentation)
+for the loss functions, see the documentation of fistaFlat</p>
+<p>This function can also handle intercepts (last row of W is not regularized),
+and/or non-negativity constraints on W and sparse matrices X</p>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>Y</em> &#8211; double dense m x n matrix</li>
+<li><em>X</em> &#8211; double dense or sparse m x p matrix</li>
+<li><em>W0</em> &#8211; double dense p x n matrix or p x Nn matrix (for multi-logistic loss)
+initial guess</li>
+<li><em>tree</em> &#8211; named list (see documentation of proximalTree)</li>
+<li><em>return_optim_info</em> &#8211; if true the function will return a tuple of matrices.</li>
+<li><em>loss</em> &#8211; (choice of loss, see above)</li>
+<li><em>regul</em> &#8211; (choice of regularization, see function proximalFlat)</li>
+<li><em>lambda1</em> &#8211; (regularization parameter)</li>
+<li><em>lambda2</em> &#8211; (optional, regularization parameter, 0 by default)</li>
+<li><em>lambda3</em> &#8211; (optional, regularization parameter, 0 by default)</li>
+<li><em>verbose</em> &#8211; (optional, verbosity level, false by default)</li>
+<li><em>pos</em> &#8211; (optional, adds positivity constraints on the
+coefficients, false by default)</li>
+<li><em>transpose</em> &#8211; (optional, transpose the matrix in the regularization function)</li>
+<li><em>size_group</em> &#8211; (optional, for regularization functions assuming a group
+structure)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+<li><em>max_it</em> &#8211; (optional, maximum number of iterations, 100 by default)</li>
+<li><em>it0</em> &#8211; (optional, frequency for computing duality gap, every 10 iterations by default)</li>
+<li><em>tol</em> &#8211; (optional, tolerance for stopping criteration, which is a relative duality gap
+if it is available, or a relative change of parameters).</li>
+<li><em>gamma</em> &#8211; (optional, multiplier for increasing the parameter L in fista, 1.5 by default)</li>
+<li><em>L0</em> &#8211; (optional, initial parameter L in fista, 0.1 by default, should be small enough)</li>
+<li><em>fixed_step</em> &#8211; (deactive the line search for L in fista and use L0 instead)</li>
+<li><em>compute_gram</em> &#8211; (optional, pre-compute X^TX, false by default).</li>
+<li><em>intercept</em> &#8211; (optional, do not regularize last row of W, false by default).</li>
+<li><em>ista</em> &#8211; (optional, use ista instead of fista, false by default).</li>
+<li><em>subgrad</em> &#8211; (optional, if not ista, use subradient descent instead of fista, false by default).</li>
+<li><em>a</em> &#8211; </li>
+<li><em>b</em> &#8211; <p>(optional, if subgrad, the gradient step is a/(t+b)
+also similar options as proximalTree</p>
+<p>the function also implements the ADMM algorithm via an option admm=true. It is not documented
+and you need to look at the source code to use it.</p>
+</li>
+<li><em>delta</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>c</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>max_iter_backtracking</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>lin_admm</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>admm</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>resetflow</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>clever</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>log</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>logName</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>is_inner_weights</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>inner_weights</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>sqrt_step</em> &#8211; undocumented; modify at your own risks!</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>W</strong>: double dense p x n matrix or p x Nn matrix (for multi-logistic loss)</li>
+<li><strong>optim</strong>: optional, double dense 4 x n matrix.
+first row: values of the objective functions.
+third row: values of the relative duality gap (if available)
+fourth row: number of iterations</li>
+<li><strong>optim_info</strong>: vector of size 4, containing information of the optimization.
+W = spams.fistaTree(Y,X,W0,tree,return_optim_info = False,...)
+(W,optim_info) = spams.fistaTree(Y,X,W0,tree,return_optim_info = True,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2010 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Valid values for the regularization parameter (regul) are:
+&#8220;l0&#8221;, &#8220;l1&#8221;, &#8220;l2&#8221;, &#8220;linf&#8221;, &#8220;l2-not-squared&#8221;, &#8220;elastic-net&#8221;, &#8220;fused-lasso&#8221;,
+&#8220;group-lasso-l2&#8221;, &#8220;group-lasso-linf&#8221;, &#8220;sparse-group-lasso-l2&#8221;,
+&#8220;sparse-group-lasso-linf&#8221;, &#8220;l1l2&#8221;, &#8220;l1linf&#8221;, &#8220;l1l2+l1&#8221;, &#8220;l1linf+l1&#8221;,
+&#8220;tree-l0&#8221;, &#8220;tree-l2&#8221;, &#8220;tree-linf&#8221;, &#8220;graph&#8221;, &#8220;graph-ridge&#8221;, &#8220;graph-l2&#8221;,
+&#8220;multi-task-tree&#8221;, &#8220;multi-task-graph&#8221;, &#8220;l1linf-row-column&#8221;, &#8220;trace-norm&#8221;,
+&#8220;trace-norm-vec&#8221;, &#8220;rank&#8221;, &#8220;rank-vec&#8221;, &#8220;none&#8221;</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="fistagraph">
+<h2>fistaGraph<a class="headerlink" href="#fistagraph" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.fistaGraph">
+<tt class="descclassname">spams.</tt><tt class="descname">fistaGraph</tt><big>(</big><em>Y</em>, <em>X</em>, <em>W0</em>, <em>graph</em>, <em>return_optim_info=False</em>, <em>numThreads=-1</em>, <em>max_it=1000</em>, <em>L0=1.0</em>, <em>fixed_step=False</em>, <em>gamma=1.5</em>, <em>lambda1=1.0</em>, <em>delta=1.0</em>, <em>lambda2=0.0</em>, <em>lambda3=0.0</em>, <em>a=1.0</em>, <em>b=0.0</em>, <em>c=1.0</em>, <em>tol=9.9999999999999995e-07</em>, <em>it0=100</em>, <em>max_iter_backtracking=1000</em>, <em>compute_gram=False</em>, <em>lin_admm=False</em>, <em>admm=False</em>, <em>intercept=False</em>, <em>resetflow=False</em>, <em>regul=''</em>, <em>loss=''</em>, <em>verbose=False</em>, <em>pos=False</em>, <em>clever=False</em>, <em>log=False</em>, <em>ista=False</em>, <em>subgrad=False</em>, <em>logName=''</em>, <em>is_inner_weights=False</em>, <em>inner_weights=array(</em><span class="optional">[</span>, <em>0.</em><span class="optional">]</span>, <em>)</em>, <em>size_group=1</em>, <em>sqrt_step=True</em>, <em>transpose=False</em><big>)</big><a class="headerlink" href="#spams.fistaGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>fistaGraph solves sparse regularized problems.</p>
+<blockquote>
+<p>X is a design matrix of size m x p
+X=[x^1,...,x^n]&#8217;, where the x_i&#8217;s are the rows of X
+Y=[y^1,...,y^n] is a matrix of size m x n
+It implements the algorithms FISTA, ISTA and subgradient descent.</p>
+<p>It implements the algorithms FISTA, ISTA and subgradient descent for solving</p>
+<blockquote>
+min_W  loss(W) + lambda1 psi(W)</blockquote>
+<p>The function psi are those used by proximalGraph (see documentation)
+for the loss functions, see the documentation of fistaFlat</p>
+<p>This function can also handle intercepts (last row of W is not regularized),
+and/or non-negativity constraints on W.</p>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>Y</em> &#8211; double dense m x n matrix</li>
+<li><em>X</em> &#8211; double dense or sparse m x p matrix</li>
+<li><em>W0</em> &#8211; double dense p x n matrix or p x Nn matrix (for multi-logistic loss)
+initial guess</li>
+<li><em>graph</em> &#8211; struct (see documentation of proximalGraph)</li>
+<li><em>return_optim_info</em> &#8211; if true the function will return a tuple of matrices.</li>
+<li><em>loss</em> &#8211; (choice of loss, see above)</li>
+<li><em>regul</em> &#8211; (choice of regularization, see function proximalFlat)</li>
+<li><em>lambda1</em> &#8211; (regularization parameter)</li>
+<li><em>lambda2</em> &#8211; (optional, regularization parameter, 0 by default)</li>
+<li><em>lambda3</em> &#8211; (optional, regularization parameter, 0 by default)</li>
+<li><em>verbose</em> &#8211; (optional, verbosity level, false by default)</li>
+<li><em>pos</em> &#8211; (optional, adds positivity constraints on the
+coefficients, false by default)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+<li><em>max_it</em> &#8211; (optional, maximum number of iterations, 100 by default)</li>
+<li><em>it0</em> &#8211; (optional, frequency for computing duality gap, every 10 iterations by default)</li>
+<li><em>tol</em> &#8211; (optional, tolerance for stopping criteration, which is a relative duality gap
+if it is available, or a relative change of parameters).</li>
+<li><em>gamma</em> &#8211; (optional, multiplier for increasing the parameter L in fista, 1.5 by default)</li>
+<li><em>L0</em> &#8211; (optional, initial parameter L in fista, 0.1 by default, should be small enough)</li>
+<li><em>fixed_step</em> &#8211; (deactive the line search for L in fista and use L0 instead)</li>
+<li><em>compute_gram</em> &#8211; (optional, pre-compute X^TX, false by default).</li>
+<li><em>intercept</em> &#8211; (optional, do not regularize last row of W, false by default).</li>
+<li><em>ista</em> &#8211; (optional, use ista instead of fista, false by default).</li>
+<li><em>subgrad</em> &#8211; (optional, if not ista, use subradient descent instead of fista, false by default).</li>
+<li><em>a</em> &#8211; </li>
+<li><em>b</em> &#8211; <p>(optional, if subgrad, the gradient step is a/(t+b)
+also similar options as proximalTree</p>
+<p>the function also implements the ADMM algorithm via an option admm=true. It is not documented
+and you need to look at the source code to use it.</p>
+</li>
+<li><em>delta</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>c</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>max_iter_backtracking</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>lin_admm</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>admm</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>resetflow</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>clever</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>log</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>logName</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>is_inner_weights</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>inner_weights</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>sqrt_step</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>size_group</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>transpose</em> &#8211; undocumented; modify at your own risks!</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>W</strong>: double dense p x n matrix or p x Nn matrix (for multi-logistic loss)</li>
+<li><strong>optim</strong>: optional, double dense 4 x n matrix.
+first row: values of the objective functions.
+third row: values of the relative duality gap (if available)
+fourth row: number of iterations</li>
+<li><strong>optim_info</strong>: vector of size 4, containing information of the optimization.
+W = spams.fistaGraph(Y,X,W0,graph,return_optim_info = False,...)
+(W,optim_info) = spams.fistaGraph(Y,X,W0,graph,return_optim_info = True,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2010 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Valid values for the regularization parameter (regul) are:
+&#8220;l0&#8221;, &#8220;l1&#8221;, &#8220;l2&#8221;, &#8220;linf&#8221;, &#8220;l2-not-squared&#8221;, &#8220;elastic-net&#8221;, &#8220;fused-lasso&#8221;,
+&#8220;group-lasso-l2&#8221;, &#8220;group-lasso-linf&#8221;, &#8220;sparse-group-lasso-l2&#8221;,
+&#8220;sparse-group-lasso-linf&#8221;, &#8220;l1l2&#8221;, &#8220;l1linf&#8221;, &#8220;l1l2+l1&#8221;, &#8220;l1linf+l1&#8221;,
+&#8220;tree-l0&#8221;, &#8220;tree-l2&#8221;, &#8220;tree-linf&#8221;, &#8220;graph&#8221;, &#8220;graph-ridge&#8221;, &#8220;graph-l2&#8221;,
+&#8220;multi-task-tree&#8221;, &#8220;multi-task-graph&#8221;, &#8220;l1linf-row-column&#8221;, &#8220;trace-norm&#8221;,
+&#8220;trace-norm-vec&#8221;, &#8220;rank&#8221;, &#8220;rank-vec&#8221;, &#8220;none&#8221;</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="proximalflat">
+<h2>proximalFlat<a class="headerlink" href="#proximalflat" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.proximalFlat">
+<tt class="descclassname">spams.</tt><tt class="descname">proximalFlat</tt><big>(</big><em>U</em>, <em>return_val_loss=False</em>, <em>numThreads=-1</em>, <em>lambda1=1.0</em>, <em>lambda2=0.0</em>, <em>lambda3=0.0</em>, <em>intercept=False</em>, <em>resetflow=False</em>, <em>regul=''</em>, <em>verbose=False</em>, <em>pos=False</em>, <em>clever=True</em>, <em>size_group=1</em>, <em>groups=None</em>, <em>transpose=False</em><big>)</big><a class="headerlink" href="#spams.proximalFlat" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>proximalFlat computes proximal operators. Depending</dt>
+<dd><p class="first">on the value of regul, it computes</p>
+<p>Given an input matrix U=[u^1,ldots,u^n], it computes a matrix 
+V=[v^1,ldots,v^n] such that
+if one chooses a regularization functions on vectors, it computes
+for each column u of U, a column v of V solving
+if regul=&#8217;l0&#8217;</p>
+<blockquote>
+argmin 0.5||u-v||_2^2 + lambda1||v||_0</blockquote>
+<dl class="docutils">
+<dt>if regul=&#8217;l1&#8217;</dt>
+<dd>argmin 0.5||u-v||_2^2 + lambda1||v||_1</dd>
+<dt>if regul=&#8217;l2&#8217;</dt>
+<dd>argmin 0.5||u-v||_2^2 + 0.5lambda1||v||_2^2</dd>
+<dt>if regul=&#8217;elastic-net&#8217;</dt>
+<dd>argmin 0.5||u-v||_2^2 + lambda1||v||_1 + lambda1_2||v||_2^2</dd>
+<dt>if regul=&#8217;fused-lasso&#8217;</dt>
+<dd><dl class="first last docutils">
+<dt>argmin 0.5||u-v||_2^2 + lambda1 FL(v) + ...</dt>
+<dd>...  lambda1_2||v||_1 + lambda1_3||v||_2^2</dd>
+</dl>
+</dd>
+<dt>if regul=&#8217;linf&#8217;</dt>
+<dd>argmin 0.5||u-v||_2^2 + lambda1||v||_inf</dd>
+<dt>if regul=&#8217;l1-constraint&#8217;</dt>
+<dd>argmin 0.5||u-v||_2^2 s.t. ||v||_1 &lt;= lambda1</dd>
+<dt>if regul=&#8217;l2-not-squared&#8217;</dt>
+<dd>argmin 0.5||u-v||_2^2 + lambda1||v||_2</dd>
+<dt>if regul=&#8217;group-lasso-l2&#8217;  </dt>
+<dd>argmin 0.5||u-v||_2^2 + lambda1 sum_g ||v_g||_2 
+where the groups are either defined by groups or by size_group,</dd>
+<dt>if regul=&#8217;group-lasso-linf&#8217;</dt>
+<dd>argmin 0.5||u-v||_2^2 + lambda1 sum_g ||v_g||_inf</dd>
+<dt>if regul=&#8217;sparse-group-lasso-l2&#8217;  </dt>
+<dd>argmin 0.5||u-v||_2^2 + lambda1 sum_g ||v_g||_2 + lambda1_2 ||v||_1
+where the groups are either defined by groups or by size_group,</dd>
+<dt>if regul=&#8217;sparse-group-lasso-linf&#8217;</dt>
+<dd>argmin 0.5||u-v||_2^2 + lambda1 sum_g ||v_g||_inf + lambda1_2 ||v||_1</dd>
+<dt>if regul=&#8217;trace-norm-vec&#8217; </dt>
+<dd><blockquote class="first">
+argmin 0.5||u-v||_2^2 + lambda1 ||mat(v)||_*</blockquote>
+<p class="last">where mat(v) has size_group rows</p>
+</dd>
+</dl>
+<p>if one chooses a regularization function on matrices
+if regul=&#8217;l1l2&#8217;,  V=</p>
+<blockquote>
+argmin 0.5||U-V||_F^2 + lambda1||V||_{1/2}</blockquote>
+<dl class="docutils">
+<dt>if regul=&#8217;l1linf&#8217;,  V= </dt>
+<dd>argmin 0.5||U-V||_F^2 + lambda1||V||_{1/inf}</dd>
+<dt>if regul=&#8217;l1l2+l1&#8217;,  V= </dt>
+<dd>argmin 0.5||U-V||_F^2 + lambda1||V||_{1/2} + lambda1_2||V||_{1/1}</dd>
+<dt>if regul=&#8217;l1linf+l1&#8217;,  V= </dt>
+<dd>argmin 0.5||U-V||_F^2 + lambda1||V||_{1/inf} + lambda1_2||V||_{1/1}</dd>
+<dt>if regul=&#8217;l1linf+row-column&#8217;,  V= </dt>
+<dd>argmin 0.5||U-V||_F^2 + lambda1||V||_{1/inf} + lambda1_2||V&#8217;||_{1/inf}</dd>
+<dt>if regul=&#8217;trace-norm&#8217;,  V= </dt>
+<dd>argmin 0.5||U-V||_F^2 + lambda1||V||_*</dd>
+<dt>if regul=&#8217;rank&#8217;,  V= </dt>
+<dd>argmin 0.5||U-V||_F^2 + lambda1 rank(V)</dd>
+<dt>if regul=&#8217;none&#8217;,  V= </dt>
+<dd>argmin 0.5||U-V||_F^2</dd>
+</dl>
+<p class="last">for all these regularizations, it is possible to enforce non-negativity constraints
+with the option pos, and to prevent the last row of U to be regularized, with
+the option intercept</p>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>U</em> &#8211; double m x n matrix   (input signals)
+m is the signal size</li>
+<li><em>return_val_loss</em> &#8211; if true the function will return a tuple of matrices.</li>
+<li><em>lambda1</em> &#8211; (regularization parameter)</li>
+<li><em>regul</em> &#8211; (choice of regularization, see above)</li>
+<li><em>lambda2</em> &#8211; (optional, regularization parameter)</li>
+<li><em>lambda3</em> &#8211; (optional, regularization parameter)</li>
+<li><em>verbose</em> &#8211; (optional, verbosity level, false by default)</li>
+<li><em>intercept</em> &#8211; (optional, last row of U is not regularized,
+false by default)</li>
+<li><em>transpose</em> &#8211; (optional, transpose the matrix in the regularization function)</li>
+<li><em>size_group</em> &#8211; (optional, for regularization functions assuming a group
+structure). It is a scalar. When groups is not specified, it assumes
+that the groups are the sets of consecutive elements of size size_group</li>
+<li><em>groups</em> &#8211; (int32, optional, for regularization functions assuming a group
+structure. It is an int32 vector of size m containing the group indices of the
+variables (first group is 1).</li>
+<li><em>pos</em> &#8211; (optional, adds positivity constraints on the
+coefficients, false by default)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+<li><em>resetflow</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>clever</em> &#8211; undocumented; modify at your own risks!</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>V</strong>: double m x n matrix (output coefficients)</li>
+<li><strong>val_regularizer</strong>: double 1 x n vector (value of the regularization
+term at the optimum).</li>
+<li><strong>val_loss</strong>: vector of size U.shape[1]
+alpha = spams.proximalFlat(U,return_val_loss = False,...)
+(alpha,val_loss) = spams.proximalFlat(U,return_val_loss = True,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2010 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Valid values for the regularization parameter (regul) are:
+&#8220;l0&#8221;, &#8220;l1&#8221;, &#8220;l2&#8221;, &#8220;linf&#8221;, &#8220;l2-not-squared&#8221;, &#8220;elastic-net&#8221;, &#8220;fused-lasso&#8221;,
+&#8220;group-lasso-l2&#8221;, &#8220;group-lasso-linf&#8221;, &#8220;sparse-group-lasso-l2&#8221;,
+&#8220;sparse-group-lasso-linf&#8221;, &#8220;l1l2&#8221;, &#8220;l1linf&#8221;, &#8220;l1l2+l1&#8221;, &#8220;l1linf+l1&#8221;,
+&#8220;tree-l0&#8221;, &#8220;tree-l2&#8221;, &#8220;tree-linf&#8221;, &#8220;graph&#8221;, &#8220;graph-ridge&#8221;, &#8220;graph-l2&#8221;,
+&#8220;multi-task-tree&#8221;, &#8220;multi-task-graph&#8221;, &#8220;l1linf-row-column&#8221;, &#8220;trace-norm&#8221;,
+&#8220;trace-norm-vec&#8221;, &#8220;rank&#8221;, &#8220;rank-vec&#8221;, &#8220;none&#8221;</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="proximaltree">
+<h2>proximalTree<a class="headerlink" href="#proximaltree" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.proximalTree">
+<tt class="descclassname">spams.</tt><tt class="descname">proximalTree</tt><big>(</big><em>U</em>, <em>tree</em>, <em>return_val_loss=False</em>, <em>numThreads=-1</em>, <em>lambda1=1.0</em>, <em>lambda2=0.0</em>, <em>lambda3=0.0</em>, <em>intercept=False</em>, <em>resetflow=False</em>, <em>regul=''</em>, <em>verbose=False</em>, <em>pos=False</em>, <em>clever=True</em>, <em>size_group=1</em>, <em>transpose=False</em><big>)</big><a class="headerlink" href="#spams.proximalTree" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>proximalTree computes a proximal operator. Depending</dt>
+<dd><p class="first">on the value of regul, it computes</p>
+<p>Given an input matrix U=[u^1,ldots,u^n], and a tree-structured set of groups T,
+it returns a matrix V=[v^1,ldots,v^n]:</p>
+<p>when the regularization function is for vectors,
+for every column u of U, it compute a column v of V solving
+if regul=&#8217;tree-l0&#8217;</p>
+<blockquote>
+argmin 0.5||u-v||_2^2 + lambda1 sum_{g in T} delta^g(v)</blockquote>
+<dl class="docutils">
+<dt>if regul=&#8217;tree-l2&#8217;</dt>
+<dd><dl class="first last docutils">
+<dt>for all i, v^i = </dt>
+<dd>argmin 0.5||u-v||_2^2 + lambda1sum_{g in T} eta_g||v_g||_2</dd>
+</dl>
+</dd>
+<dt>if regul=&#8217;tree-linf&#8217;</dt>
+<dd><dl class="first last docutils">
+<dt>for all i, v^i = </dt>
+<dd>argmin 0.5||u-v||_2^2 + lambda1sum_{g in T} eta_g||v_g||_inf</dd>
+</dl>
+</dd>
+</dl>
+<p>when the regularization function is for matrices:
+if regul=&#8217;multi-task-tree&#8217;</p>
+<blockquote>
+<dl class="docutils">
+<dt>V=argmin 0.5||U-V||_F^2 + lambda1 sum_{i=1}^nsum_{g in T} eta_g||v^i_g||_inf + ...</dt>
+<dd>lambda1_2 sum_{g in T} eta_g max_{j in g}||V_j||_{inf}</dd>
+</dl>
+</blockquote>
+<p>it can also be used with any non-tree-structured regularization addressed by proximalFlat</p>
+<p class="last">for all these regularizations, it is possible to enforce non-negativity constraints
+with the option pos, and to prevent the last row of U to be regularized, with
+the option intercept</p>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>U</em> &#8211; double m x n matrix   (input signals)
+m is the signal size</li>
+<li><em>tree</em> &#8211; <p>named list 
+with four fields, eta_g, groups, own_variables and N_own_variables.</p>
+<p>The tree structure requires a particular organization of groups and variables
+* Let us denote by N = <a href="#id1"><span class="problematic" id="id2">|T|</span></a>, the number of groups.
+the groups should be ordered T={g1,g2,ldots,gN} such that if gi is included
+in gj, then j &lt;= i. g1 should be the group at the root of the tree 
+and contains every variable.
+* Every group is a set of  contiguous indices for instance 
+gi={3,4,5} or gi={4,5,6,7} or gi={4}, but not {3,5};
+* We define root(gi) as the indices of the variables that are in gi,
+but not in its descendants. For instance for
+T={ g1={1,2,3,4},g2={2,3},g3={4} }, then, root(g1)={1}, 
+root(g2)={2,3}, root(g3)={4},
+We assume that for all i, root(gi) is a set of contigous variables
+* We assume that the smallest of root(gi) is also the smallest index of gi.</p>
+<p>For instance, 
+T={ g1={1,2,3,4},g2={2,3},g3={4} }, is a valid set of groups.
+but we can not have
+T={ g1={1,2,3,4},g2={1,2},g3={3} }, since root(g1)={4} and 4 is not the
+smallest element in g1.</p>
+<p>We do not lose generality with these assumptions since they can be fullfilled for any
+tree-structured set of groups after a permutation of variables and a correct ordering of the
+groups.
+see more examples in test_ProximalTree.m of valid tree-structured sets of groups.</p>
+<p>The first fields sets the weights for every group
+tree[&#8216;eta_g&#8217;]            double N vector</p>
+<p>The next field sets inclusion relations between groups 
+(but not between groups and variables):
+tree[&#8216;groups&#8217;]           sparse (double or boolean) N x N matrix  
+the (i,j) entry is non-zero if and only if i is different than j and 
+gi is included in gj.
+the first column corresponds to the group at the root of the tree.</p>
+<p>The next field define the smallest index of each group gi, 
+which is also the smallest index of root(gi)
+tree[&#8216;own_variables&#8217;]    int32 N vector</p>
+<p>The next field define for each group gi, the size of root(gi)
+tree[&#8216;N_own_variables&#8217;]  int32 N vector</p>
+<p>examples are given in test_ProximalTree.m</p>
+</li>
+<li><em>return_val_loss</em> &#8211; if true the function will return a tuple of matrices.</li>
+<li><em>lambda1</em> &#8211; (regularization parameter)</li>
+<li><em>regul</em> &#8211; (choice of regularization, see above)</li>
+<li><em>lambda2</em> &#8211; (optional, regularization parameter)</li>
+<li><em>lambda3</em> &#8211; (optional, regularization parameter)</li>
+<li><em>verbose</em> &#8211; (optional, verbosity level, false by default)</li>
+<li><em>intercept</em> &#8211; (optional, last row of U is not regularized,
+false by default)</li>
+<li><em>pos</em> &#8211; (optional, adds positivity constraints on the
+coefficients, false by default)</li>
+<li><em>transpose</em> &#8211; (optional, transpose the matrix in the regularization function)</li>
+<li><em>size_group</em> &#8211; (optional, for regularization functions assuming a group
+structure). It is a scalar. When groups is not specified, it assumes
+that the groups are the sets of consecutive elements of size size_group</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+<li><em>resetflow</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>clever</em> &#8211; undocumented; modify at your own risks!</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>V</strong>: double m x n matrix (output coefficients)</li>
+<li><strong>val_regularizer</strong>: double 1 x n vector (value of the regularization
+term at the optimum).</li>
+<li><strong>val_loss</strong>: vector of size U.shape[1]
+alpha = spams.proximalTree(U,tree,return_val_loss = False,...)
+(alpha,val_loss) = spams.proximalTree(U,tree,return_val_loss = True,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2010 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Valid values for the regularization parameter (regul) are:
+&#8220;l0&#8221;, &#8220;l1&#8221;, &#8220;l2&#8221;, &#8220;linf&#8221;, &#8220;l2-not-squared&#8221;, &#8220;elastic-net&#8221;, &#8220;fused-lasso&#8221;,
+&#8220;group-lasso-l2&#8221;, &#8220;group-lasso-linf&#8221;, &#8220;sparse-group-lasso-l2&#8221;,
+&#8220;sparse-group-lasso-linf&#8221;, &#8220;l1l2&#8221;, &#8220;l1linf&#8221;, &#8220;l1l2+l1&#8221;, &#8220;l1linf+l1&#8221;,
+&#8220;tree-l0&#8221;, &#8220;tree-l2&#8221;, &#8220;tree-linf&#8221;, &#8220;graph&#8221;, &#8220;graph-ridge&#8221;, &#8220;graph-l2&#8221;,
+&#8220;multi-task-tree&#8221;, &#8220;multi-task-graph&#8221;, &#8220;l1linf-row-column&#8221;, &#8220;trace-norm&#8221;,
+&#8220;trace-norm-vec&#8221;, &#8220;rank&#8221;, &#8220;rank-vec&#8221;, &#8220;none&#8221;</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="proximalgraph">
+<h2>proximalGraph<a class="headerlink" href="#proximalgraph" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.proximalGraph">
+<tt class="descclassname">spams.</tt><tt class="descname">proximalGraph</tt><big>(</big><em>U</em>, <em>graph</em>, <em>return_val_loss=False</em>, <em>numThreads=-1</em>, <em>lambda1=1.0</em>, <em>lambda2=0.0</em>, <em>lambda3=0.0</em>, <em>intercept=False</em>, <em>resetflow=False</em>, <em>regul=''</em>, <em>verbose=False</em>, <em>pos=False</em>, <em>clever=True</em>, <em>eval=None</em>, <em>size_group=1</em>, <em>transpose=False</em><big>)</big><a class="headerlink" href="#spams.proximalGraph" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>proximalGraph computes a proximal operator. Depending</dt>
+<dd><p class="first">on the value of regul, it computes</p>
+<p>Given an input matrix U=[u^1,ldots,u^n], and a set of groups G,
+it computes a matrix V=[v^1,ldots,v^n] such that</p>
+<p>if regul=&#8217;graph&#8217;
+for every column u of U, it computes a column v of V solving</p>
+<blockquote>
+argmin 0.5||u-v||_2^2 + lambda1sum_{g in G} eta_g||v_g||_inf</blockquote>
+<p>if regul=&#8217;graph+ridge&#8217;
+for every column u of U, it computes a column v of V solving</p>
+<blockquote>
+argmin 0.5||u-v||_2^2 + lambda1sum_{g in G} eta_g||v_g||_inf + lambda1_2||v||_2^2</blockquote>
+<dl class="docutils">
+<dt>if regul=&#8217;multi-task-graph&#8217;</dt>
+<dd><dl class="first last docutils">
+<dt>V=argmin 0.5||U-V||_F^2 + lambda1 sum_{i=1}^nsum_{g in G} eta_g||v^i_g||_inf + ...</dt>
+<dd>lambda1_2 sum_{g in G} eta_g max_{j in g}||V_j||_{inf}</dd>
+</dl>
+</dd>
+</dl>
+<p>it can also be used with any regularization addressed by proximalFlat</p>
+<p class="last">for all these regularizations, it is possible to enforce non-negativity constraints
+with the option pos, and to prevent the last row of U to be regularized, with
+the option intercept</p>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>U</em> &#8211; double p x n matrix   (input signals)
+m is the signal size</li>
+<li><em>graph</em> &#8211; <p>struct
+with three fields, eta_g, groups, and groups_var</p>
+<p>The first fields sets the weights for every group
+graph.eta_g            double N vector</p>
+<p>The next field sets inclusion relations between groups 
+(but not between groups and variables):
+graph.groups           sparse (double or boolean) N x N matrix  
+the (i,j) entry is non-zero if and only if i is different than j and 
+gi is included in gj.</p>
+<p>The next field sets inclusion relations between groups and variables
+graph.groups_var       sparse (double or boolean) p x N matrix
+the (i,j) entry is non-zero if and only if the variable i is included 
+in gj, but not in any children of gj.</p>
+<p>examples are given in test_ProximalGraph.m</p>
+</li>
+<li><em>return_val_loss</em> &#8211; if true the function will return a tuple of matrices.</li>
+<li><em>lambda1</em> &#8211; (regularization parameter)</li>
+<li><em>regul</em> &#8211; (choice of regularization, see above)</li>
+<li><em>lambda2</em> &#8211; (optional, regularization parameter)</li>
+<li><em>lambda3</em> &#8211; (optional, regularization parameter)</li>
+<li><em>verbose</em> &#8211; (optional, verbosity level, false by default)</li>
+<li><em>intercept</em> &#8211; (optional, last row of U is not regularized,
+false by default)</li>
+<li><em>pos</em> &#8211; (optional, adds positivity constraints on the
+coefficients, false by default)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+<li><em>resetflow</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>clever</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>size_group</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>transpose</em> &#8211; undocumented; modify at your own risks!</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>V</strong>: double p x n matrix (output coefficients)</li>
+<li><strong>val_regularizer</strong>: double 1 x n vector (value of the regularization
+term at the optimum).</li>
+<li><strong>val_loss</strong>: vector of size U.shape[1]
+alpha = spams.proximalGraph(U,graph,return_val_loss = False,...)
+(alpha,val_loss) = spams.proximalGraph(U,graph,return_val_loss = True,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2010 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Valid values for the regularization parameter (regul) are:
+&#8220;l0&#8221;, &#8220;l1&#8221;, &#8220;l2&#8221;, &#8220;linf&#8221;, &#8220;l2-not-squared&#8221;, &#8220;elastic-net&#8221;, &#8220;fused-lasso&#8221;,
+&#8220;group-lasso-l2&#8221;, &#8220;group-lasso-linf&#8221;, &#8220;sparse-group-lasso-l2&#8221;,
+&#8220;sparse-group-lasso-linf&#8221;, &#8220;l1l2&#8221;, &#8220;l1linf&#8221;, &#8220;l1l2+l1&#8221;, &#8220;l1linf+l1&#8221;,
+&#8220;tree-l0&#8221;, &#8220;tree-l2&#8221;, &#8220;tree-linf&#8221;, &#8220;graph&#8221;, &#8220;graph-ridge&#8221;, &#8220;graph-l2&#8221;,
+&#8220;multi-task-tree&#8221;, &#8220;multi-task-graph&#8221;, &#8220;l1linf-row-column&#8221;, &#8220;trace-norm&#8221;,
+&#8220;trace-norm-vec&#8221;, &#8220;rank&#8221;, &#8220;rank-vec&#8221;, &#8220;none&#8221;</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="traindl">
+<h2>trainDL<a class="headerlink" href="#traindl" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.trainDL">
+<tt class="descclassname">spams.</tt><tt class="descname">trainDL</tt><big>(</big><em>X</em>, <em>return_model=False</em>, <em>model=None</em>, <em>D=None</em>, <em>numThreads=-1</em>, <em>batchsize=-1</em>, <em>K=-1</em>, <em>lambda1=None</em>, <em>lambda2=1.0000000000000001e-09</em>, <em>iter=-1</em>, <em>t0=1.0000000000000001e-05</em>, <em>mode=2</em>, <em>posAlpha=False</em>, <em>posD=False</em>, <em>expand=False</em>, <em>modeD=0</em>, <em>whiten=False</em>, <em>clean=True</em>, <em>verbose=True</em>, <em>gamma1=0.0</em>, <em>gamma2=0.0</em>, <em>rho=1.0</em>, <em>iter_updateD=None</em>, <em>stochastic_deprecated=False</em>, <em>modeParam=0</em>, <em>batch=False</em>, <em>log_deprecated=False</em>, <em>logName=''</em><big>)</big><a class="headerlink" href="#spams.trainDL" title="Permalink to this definition">¶</a></dt>
+<dd><p>trainDL is an efficient implementation of the
+dictionary learning technique presented in</p>
+<blockquote>
+<p>&#8220;Online Learning for Matrix Factorization and Sparse Coding&#8221;
+by Julien Mairal, Francis Bach, Jean Ponce and Guillermo Sapiro
+arXiv:0908.0050</p>
+<p>&#8220;Online Dictionary Learning for Sparse Coding&#8221;      
+by Julien Mairal, Francis Bach, Jean Ponce and Guillermo Sapiro
+ICML 2009.</p>
+<p>Note that if you use mode=1 or 2, if the training set has a
+reasonable size and you have enough memory on your computer, you 
+should use trainDL_Memory instead.</p>
+<dl class="docutils">
+<dt>It addresses the dictionary learning problems</dt>
+<dd><ol class="first last arabic simple">
+<li>if mode=0</li>
+</ol>
+</dd>
+<dt>min_{D in C} (1/n) sum_{i=1}^n (1/2)||x_i-Dalpha_i||_2^2  s.t. ...</dt>
+<dd><blockquote class="first">
+||alpha_i||_1 &lt;= lambda1</blockquote>
+<ol class="last arabic simple" start="2">
+<li>if mode=1</li>
+</ol>
+</dd>
+<dt>min_{D in C} (1/n) sum_{i=1}^n  ||alpha_i||_1  s.t.  ...</dt>
+<dd><blockquote class="first">
+||x_i-Dalpha_i||_2^2 &lt;= lambda1</blockquote>
+<ol class="last arabic simple" start="3">
+<li>if mode=2</li>
+</ol>
+</dd>
+<dt>min_{D in C} (1/n) sum_{i=1}^n (1/2)||x_i-Dalpha_i||_2^2 + ... </dt>
+<dd><blockquote class="first">
+lambda1||alpha_i||_1 + lambda1_2||alpha_i||_2^2</blockquote>
+<ol class="last arabic simple" start="4">
+<li>if mode=3, the sparse coding is done with OMP</li>
+</ol>
+</dd>
+<dt>min_{D in C} (1/n) sum_{i=1}^n (1/2)||x_i-Dalpha_i||_2^2  s.t. ... </dt>
+<dd><blockquote class="first">
+||alpha_i||_0 &lt;= lambda1</blockquote>
+<ol class="last arabic simple" start="5">
+<li>if mode=4, the sparse coding is done with OMP</li>
+</ol>
+</dd>
+<dt>min_{D in C} (1/n) sum_{i=1}^n  ||alpha_i||_0  s.t.  ...</dt>
+<dd><blockquote class="first">
+||x_i-Dalpha_i||_2^2 &lt;= lambda1</blockquote>
+<ol class="last arabic simple" start="6">
+<li>if mode=5, the sparse coding is done with OMP</li>
+</ol>
+</dd>
+</dl>
+<p>min_{D in C} (1/n) sum_{i=1}^n 0.5||x_i-Dalpha_i||_2^2 +lambda1||alpha_i||_0</p>
+<dl class="docutils">
+<dt>C is a convex set verifying</dt>
+<dd><ol class="first last arabic">
+<li><p class="first">if modeD=0
+C={  D in Real^{m x p}  s.t.  forall j,  ||d_j||_2^2 &lt;= 1 }</p>
+</li>
+<li><p class="first">if modeD=1
+C={  D in Real^{m x p}  s.t.  forall j,  ||d_j||_2^2 + ...</p>
+<blockquote>
+<p>gamma1||d_j||_1 &lt;= 1 }</p>
+</blockquote>
+</li>
+<li><p class="first">if modeD=2
+C={  D in Real^{m x p}  s.t.  forall j,  ||d_j||_2^2 + ...</p>
+<blockquote>
+<p>gamma1||d_j||_1 + gamma2 FL(d_j) &lt;= 1 }</p>
+</blockquote>
+</li>
+<li><p class="first">if modeD=3
+C={  D in Real^{m x p}  s.t.  forall j,  (1-gamma1)||d_j||_2^2 + ...</p>
+<blockquote>
+<p>gamma1||d_j||_1 &lt;= 1 }</p>
+</blockquote>
+</li>
+</ol>
+</dd>
+</dl>
+<p>Potentially, n can be very large with this algorithm.</p>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix   (input signals)
+m is the signal size
+n is the number of signals to decompose</li>
+<li><em>return_model</em> &#8211; if true the function will return the model
+as a named list (&#8216;A&#8217; = A, &#8216;B&#8217; = B, &#8216;iter&#8217; = n)</li>
+<li><em>model</em> &#8211; None or model (as A,B,iter) to use as initialisation</li>
+<li><em>D</em> &#8211; (optional) double m x p matrix   (dictionary)
+p is the number of elements in the dictionary
+When D is not provided, the dictionary is initialized 
+with random elements from the training set.</li>
+<li><em>K</em> &#8211; (size of the dictionary, optional is D is provided)</li>
+<li><em>lambda1</em> &#8211; (parameter)</li>
+<li><em>lambda2</em> &#8211; (optional, by default 0)</li>
+<li><em>iter</em> &#8211; (number of iterations).  If a negative number is 
+provided it will perform the computation during the
+corresponding number of seconds. For instance iter=-5
+learns the dictionary during 5 seconds.</li>
+<li><em>mode</em> &#8211; (optional, see above, by default 2)</li>
+<li><em>posAlpha</em> &#8211; (optional, adds positivity constraints on the
+coefficients, false by default, not compatible with 
+mode =3,4)</li>
+<li><em>modeD</em> &#8211; (optional, see above, by default 0)</li>
+<li><em>posD</em> &#8211; (optional, adds positivity constraints on the 
+dictionary, false by default, not compatible with 
+modeD=2)</li>
+<li><em>gamma1</em> &#8211; (optional parameter for modeD &gt;= 1)</li>
+<li><em>gamma2</em> &#8211; (optional parameter for modeD = 2)</li>
+<li><em>batchsize</em> &#8211; (optional, size of the minibatch, by default 
+512)</li>
+<li><em>iter_updateD</em> &#8211; (optional, number of BCD iterations for the dictionary
+update step, by default 1)</li>
+<li><em>modeParam</em> &#8211; (optimization mode).
+1) if modeParam=0, the optimization uses the 
+parameter free strategy of the ICML paper
+2) if modeParam=1, the optimization uses the 
+parameters rho as in arXiv:0908.0050
+3) if modeParam=2, the optimization uses exponential 
+decay weights with updates of the form 
+A_{t} &lt;- rho A_{t-1} + alpha_t alpha_t^T</li>
+<li><em>rho</em> &#8211; (optional) tuning parameter (see paper arXiv:0908.0050)</li>
+<li><em>t0</em> &#8211; (optional) tuning parameter (see paper arXiv:0908.0050)</li>
+<li><em>clean</em> &#8211; (optional, true by default. prunes 
+automatically the dictionary from unused elements).</li>
+<li><em>verbose</em> &#8211; (optional, true by default, increase verbosity)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+<li><em>expand</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>whiten</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>stochastic_deprecated</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>batch</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>log_deprecated</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>logName</em> &#8211; undocumented; modify at your own risks!</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>D</strong>: double m x p matrix   (dictionary)</li>
+<li><strong>model</strong>: the model as A B iter
+D = spams.trainDL(X,return_model = False,...)
+(D,model) = spams.trainDL(X,return_model = True,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function admits a few experimental usages, which have not
+been extensively tested:
+- single precision setting</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="traindl-memory">
+<h2>trainDL_Memory<a class="headerlink" href="#traindl-memory" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.trainDL_Memory">
+<tt class="descclassname">spams.</tt><tt class="descname">trainDL_Memory</tt><big>(</big><em>X</em>, <em>D=None</em>, <em>numThreads=-1</em>, <em>batchsize=-1</em>, <em>K=-1</em>, <em>lambda1=None</em>, <em>iter=-1</em>, <em>t0=1.0000000000000001e-05</em>, <em>mode=2</em>, <em>posD=False</em>, <em>expand=False</em>, <em>modeD=0</em>, <em>whiten=False</em>, <em>clean=True</em>, <em>gamma1=0.0</em>, <em>gamma2=0.0</em>, <em>rho=1.0</em>, <em>iter_updateD=1</em>, <em>stochastic_deprecated=False</em>, <em>modeParam=0</em>, <em>batch=False</em>, <em>log_deprecated=False</em>, <em>logName=''</em><big>)</big><a class="headerlink" href="#spams.trainDL_Memory" title="Permalink to this definition">¶</a></dt>
+<dd><p>trainDL_Memory is an efficient but memory consuming 
+variant of the dictionary learning technique presented in</p>
+<blockquote>
+<p>&#8220;Online Learning for Matrix Factorization and Sparse Coding&#8221;
+by Julien Mairal, Francis Bach, Jean Ponce and Guillermo Sapiro
+arXiv:0908.0050</p>
+<p>&#8220;Online Dictionary Learning for Sparse Coding&#8221;      
+by Julien Mairal, Francis Bach, Jean Ponce and Guillermo Sapiro
+ICML 2009.</p>
+<dl class="docutils">
+<dt>Contrary to the approaches above, the algorithm here </dt>
+<dd>does require to store all the coefficients from all the training
+signals. For this reason this variant can not be used with large
+training sets, but is more efficient than the regular online
+approach for training sets of reasonable size.</dd>
+<dt>It addresses the dictionary learning problems</dt>
+<dd><ol class="first last arabic simple">
+<li>if mode=1</li>
+</ol>
+</dd>
+<dt>min_{D in C} (1/n) sum_{i=1}^n  ||alpha_i||_1  s.t.  ...</dt>
+<dd><blockquote class="first">
+||x_i-Dalpha_i||_2^2 &lt;= lambda1</blockquote>
+<ol class="last arabic simple" start="2">
+<li>if mode=2</li>
+</ol>
+</dd>
+<dt>min_{D in C} (1/n) sum_{i=1}^n (1/2)||x_i-Dalpha_i||_2^2 + ... </dt>
+<dd>lambda1||alpha_i||_1</dd>
+<dt>C is a convex set verifying</dt>
+<dd><ol class="first arabic simple">
+<li>if modeD=0
+C={  D in Real^{m x p}  s.t.  forall j,  ||d_j||_2^2 &lt;= 1 }</li>
+</ol>
+<ol class="arabic">
+<li><p class="first">if modeD=1
+C={  D in Real^{m x p}  s.t.  forall j,  ||d_j||_2^2 + ...</p>
+<blockquote>
+<p>gamma1||d_j||_1 &lt;= 1 }</p>
+</blockquote>
+</li>
+</ol>
+<ol class="last arabic">
+<li><p class="first">if modeD=2
+C={  D in Real^{m x p}  s.t.  forall j,  ||d_j||_2^2 + ...</p>
+<blockquote>
+<p>gamma1||d_j||_1 + gamma2 FL(d_j) &lt;= 1 }</p>
+</blockquote>
+</li>
+</ol>
+</dd>
+</dl>
+<p>Potentially, n can be very large with this algorithm.</p>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix   (input signals)
+m is the signal size
+n is the number of signals to decompose</li>
+<li><em>D</em> &#8211; (optional) double m x p matrix   (dictionary)
+p is the number of elements in the dictionary
+When D is not provided, the dictionary is initialized 
+with random elements from the training set.</li>
+<li><em>K</em> &#8211; (size of the dictionary, optional is D is provided)</li>
+<li><em>lambda1</em> &#8211; (parameter)</li>
+<li><em>iter</em> &#8211; (number of iterations).  If a negative number is 
+provided it will perform the computation during the
+corresponding number of seconds. For instance iter=-5
+learns the dictionary during 5 seconds.</li>
+<li><em>mode</em> &#8211; (optional, see above, by default 2)</li>
+<li><em>modeD</em> &#8211; (optional, see above, by default 0)</li>
+<li><em>posD</em> &#8211; (optional, adds positivity constraints on the 
+dictionary, false by default, not compatible with 
+modeD=2)</li>
+<li><em>gamma1</em> &#8211; (optional parameter for modeD &gt;= 1)</li>
+<li><em>gamma2</em> &#8211; (optional parameter for modeD = 2)</li>
+<li><em>batchsize</em> &#8211; (optional, size of the minibatch, by default 
+512)</li>
+<li><em>iter_updateD</em> &#8211; (optional, number of BCD iterations for the dictionary 
+update step, by default 1)</li>
+<li><em>modeParam</em> &#8211; (optimization mode).
+1) if modeParam=0, the optimization uses the 
+parameter free strategy of the ICML paper
+2) if modeParam=1, the optimization uses the 
+parameters rho as in arXiv:0908.0050
+3) if modeParam=2, the optimization uses exponential 
+decay weights with updates of the form 
+A_{t} &lt;- rho A_{t-1} + alpha_t alpha_t^T</li>
+<li><em>rho</em> &#8211; (optional) tuning parameter (see paper arXiv:0908.0050)</li>
+<li><em>t0</em> &#8211; (optional) tuning parameter (see paper arXiv:0908.0050)</li>
+<li><em>clean</em> &#8211; (optional, true by default. prunes 
+automatically the dictionary from unused elements).</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+<li><em>expand</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>whiten</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>stochastic_deprecated</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>batch</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>log_deprecated</em> &#8211; undocumented; modify at your own risks!</li>
+<li><em>logName</em> &#8211; undocumented; modify at your own risks!</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>D</strong>: double m x p matrix   (dictionary)</li>
+<li><strong>model</strong>: the model as A B iter
+D = spams.trainDL_Memory(X,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this function admits a few experimental usages, which have not
+been extensively tested:
+- single precision setting (even though the output alpha is double 
+precision)</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="nmf">
+<h2>nmf<a class="headerlink" href="#nmf" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.nmf">
+<tt class="descclassname">spams.</tt><tt class="descname">nmf</tt><big>(</big><em>X</em>, <em>return_lasso=False</em>, <em>model=None</em>, <em>numThreads=-1</em>, <em>batchsize=-1</em>, <em>K=-1</em>, <em>iter=-1</em>, <em>t0=1.0000000000000001e-05</em>, <em>clean=True</em>, <em>rho=1.0</em>, <em>modeParam=0</em>, <em>batch=False</em><big>)</big><a class="headerlink" href="#spams.nmf" title="Permalink to this definition">¶</a></dt>
+<dd><p>trainDL is an efficient implementation of the
+non-negative matrix factorization technique presented in</p>
+<blockquote>
+<p>&#8220;Online Learning for Matrix Factorization and Sparse Coding&#8221;
+by Julien Mairal, Francis Bach, Jean Ponce and Guillermo Sapiro
+arXiv:0908.0050</p>
+<p>&#8220;Online Dictionary Learning for Sparse Coding&#8221;      
+by Julien Mairal, Francis Bach, Jean Ponce and Guillermo Sapiro
+ICML 2009.</p>
+<p>Potentially, n can be very large with this algorithm.</p>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix   (input signals)
+m is the signal size
+n is the number of signals to decompose</li>
+<li><em>return_lasso</em> &#8211; if true the function will return a tuple of matrices.</li>
+<li><em>K</em> &#8211; (number of required factors)</li>
+<li><em>iter</em> &#8211; (number of iterations).  If a negative number 
+is provided it will perform the computation during the
+corresponding number of seconds. For instance iter=-5
+learns the dictionary during 5 seconds.</li>
+<li><em>batchsize</em> &#8211; (optional, size of the minibatch, by default 
+512)</li>
+<li><em>modeParam</em> &#8211; (optimization mode).
+1) if modeParam=0, the optimization uses the 
+parameter free strategy of the ICML paper
+2) if modeParam=1, the optimization uses the 
+parameters rho as in arXiv:0908.0050
+3) if modeParam=2, the optimization uses exponential 
+decay weights with updates of the form  
+A_{t} &lt;- rho A_{t-1} + alpha_t alpha_t^T</li>
+<li><em>rho</em> &#8211; (optional) tuning parameter (see paper 
+arXiv:0908.0050)</li>
+<li><em>t0</em> &#8211; (optional) tuning parameter (see paper 
+arXiv:0908.0050)</li>
+<li><em>clean</em> &#8211; (optional, true by default. prunes automatically 
+the dictionary from unused elements).</li>
+<li><em>batch</em> &#8211; (optional, false by default, use batch learning 
+instead of online learning)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+<li><em>model</em> &#8211; struct (optional) learned model for &#8220;retraining&#8221; the data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>U</strong>: double m x p matrix</li>
+<li><strong>V</strong>: double p x n matrix   (optional)</li>
+<li><strong>model</strong>: struct (optional) learned model to be used for 
+&#8220;retraining&#8221; the data.
+U = spams.nmf(X,return_lasso = False,...)
+(U,V) = spams.nmf(X,return_lasso = True,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="nnsc">
+<h2>nnsc<a class="headerlink" href="#nnsc" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spams.nnsc">
+<tt class="descclassname">spams.</tt><tt class="descname">nnsc</tt><big>(</big><em>X</em>, <em>return_lasso=False</em>, <em>model=None</em>, <em>lambda1=None</em>, <em>numThreads=-1</em>, <em>batchsize=-1</em>, <em>K=-1</em>, <em>iter=-1</em>, <em>t0=1.0000000000000001e-05</em>, <em>clean=True</em>, <em>rho=1.0</em>, <em>modeParam=0</em>, <em>batch=False</em><big>)</big><a class="headerlink" href="#spams.nnsc" title="Permalink to this definition">¶</a></dt>
+<dd><p>trainDL is an efficient implementation of the
+non-negative sparse coding technique presented in</p>
+<blockquote>
+<p>&#8220;Online Learning for Matrix Factorization and Sparse Coding&#8221;
+by Julien Mairal, Francis Bach, Jean Ponce and Guillermo Sapiro
+arXiv:0908.0050</p>
+<p>&#8220;Online Dictionary Learning for Sparse Coding&#8221;      
+by Julien Mairal, Francis Bach, Jean Ponce and Guillermo Sapiro
+ICML 2009.</p>
+<p>Potentially, n can be very large with this algorithm.</p>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>X</em> &#8211; double m x n matrix   (input signals)
+m is the signal size
+n is the number of signals to decompose</li>
+<li><em>return_lasso</em> &#8211; if true the function will return a tuple of matrices.</li>
+<li><em>K</em> &#8211; (number of required factors)</li>
+<li><em>lambda1</em> &#8211; (parameter)</li>
+<li><em>iter</em> &#8211; (number of iterations).  If a negative number 
+is provided it will perform the computation during the
+corresponding number of seconds. For instance iter=-5
+learns the dictionary during 5 seconds.</li>
+<li><em>batchsize</em> &#8211; (optional, size of the minibatch, by default 
+512)</li>
+<li><em>modeParam</em> &#8211; (optimization mode).
+1) if modeParam=0, the optimization uses the 
+parameter free strategy of the ICML paper
+2) if modeParam=1, the optimization uses the 
+parameters rho as in arXiv:0908.0050
+3) if modeParam=2, the optimization uses exponential 
+decay weights with updates of the form 
+A_{t} &lt;- rho A_{t-1} + alpha_t alpha_t^T</li>
+<li><em>rho</em> &#8211; (optional) tuning parameter (see paper
+arXiv:0908.0050)</li>
+<li><em>t0</em> &#8211; (optional) tuning parameter (see paper 
+arXiv:0908.0050)</li>
+<li><em>clean</em> &#8211; (optional, true by default. prunes automatically 
+the dictionary from unused elements).</li>
+<li><em>batch</em> &#8211; (optional, false by default, use batch learning 
+instead of online learning)</li>
+<li><em>numThreads</em> &#8211; (optional, number of threads for exploiting
+multi-core / multi-cpus. By default, it takes the value -1,
+which automatically selects all the available CPUs/cores).</li>
+<li><em>model</em> &#8211; struct (optional) learned model for &#8220;retraining&#8221; the data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><ul class="first simple">
+<li><strong>U</strong>: double m x p matrix</li>
+<li><strong>V</strong>: double p x n matrix   (optional)</li>
+<li><strong>model</strong>: struct (optional) learned model to be used for 
+&#8220;retraining&#8221; the data.
+U = spams.nnsc(X,return_lasso = False,...)
+(U,V) = spams.nnsc(X,return_lasso = True,...)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Authors:</th><td class="field-body"><ul class="first last simple">
+<li>Julien MAIRAL, 2009 (spams, matlab interface and documentation)</li>
+<li>Jean-Paul CHIEZE 2011-2012 (python interface)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference external" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference external" href="modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference external" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="#">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">SPAMS&#8217;s python interface documentation</a><ul>
+<li><a class="reference external" href="#sort">sort</a></li>
+<li><a class="reference external" href="#calcaat">calcAAt</a></li>
+<li><a class="reference external" href="#calcxat">calcXAt</a></li>
+<li><a class="reference external" href="#calcxy">calcXY</a></li>
+<li><a class="reference external" href="#calcxyt">calcXYt</a></li>
+<li><a class="reference external" href="#calcxty">calcXtY</a></li>
+<li><a class="reference external" href="#bayer">bayer</a></li>
+<li><a class="reference external" href="#conjgrad">conjGrad</a></li>
+<li><a class="reference external" href="#invsym">invSym</a></li>
+<li><a class="reference external" href="#normalize">normalize</a></li>
+<li><a class="reference external" href="#sparseproject">sparseProject</a></li>
+<li><a class="reference external" href="#lasso">lasso</a></li>
+<li><a class="reference external" href="#lassomask">lassoMask</a></li>
+<li><a class="reference external" href="#lassoweighted">lassoWeighted</a></li>
+<li><a class="reference external" href="#omp">omp</a></li>
+<li><a class="reference external" href="#ompmask">ompMask</a></li>
+<li><a class="reference external" href="#cd">cd</a></li>
+<li><a class="reference external" href="#somp">somp</a></li>
+<li><a class="reference external" href="#l1l2bcd">l1L2BCD</a></li>
+<li><a class="reference external" href="#fistaflat">fistaFlat</a></li>
+<li><a class="reference external" href="#fistatree">fistaTree</a></li>
+<li><a class="reference external" href="#fistagraph">fistaGraph</a></li>
+<li><a class="reference external" href="#proximalflat">proximalFlat</a></li>
+<li><a class="reference external" href="#proximaltree">proximalTree</a></li>
+<li><a class="reference external" href="#proximalgraph">proximalGraph</a></li>
+<li><a class="reference external" href="#traindl">trainDL</a></li>
+<li><a class="reference external" href="#traindl-memory">trainDL_Memory</a></li>
+<li><a class="reference external" href="#nmf">nmf</a></li>
+<li><a class="reference external" href="#nnsc">nnsc</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/index.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="#">SPAMS v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2012, jp.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

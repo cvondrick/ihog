@@ -1,0 +1,139 @@
+This directory contains files to build the python interfaces
+to the functions of V2.3 SPAMS library already interfaced with matlab.
+
+The interface consists of 4 files : spams.py myscipy_rand.py spams_wrap.py _spams_wrap.so
+Note: myscipy_rand.py supplies a random generator for sparse matrix
+      for some old scipy distributions
+WARNING : the API of spams.OMP and spams.OMPMask has changed since version V2.2
+########################################
+Interface building 
+
+Packages required: python-numpy, python-scipy, blas + lapack (preferably from atlas).
+
+tar zxf spams-python-v2.3-svn2012-10-23.tar.gz
+cd spams-python
+python setup.py build
+
+inst=<your-python-install-dir>
+python setup.py install --prefix=$inst
+
+################################
+Linux : 
+      carefully install atlas. For example on my ubuntu I had to do
+      apt-get install libatlas-dev libatlas3gf-base libatlas-3gf.so
+      If you don't have libblas.so and liblapack.so in /lib or /usr/lib,
+      you need to edit setup.py
+
+MacOS:
+	the build has been tested with MacOS 10 (Lion) and required
+	packages were installed with 'port install' :
+	port install atlas;port install py26-numpy;install py26-scipy
+
+Windows 32bits:
+	You need packages MinGW, python-2.7, and scipy + numpy for python-2.7
+	
+	You will find binary distributions for MinGW on www.mingw.org,
+	python-2.7 on www.python.org,
+	numpy and scipy on www.numpy.org (or www.scipy.org)
+	Unfortunately, I did not find a binary distro for atlas.
+`	I use blas and lapack dlls fron the package R (2.15.1).
+	I found dlls for blas and lapcak on http://icl.cs.utk.edu/lapack-for-windows/lapack.
+	They work fine, but are slower.
+	
+ 	To make a binary windows installer (spams-2.3.win32-py2.7.exe) :
+	- open a mingw console
+	- extract files from the .tar.gz source distribution (tar zxf ...)
+	- enter directory spams-python
+	- execute ./win-build.sh
+	  you will obtain spams-python-v2.3-svn2012-10-23.win32-py2.7.exe
+
+	 Note : you may need to modify the script if you have different versions of python and R.
+	- when your installer is built, you may remove the package R.
+
+Windows 64bits :
+	As I am a windows newbe, it was a nightmare for me to build a win64 distro
+	(the difficulty was to download the right version of each MS component).
+
+	According to http://mattptr.net/2010/07/28/building-python-extensions-in-a-modern-windows-environment/ 
+	(and to my experience) this can only be done with "Visual C++ 2008 express".
+	
+	I worked on a virtual machine with a 64 bits windows7.
+
+	Here is what I exactly did.
+	- install MinGW (for the comfort of bash)
+	  (http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/mingw-get-inst-20120426/mingw-get-inst-20120426.exe)
+	- install python-2.7 + numpy +scipy for win64
+	  (www.python.org and www.numpy.org)
+       - install R (2.15.1 ) from http://cran.r-project.org/, for blas and lapack libraries.
+       - install "Microsoft Visual C++ 2008 SP1 Redistributable Package (x64)"
+       	 (vcredist_x64.exe http://www.microsoft.com/fr-fr/download/details.aspx?id=2092)
+      - install "Microsoft Visual Studio 2008 Express with SP1"	
+      	(vcsetup.exe http://www.microsoft.com/fr-fr/download/details.aspx?id=14597)
+     - install (uncheck doc, samples, .NET dev) 
+       "Microsoft Windows SDK for Windows 7 and .NET Framework 3.5 SP1"
+	  (winsdk_web.exe http://www.microsoft.com/en-us/download/details.aspx?id=3138)
+    - install (select only "Windows Headers and Libraries")
+       "Microsoft Windows SDK for Windows 7 and .NET Framework 4"
+       (winsdk_web.exe http://www.microsoft.com/en-us/download/confirmation.aspx?id=8279)
+
+   - create a file "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 9.0"/VC/bin/amd64/vcvarsamd64.bat 
+     containing just the line
+       call "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64 /Release
+   - get pexports and copy pexports.exe to C:/Windows/syatem32 or /c/mingw/bin
+     (http://sourceforge.net/projects/mingw/files/MinGW/Extension/pexports/)
+   
+   - untar the source package of spams-python
+   - cd spams-python
+     ./win-build.sh
+   Ignore error "mt.exe not found"
+
+   The result should be  spams-python-v2.3-svn2012-10-23.win-amd64-py2.7.exe
+
+########################################
+Testing the interface :
+
+- Linux or Mac :
+export PYTHONPATH=$inst/lib/python2.6/site-packages
+cd $inst/test
+python test_spams.py -h : to get help
+python test_spams.py  : will run all the tests
+python test_spams.py linalg : test of linalg functions
+python test_spams.py name1 name2 ... : run named tests
+
+- Windows (binary install) :
+  cd C:\Python27\test
+  ..\python.exe test_spams.py -h
+  ..\python.exe test_spams.py
+  	  ...
+
+########################################
+Using the interface :
+setup your PYTHONPATH
+
+import spams
+
+The spams functions accept only numpy dense vectors or "Fortran" matrices and
+scipy sparce matrices of csc type.
+
+Examples :
+
+-----
+import numpy as np
+import spams
+X = np.asfortranarray(np.random.random((64,200)))
+Y = np.asfortranarray(np.random.random((200,20000)))
+Z = spams.CalcXY(X,Y)
+----
+import numpy as np
+import scipy
+import scipy.sparse
+import spams
+
+if not ('rand' in scipy.sparse.__dict__):
+    import myscipy as ssp
+else:
+    import scipy.sparse as ssp
+    m=200; n = 200000; d= 0.05
+    A = ssp.rand(m,n,density=d,format='csc',dtype=np.float64)
+    B = spams.CalcAAt(A)
+-----

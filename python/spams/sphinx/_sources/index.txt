@@ -1,0 +1,168 @@
+.. SPAMS documentation created by docmatlab2python
+
+SPAMS's python interface documentation
+======================================
+
+Contents:
+
+
+.. currentmodule:: spams
+
+.. autosummary::
+
+    sort
+    calcAAt
+    calcXAt
+    calcXY
+    calcXYt
+    calcXtY
+    bayer
+    conjGrad
+    invSym
+    normalize
+    sparseProject
+    lasso
+    lassoMask
+    lassoWeighted
+    omp
+    ompMask
+    cd
+    somp
+    l1L2BCD
+    fistaFlat
+    fistaTree
+    fistaGraph
+    proximalFlat
+    proximalTree
+    proximalGraph
+    trainDL
+    trainDL_Memory
+    nmf
+    nnsc
+
+
+sort
+----
+.. autofunction:: sort
+
+calcAAt
+-------
+.. autofunction:: calcAAt
+
+calcXAt
+-------
+.. autofunction:: calcXAt
+
+calcXY
+------
+.. autofunction:: calcXY
+
+calcXYt
+-------
+.. autofunction:: calcXYt
+
+calcXtY
+-------
+.. autofunction:: calcXtY
+
+bayer
+-----
+.. autofunction:: bayer
+
+conjGrad
+--------
+.. autofunction:: conjGrad
+
+invSym
+------
+.. autofunction:: invSym
+
+normalize
+---------
+.. autofunction:: normalize
+
+sparseProject
+-------------
+.. autofunction:: sparseProject
+
+lasso
+-----
+.. autofunction:: lasso
+
+lassoMask
+---------
+.. autofunction:: lassoMask
+
+lassoWeighted
+-------------
+.. autofunction:: lassoWeighted
+
+omp
+---
+.. autofunction:: omp
+
+ompMask
+-------
+.. autofunction:: ompMask
+
+cd
+--
+.. autofunction:: cd
+
+somp
+----
+.. autofunction:: somp
+
+l1L2BCD
+-------
+.. autofunction:: l1L2BCD
+
+fistaFlat
+---------
+.. autofunction:: fistaFlat
+
+fistaTree
+---------
+.. autofunction:: fistaTree
+
+fistaGraph
+----------
+.. autofunction:: fistaGraph
+
+proximalFlat
+------------
+.. autofunction:: proximalFlat
+
+proximalTree
+------------
+.. autofunction:: proximalTree
+
+proximalGraph
+-------------
+.. autofunction:: proximalGraph
+
+trainDL
+-------
+.. autofunction:: trainDL
+
+trainDL_Memory
+--------------
+.. autofunction:: trainDL_Memory
+
+nmf
+---
+.. autofunction:: nmf
+
+nnsc
+----
+.. autofunction:: nnsc
+
+
+Indices and tables
+==================
+
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

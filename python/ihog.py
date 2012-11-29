@@ -1,0 +1,2 @@
+def invertHOG(feat):
+    pass

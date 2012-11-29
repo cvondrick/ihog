@@ -1,0 +1,390 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+
+<META name="Author" content="Julien Mairal">
+<link rel="stylesheet" href="doc_spams.css">
+<LINK rel="stylesheet" type="text/css" href="doc_spams.css">
+<TITLE>Miscellaneous Functions</TITLE>
+</HEAD>
+<BODY >
+<A HREF="doc_spams006.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="doc_spams008.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H2 CLASS="section"><A NAME="htoc36">6</A>  Miscellaneous Functions</H2><UL>
+<LI><A HREF="doc_spams007.html#toc25">Function spams.conjGrad</A>
+</LI><LI><A HREF="doc_spams007.html#toc26">Function spams.bayer</A>
+</LI><LI><A HREF="doc_spams007.html#toc27">Function spams.calcAAt</A>
+</LI><LI><A HREF="doc_spams007.html#toc28">Function spams.calcXAt</A>
+</LI><LI><A HREF="doc_spams007.html#toc29">Function spams.calcXY</A>
+</LI><LI><A HREF="doc_spams007.html#toc30">Function spams.calcXYt</A>
+</LI><LI><A HREF="doc_spams007.html#toc31">Function spams.calcXtY</A>
+</LI><LI><A HREF="doc_spams007.html#toc32">Function spams.invSym</A>
+</LI><LI><A HREF="doc_spams007.html#toc33">Function spams.normalize</A>
+</LI><LI><A HREF="doc_spams007.html#toc34">Function spams.sort</A>
+</LI><LI><A HREF="doc_spams007.html#toc35">Function mexDisplayPatches</A>
+</LI><LI><A HREF="doc_spams007.html#toc36">Function spams.countPathsDAG</A>
+</LI><LI><A HREF="doc_spams007.html#toc37">Function spams.removeCyclesGraph</A>
+</LI><LI><A HREF="doc_spams007.html#toc38">Function spams.countConnexComponents</A>
+</LI></UL>
+<H3 CLASS="subsection"><A NAME="toc25"></A><A NAME="htoc37">6.1</A>  Function spams.conjGrad</H3><P>Implementation of a conjugate gradient for solving a linear system <B><I>Ax</I></B>=<I><B>b</B></I>
+when <I><B>A</B></I> is positive definite. In some cases, it is faster than the Matlab
+function <CODE>pcg</CODE>, especially when the library uses the Intel Math Kernel Library.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# Name: conjGrad<BR>
+#<BR>
+# Usage: spams.conjGrad(A,b,x0 = None,tol = 1e-10,itermax = None)<BR>
+#<BR>
+# Description:<BR>
+#     Conjugate gradient algorithm, sometimes faster than the <BR>
+#    equivalent python function solve. In order to solve Ax=b;<BR>
+#<BR>
+# Inputs:<BR>
+#       A:  double square n x n matrix. HAS TO BE POSITIVE DEFINITE<BR>
+#       b:  double vector of length n.<BR>
+#       x0: double vector of length n. (optional) initial guess.<BR>
+#       tol: (optional) tolerance.<BR>
+#       itermax: (optional) maximum number of iterations.<BR>
+#<BR>
+# Output:<BR>
+#       x: double vector of length n.<BR>
+#<BR>
+# Authors:<BR>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<BR>
+# Jean-Paul CHIEZE 2011-2012 (python interface)<BR>
+#</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>import</B></FONT> spams<BR>
+<FONT COLOR="blue"><B>import</B></FONT> numpy as np<BR>
+A = np.asfortranarray(np.random.normal(size = (5000,500)))<BR>
+A = np.asfortranarray(np.dot(A.T,A))<BR>
+b = np.ones((A.shape[1],),dtype=np.float64,order=<FONT COLOR="red">"FORTRAN"</FONT>)<BR>
+x0 = b<BR>
+tol = 1e-4<BR>
+itermax = int(0.5 * len(b))<BR>
+<BR>
+tic = time.time()<BR>
+<FONT COLOR="blue"><B>for</B></FONT> i <FONT COLOR="blue"><B>in</B></FONT> xrange(0,20):<BR>
+    y1 = np.linalg.solve(A,b)<BR>
+tac = time.time()<BR>
+<FONT COLOR="blue"><B>print</B></FONT> <FONT COLOR="red">"  Time (numpy): "</FONT>, tac - tic<BR>
+x1 = np.abs(b - np.dot(A,y1))<BR>
+<FONT COLOR="blue"><B>print</B></FONT> <FONT COLOR="red">"Mean error on b : %f"</FONT> %(x1.sum() / b.shape[0])<BR>
+<BR>
+tic = time.time()<BR>
+<FONT COLOR="blue"><B>for</B></FONT> i <FONT COLOR="blue"><B>in</B></FONT> xrange(0,20):<BR>
+    y2 = spams.conjGrad(A,b,x0,tol,itermax)<BR>
+tac = time.time()<BR>
+<FONT COLOR="blue"><B>print</B></FONT> <FONT COLOR="red">"  Time (spams): "</FONT>, tac - tic<BR>
+x1 = np.dot(A,y2)<BR>
+x2 = np.abs(b - x1)<BR>
+<FONT COLOR="blue"><B>print</B></FONT> <FONT COLOR="red">"Mean error on b : %f"</FONT> %(x2.sum() / b.shape[0])<BR>
+<BR>
+err = abs(y1 - y2)</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc26"></A><A NAME="htoc38">6.2</A>  Function spams.bayer</H3><P>Apply a Bayer pattern to an input image
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# Name: conjGrad<BR>
+#<BR>
+# Usage: spams.conjGrad(A,b,x0 = None,tol = 1e-10,itermax = None)<BR>
+#<BR>
+# Description:<BR>
+#     Conjugate gradient algorithm, sometimes faster than the <BR>
+#    equivalent python function solve. In order to solve Ax=b;<BR>
+#<BR>
+# Inputs:<BR>
+#       A:  double square n x n matrix. HAS TO BE POSITIVE DEFINITE<BR>
+#       b:  double vector of length n.<BR>
+#       x0: double vector of length n. (optional) initial guess.<BR>
+#       tol: (optional) tolerance.<BR>
+#       itermax: (optional) maximum number of iterations.<BR>
+#<BR>
+# Output:<BR>
+#       x: double vector of length n.<BR>
+#<BR>
+# Authors:<BR>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<BR>
+# Jean-Paul CHIEZE 2011-2012 (python interface)<BR>
+#</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>import</B></FONT> spams<BR>
+<FONT COLOR="blue"><B>import</B></FONT> numpy as np<BR>
+A = np.asfortranarray(np.random.normal(size = (5000,500)))<BR>
+A = np.asfortranarray(np.dot(A.T,A))<BR>
+b = np.ones((A.shape[1],),dtype=np.float64,order=<FONT COLOR="red">"FORTRAN"</FONT>)<BR>
+x0 = b<BR>
+tol = 1e-4<BR>
+itermax = int(0.5 * len(b))<BR>
+<BR>
+tic = time.time()<BR>
+<FONT COLOR="blue"><B>for</B></FONT> i <FONT COLOR="blue"><B>in</B></FONT> xrange(0,20):<BR>
+    y1 = np.linalg.solve(A,b)<BR>
+tac = time.time()<BR>
+<FONT COLOR="blue"><B>print</B></FONT> <FONT COLOR="red">"  Time (numpy): "</FONT>, tac - tic<BR>
+x1 = np.abs(b - np.dot(A,y1))<BR>
+<FONT COLOR="blue"><B>print</B></FONT> <FONT COLOR="red">"Mean error on b : %f"</FONT> %(x1.sum() / b.shape[0])<BR>
+<BR>
+tic = time.time()<BR>
+<FONT COLOR="blue"><B>for</B></FONT> i <FONT COLOR="blue"><B>in</B></FONT> xrange(0,20):<BR>
+    y2 = spams.conjGrad(A,b,x0,tol,itermax)<BR>
+tac = time.time()<BR>
+<FONT COLOR="blue"><B>print</B></FONT> <FONT COLOR="red">"  Time (spams): "</FONT>, tac - tic<BR>
+x1 = np.dot(A,y2)<BR>
+x2 = np.abs(b - x1)<BR>
+<FONT COLOR="blue"><B>print</B></FONT> <FONT COLOR="red">"Mean error on b : %f"</FONT> %(x2.sum() / b.shape[0])<BR>
+<BR>
+err = abs(y1 - y2)</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc27"></A><A NAME="htoc39">6.3</A>  Function spams.calcAAt</H3><P>For an input sparse matrix <I><B>A</B></I>, this function returns <I><B>AA</B><SUP>T</SUP></I>. For some reasons, when <I><B>A</B></I> has a lot more columns than rows, this function can be much faster than the equivalent matlab command <CODE>X*A'</CODE>. 
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# Name: calcAAt<BR>
+#<BR>
+# Usage: spams.calcAAt(A)<BR>
+#<BR>
+# Description:<BR>
+#     Compute efficiently AAt = A*A', when A is sparse <BR>
+#   and has a lot more columns than rows. In some cases, it is<BR>
+#   up to 20 times faster than the equivalent python expression<BR>
+#   AAt=A*A';<BR>
+#<BR>
+# Inputs:<BR>
+#       A:  double sparse m x n matrix   <BR>
+#<BR>
+# Output:<BR>
+#       AAt: double m x m matrix <BR>
+#<BR>
+# Authors:<BR>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<BR>
+# Jean-Paul CHIEZE 2011-2012 (python interface)<BR>
+#</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>import</B></FONT> spams<BR>
+<FONT COLOR="blue"><B>import</B></FONT> numpy as np<BR>
+<FONT COLOR="red">"""<BR>
+test A * A'<BR>
+"""</FONT><BR>
+m=200; n = 200000; d= 0.05<BR>
+A = ssprand(m,n,density=d,format=<FONT COLOR="red">'csc'</FONT>,dtype=np.float64)<BR>
+result = spams.calcAAt(A)</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc28"></A><A NAME="htoc40">6.4</A>  Function spams.calcXAt</H3><P>
+For an input sparse matrix <I><B>A</B></I> and a matrix <I><B>X</B></I>, this function returns <I><B>XA</B><SUP>T</SUP></I>. For some reasons, when <I><B>A</B></I> has a lot more columns than rows, this function can be much faster than the equivalent matlab command <CODE>X*A'</CODE>. 
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# Name: calcXAt<BR>
+#<BR>
+# Usage: spams.calcXAt(X,A)<BR>
+#<BR>
+# Description:<BR>
+#     Compute efficiently XAt = X*A', when A is sparse and has a <BR>
+#   lot more columns than rows. In some cases, it is up to 20 times <BR>
+#   faster than the equivalent python expression;<BR>
+#<BR>
+# Inputs:<BR>
+#       X:  double m x n matrix<BR>
+#       A:  double sparse p x n matrix   <BR>
+#<BR>
+# Output:<BR>
+#       XAt: double m x p matrix <BR>
+#<BR>
+# Authors:<BR>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<BR>
+# Jean-Paul CHIEZE 2011-2012 (python interface)<BR>
+#</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>import</B></FONT> spams<BR>
+<FONT COLOR="blue"><B>import</B></FONT> numpy as np<BR>
+m=200; n = 200000; d= 0.05<BR>
+A = ssprand(m,n,density=d,format=<FONT COLOR="red">'csc'</FONT>,dtype=np.float64)<BR>
+X = np.asfortranarray(np.random.normal(size = (64,n)))<BR>
+<BR>
+result = spams.calcXAt(X,A)</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc29"></A><A NAME="htoc41">6.5</A>  Function spams.calcXY</H3><P>
+For two input matrices <I><B>X</B></I> and <I><B>Y</B></I>, this function returns <B><I>XY</I></B>. 
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# Name: calcXY<BR>
+#<BR>
+# Usage: spams.calcXY(X,Y)<BR>
+#<BR>
+# Description:<BR>
+#     Compute Z=XY using the BLAS library used by SPAMS.<BR>
+#<BR>
+# Inputs:<BR>
+#       X:  double m x n matrix<BR>
+#       Y:  double n x p matrix   <BR>
+#<BR>
+# Output:<BR>
+#       Z: double m x p matrix <BR>
+#<BR>
+# Authors:<BR>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<BR>
+# Jean-Paul CHIEZE 2011-2012 (python interface)<BR>
+#</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>import</B></FONT> spams<BR>
+<FONT COLOR="blue"><B>import</B></FONT> numpy as np<BR>
+X = np.asfortranarray(np.random.normal(size = (64,200)))<BR>
+Y = np.asfortranarray(np.random.normal(size = (200,20000)))<BR>
+result = spams.calcXY(X,Y)</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc30"></A><A NAME="htoc42">6.6</A>  Function spams.calcXYt</H3><P>
+For two input matrices <I><B>X</B></I> and <I><B>Y</B></I>, this function returns <I><B>XY</B><SUP>T</SUP></I>.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# Name: calcXYt<BR>
+#<BR>
+# Usage: spams.calcXYt(X,Y)<BR>
+#<BR>
+# Description:<BR>
+#     Compute Z=XY' using the BLAS library used by SPAMS.<BR>
+#<BR>
+# Inputs:<BR>
+#       X:  double m x n matrix<BR>
+#       Y:  double p x n matrix   <BR>
+#<BR>
+# Output:<BR>
+#       Z: double m x p matrix <BR>
+#<BR>
+# Authors:<BR>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<BR>
+# Jean-Paul CHIEZE 2011-2012 (python interface)<BR>
+#</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>import</B></FONT> spams<BR>
+<FONT COLOR="blue"><B>import</B></FONT> numpy as np<BR>
+X = np.asfortranarray(np.random.normal(size = (64,200)))<BR>
+Y = np.asfortranarray(np.random.normal(size = (20000,200)))<BR>
+result = spams.calcXYt(X,Y)</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc31"></A><A NAME="htoc43">6.7</A>  Function spams.calcXtY</H3><P>
+For two input matrices <I><B>X</B></I> and <I><B>Y</B></I>, this function returns <I><B>X</B><SUP>T</SUP><B>Y</B></I>.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# Name: calcXtY<BR>
+#<BR>
+# Usage: spams.calcXtY(X,Y)<BR>
+#<BR>
+# Description:<BR>
+#     Compute Z=X'Y using the BLAS library used by SPAMS.<BR>
+#<BR>
+# Inputs:<BR>
+#       X:  double n x m matrix<BR>
+#       Y:  double n x p matrix   <BR>
+#<BR>
+# Output:<BR>
+#       Z: double m x p matrix <BR>
+#<BR>
+# Authors:<BR>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<BR>
+# Jean-Paul CHIEZE 2011-2012 (python interface)<BR>
+#</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>import</B></FONT> spams<BR>
+<FONT COLOR="blue"><B>import</B></FONT> numpy as np<BR>
+X = np.asfortranarray(np.random.normal(size = (200,64)))<BR>
+Y = np.asfortranarray(np.random.normal(size = (200,20000)))<BR>
+result = spams.calcXtY(X,Y)</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc32"></A><A NAME="htoc44">6.8</A>  Function spams.invSym</H3><P>
+For an input symmetric matrices <I><B>A</B></I> in ℝ<SUP><I>n</I> × <I>n</I></SUP>, this function returns <I><B>A</B></I><SUP>−1</SUP>.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# Name: invSym<BR>
+#<BR>
+# Usage: spams.invSym(A)<BR>
+#<BR>
+# Description:<BR>
+#     returns the inverse of a symmetric matrix A<BR>
+#<BR>
+# Inputs:<BR>
+#       A:  double n x n matrix   <BR>
+#<BR>
+# Output:<BR>
+#       B: double n x n matrix <BR>
+#<BR>
+# Authors:<BR>
+# Julien MAIRAL, 2009 (spams, matlab interface and documentation)<BR>
+# Jean-Paul CHIEZE 2011-2012 (python interface)<BR>
+#</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>import</B></FONT> spams<BR>
+<FONT COLOR="blue"><B>import</B></FONT> numpy as np<BR>
+A = np.asfortranarray(np.random.random(size = (1000,1000)))<BR>
+A =np.asfortranarray( np.dot(A.T,A))<BR>
+result = spams.invSym(A)</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc33"></A><A NAME="htoc45">6.9</A>  Function spams.normalize</H3><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# Name: normalize<BR>
+#<BR>
+# Usage: spams.normalize(A)<BR>
+#<BR>
+# Description:<BR>
+#     rescale the columns of X so that they have<BR>
+#        unit l2-norm.<BR>
+#<BR>
+# Inputs:<BR>
+#       X:  double m x n matrix   <BR>
+#<BR>
+# Output:<BR>
+#       Y: double m x n matrix <BR>
+#<BR>
+# Authors:<BR>
+# Julien MAIRAL, 2010 (spams, matlab interface and documentation)<BR>
+# Jean-Paul CHIEZE 2011-2012 (python interface)<BR>
+#</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>import</B></FONT> spams<BR>
+<FONT COLOR="blue"><B>import</B></FONT> numpy as np<BR>
+A = np.asfortranarray(np.random.random(size = (100,1000)))<BR>
+res2 = spams.normalize(A)</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc34"></A><A NAME="htoc46">6.10</A>  Function spams.sort</H3><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# Name: sort<BR>
+#<BR>
+# Usage: spams.sort(X,mode=True)<BR>
+#<BR>
+# Description:<BR>
+#     sort the elements of X using quicksort<BR>
+#<BR>
+# Inputs:<BR>
+#       X:  double vector of size n<BR>
+#       mode: false for decreasing order (true by default)<BR>
+#<BR>
+# Output:<BR>
+#       Y: double  vector of size n<BR>
+#<BR>
+# Authors:<BR>
+# Julien MAIRAL, 2010 (spams, matlab interface and documentation)<BR>
+# Jean-Paul CHIEZE 2011-2012 (python interface)<BR>
+#</FONT></TD></TR>
+</TABLE><P>
+The following piece of code contains usage examples:
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>import</B></FONT> spams<BR>
+<FONT COLOR="blue"><B>import</B></FONT> numpy as np<BR>
+n = 2000000<BR>
+X = np.random.normal(size = (n,))<BR>
+result = spams.sort(X,True)</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc35"></A><A NAME="htoc47">6.11</A>  Function mexDisplayPatches</H3><P>
+Print to the screen a matrix containing as columns image patches.</P><H3 CLASS="subsection"><A NAME="toc36"></A><A NAME="htoc48">6.12</A>  Function spams.countPathsDAG</H3><P>
+This function counts the number of paths in a DAG using dynamic programming.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# The python function is not yet implemented.<BR>
+#</FONT></TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc37"></A><A NAME="htoc49">6.13</A>  Function spams.removeCyclesGraph</H3><P>
+One heuristic to remove cycles from a graph.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# The python function is not yet implemented.<BR>
+#</FONT></TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc38"></A><A NAME="htoc50">6.14</A>  Function spams.countConnexComponents</H3><P>
+Count the number of connected components of a subgraph from a graph.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">#<BR>
+# The python function is not yet implemented.<BR>
+#</FONT></TD></TR>
+</TABLE><HR>
+<A HREF="doc_spams006.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="doc_spams008.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>
