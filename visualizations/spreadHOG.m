@@ -2,8 +2,13 @@
 %
 % Shows the HOG channels seperately.
 function vis = spreadHOG(feat),
-fprintf('ihog: spread: ');
+bord = 10;
+ny = size(feat,1)*8+16+2*bord;
+nx = (size(feat,2)*8+16+bord)*2;
 nf = size(feat, 3);
+bigfig = ones(ny*4, nx*9) * 0.5;
+
+fprintf('ihog: spread: ');
 for i=1:nf,
   fprintf('.');
   f = zeros(size(feat));
@@ -12,7 +17,7 @@ for i=1:nf,
 
   if i < 28,
     f(:) = 0;
-    f(:, :, mod(i-1, 9)+18) = feat(:, :, i);
+    f(:, :, mod(i-1, 9)+18+1) = feat(:, :, i);
     glyph = HOGpicture(f);
     glyph = imresize(glyph, size(ihog));
     gylph(glyph > 1) = 1;
@@ -21,17 +26,15 @@ for i=1:nf,
     glyph = zeros(size(ihog));
   end
 
-  ihog = padarray(ihog, [5 5], 0.5);
-  glyph = padarray(glyph, [5 5], 0.5);
+  im = [ihog glyph];
+  im = padarray(im, [bord bord], 0.5);
 
-  subplot(4, 9, i);
-  imagesc([ihog glyph]);
-  axis image;
-  axis off;
+  col = mod(i-1, 9);
+  row = floor((i-1)/9);
+
+  bigfig(row*ny+1:(row+1)*ny, col*nx+1:(col+1)*nx) = im;
 end
 fprintf('\n');
 
-subplot(4,9,1); title('+ Signed');
-subplot(4,9,10); title('- Signed');
-subplot(4,9,19); title('Unsigned');
-subplot(4,9,28); title('Texture');
+imagesc(bigfig);
+axis image;
