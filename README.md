@@ -60,6 +60,22 @@ The above learns a 5x5 HOG patch paired dictionary with 1000 elements and a trai
 set size of one million window patches. Depending on the size of the problem, it may
 take minutes or hours to complete.
 
+Bundled Libraries
+-----------------
+
+The iHOG package contains source code from the SPAMS sparse coding toolbox
+(http://spams-devel.gforge.inria.fr/). We have modified their code to better
+support 64 bit machines.
+
+In addition, we have included a select few files from the discriminatively
+trained deformable parts model (http://people.cs.uchicago.edu/~rbg/latent/).
+We use their HOG code and glyph visualization code.
+
+Questions and Comments
+----------------------
+
+If you have any feedback, please write to Carl Vondrick <vondrick@mit.edu>.
+
 References
 ----------
 
