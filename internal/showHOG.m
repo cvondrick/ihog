@@ -4,8 +4,8 @@ function showHOG(w)
 
 % Make pictures of positive and negative weights
 bs = 20;
-w = w(:,:,19:28);
-scale = max(max(w(:)),max(-w(:)));
+%w = w(:,:,19:28);
+scale = max(max(w(:)),max(-w(:))) * 2;
 pos = HOGpicture(w, bs) * 255/scale;
 neg = HOGpicture(-w, bs) * 255/scale;
 
