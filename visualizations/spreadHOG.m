@@ -38,3 +38,4 @@ fprintf('\n');
 
 imagesc(bigfig);
 axis image;
+colormap gray;

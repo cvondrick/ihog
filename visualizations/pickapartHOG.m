@@ -65,3 +65,5 @@ subplot(236);
 imagesc(negative);
 axis image;
 title('Negative Signed HOG');
+
+colormap gray;

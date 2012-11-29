@@ -25,7 +25,11 @@ cx = (gnx*2+bord);
 im = ones(cy*sy, cx*sx);
 
 iii = randperm(size(pd.dgray,2));
+
+fprintf('ihog: show pair dict: ');
 for i=1:min(sy*sx, pd.k),
+  fprintf('.');
+
   row = mod(i-1, sx)+1;
   col = floor((i-1) / sx)+1;
 
@@ -34,8 +38,7 @@ for i=1:min(sy*sx, pd.k),
   graypic(:) = graypic(:) / max(graypic(:));
 
   hogfeat = reshape(pd.dhog(:, iii(i)), [hny hnx 32]);
-  hogscale = max(max(hogfeat(:)),max(-hogfeat(:)));
-  hogpic = HOGpicture(hogfeat) / hogscale;
+  hogpic = HOGpicture(hogfeat);
   hogpic = imresize(hogpic, [gny gnx]);
   hogpic(hogpic < 0) = 0;
   hogpic(hogpic > 1) = 1;
@@ -45,6 +48,7 @@ for i=1:min(sy*sx, pd.k),
 
   im((col-1)*cy+1:col*cy, (row-1)*cx+1:row*cx) = pic;
 end
+fprintf('\n');
 
 im = im(1:end-bord, 1:end-bord);
 
