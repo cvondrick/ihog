@@ -98,6 +98,9 @@ r = f(:, :, 19:27);
 showHOG(f - mean(r(:)));
 title('Negative Signed HOG');
 
+subplot(nfigs,2,1);
+title('Unsigned HOG');
+
 if nfigs == 3,
   return;
 end
