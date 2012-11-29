@@ -2,8 +2,22 @@
 %
 % This function provides a diagnostic visualization of a HOG feature.  This is
 % meant to be a drop-in replacement for the voc-release5 framework.
+%
+% Usage is simple:
+%   >> feat = features(im, 8);
+%   >> visualizeHOG(feat);
+%
+% and the current figure will contain both the standard HOG glyph visualization as well
+% as the inverse.  This function has extra verbosity outputs you can use as well:
+%
+%   >> visualizeHOG(feat, 0);
+%   >> visualizeHOG(feat, 1);
+%   >> visualizeHOG(feat, 2);
+%   >> visualizeHOG(feat, 3);
+%
+% each output increasingly more visualizations.
 
-function visualizeHOG(feat, verbosity),
+function visualizehog(feat, verbosity),
 
 if ~exist('verbosity', 'var'),
   verbosity = 0;
