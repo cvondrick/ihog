@@ -14,7 +14,8 @@ To invert a HOG point, use the 'invertHOG()' function:
     >> ihog = invertHOG(feat);
     >> imagesc(ihog); axis image;
 
-Our tool handles the rest for you!
+On typical sized images, this inversion should take no more than a second on a
+modern computer.
 
 Visualizing HOG
 ---------------
