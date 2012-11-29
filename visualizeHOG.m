@@ -8,14 +8,14 @@
 %   >> visualizeHOG(feat);
 %
 % and the current figure will contain both the standard HOG glyph visualization as well
-% as the inverse.  This function has extra verbosity outputs you can use as well:
+% as the inverse.  This function has extra verbosity outputs you can use too:
 %
 %   >> visualizeHOG(feat, 0);
 %   >> visualizeHOG(feat, 1);
 %   >> visualizeHOG(feat, 2);
 %   >> visualizeHOG(feat, 3);
 %
-% each output increasingly more visualizations.
+% each outputting increasingly more visualizations.
 
 function visualizehog(feat, verbosity),
 
