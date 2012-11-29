@@ -3,7 +3,17 @@
 % This function provides a diagnostic visualization of a HOG feature.  This is
 % meant to be a drop-in replacement for the voc-release5 framework.
 
-function visualizeHOG(feat),
+function visualizeHOG(feat, verbosity),
+
+if ~exist('verbosity', 'var'),
+  verbosity = 0;
+end
+
+if verbosity == 0,
+  nfigs = 1;
+else,
+  nfigs = 2;
+end
 
 im = invertHOG(max(feat, 0));
 
@@ -18,21 +28,25 @@ end
 
 clf;
 
-subplot(221);
+subplot(nfigs,2,1);
 showHOG(feat);
 title('HOG');
 
-subplot(222);
+subplot(nfigs,2,2);
 imagesc(im);
 axis image;
 colormap gray;
 title('Inverse');
 
-subplot(223);
+if nfigs == 1,
+  return;
+end
+
+subplot(nfigs,2,3);
 showHOG(feat - mean(feat(:)));
 title('0-mean HOG');
 
-subplot(224);
+subplot(nfigs,2,4);
 
 if min(feat(:)) < 0,
   buff = 5;
@@ -77,7 +91,6 @@ for i=1:ny,
       for z=1:3,
         bigfig((i-1)*(h+b)+1+(h+b-val) : i*(h+b), ...
                (j-1)*(w*nf+b)+1+(k-1)*w+1 : (j-1)*(w*nf+b)+1+k*w, z) = cc(k, z);
-               %((j-1)*nf+k-1)*w+1:((j-1)*nf+k)*w, z) = cc(k, z);
       end
     end
   end
