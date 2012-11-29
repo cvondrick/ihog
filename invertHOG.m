@@ -45,6 +45,11 @@ if size(feat,2) < pd.nx,
   x = padarray(x, [0 pd.nx - size(x,2) 0], 0, 'post');
 end
 
+% pad feat if dim lacks occlusion feature
+if size(feat,3) == 31,
+  x(:, :, end+1) = 0;
+end
+
 % extract every window 
 windows = zeros(pd.ny*pd.nx*32, (ny-pd.ny+1)*(nx-pd.nx+1));
 c = 1;
