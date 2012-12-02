@@ -98,9 +98,24 @@ fprintf('\n');
 %
 % Whitens the input feature with zero mean and unit variance
 function out = whiten(in),
-fprintf('ihog: whiten data\n');
-out=bsxfun(@minus, in, mean(in)); 
-out=bsxfun(@rdivide, out, sqrt(sum(out.^2) + 1));
+mu = mean(data,2);
+for i=1:size(data, 2),
+  data(:, i) = data(:, i) - mu;
+end
+% unfortunately, matlab builtins use too much ram, so we do it the slow way
+% fortunately, this isn't too slow
+fprintf('ihog: whiten: compute std\n');
+sig = zeros(size(data,1),1);
+for i=1:size(data,2),
+  sig = sig + data(:,i).^2;
+end
+sig = sig / size(data,2);
+sig = sqrt(sig);
+sig(sig==0) = 1;
+fprintf('ihog: whiten: unit variance\n');
+for i=1:size(data, 2),
+  data(:, i) = data(:, i) ./ sig;
+end
 
 
 
