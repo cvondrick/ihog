@@ -52,7 +52,7 @@ stream = resolvestream(stream);
 data = getdata(stream, n, [ny nx], sbin);
 
 data(1:graysize, :) = whiten(data(graysize, :));
-data((graysize+1:end, :) = whiten(data(graysize+1:end, :));
+data(graysize+1:end, :) = whiten(data(graysize+1:end, :));
 
 dict = lasso(data, k, iters, lambda, gamma);
 
