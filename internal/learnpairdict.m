@@ -44,14 +44,18 @@ if ~exist('sbin', 'var'),
   sbin = 8;
 end
 
+graysize = (ny+2)*(nx+2)*sbin^2;
+
 t = tic;
 
 stream = resolvestream(stream);
 data = getdata(stream, n, [ny nx], sbin);
-data = whiten(data);
+
+data(1:graysize, :) = whiten(data(graysize, :));
+data((graysize+1:end, :) = whiten(data(graysize+1:end, :));
+
 dict = lasso(data, k, iters, lambda, gamma);
 
-graysize = (ny+2)*(nx+2)*sbin^2;
 pd.dgray = dict(1:graysize, :);
 pd.dhog = dict(graysize+1:end, :);
 pd.n = n;
@@ -97,24 +101,21 @@ fprintf('\n');
 % whiten(in)
 %
 % Whitens the input feature with zero mean and unit variance
-function out = whiten(in),
-mu = mean(data,2);
-for i=1:size(data, 2),
+function data = whiten(data),
+fprintf('ihog: whiten: zero mean\n');
+mu = mean(data(:));
+for i=1:size(data,2),
   data(:, i) = data(:, i) - mu;
 end
-% unfortunately, matlab builtins use too much ram, so we do it the slow way
-% fortunately, this isn't too slow
-fprintf('ihog: whiten: compute std\n');
-sig = zeros(size(data,1),1);
-for i=1:size(data,2),
-  sig = sig + data(:,i).^2;
-end
-sig = sig / size(data,2);
-sig = sqrt(sig);
-sig(sig==0) = 1;
 fprintf('ihog: whiten: unit variance\n');
-for i=1:size(data, 2),
-  data(:, i) = data(:, i) ./ sig;
+sig = 0;
+for i=1:size(data,2),
+  sig = sig + sum(data(:, i).^2);
+end
+sig = sig / numel(data);
+sig = sqrt(sig);
+for i=1:size(data,2),
+  data(:, i) = data(:, i) / sig;
 end
 
 
@@ -127,7 +128,8 @@ function data = getdata(stream, n, dim, sbin),
 ny = dim(1);
 nx = dim(2);
 
-fprintf('ihog: initializing data stores\n');
+fprintf('ihog: allocating data store: %.02fGB\n', ...
+        (ny+2)*(nx+2)*sbin^2+ny*nx*32*n*4/1024/1024/1024);
 data = zeros((ny+2)*(nx+2)*sbin^2+ny*nx*32, n, 'single');
 c = 1;
 
