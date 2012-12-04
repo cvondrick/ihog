@@ -82,6 +82,9 @@ If you have any feedback, please write to Carl Vondrick at <vondrick@mit.edu>.
 References
 ----------
 
+The conference paper for this software is currently under submission. In
+the mean time, please see our technical report:
+
 [1] Carl Vondrick, Aditya Khosla, Tomasz Malisiewicz, Antonio Torralba.
 "Inverting and Visualizing Features for Object Detection." Technical Report.
 2013.
