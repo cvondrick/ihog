@@ -51,7 +51,7 @@ t = tic;
 stream = resolvestream(stream);
 data = getdata(stream, n, [ny nx], sbin);
 
-data(1:graysize, :) = whiten(data(graysize, :));
+data(1:graysize, :) = whiten(data(1:graysize, :));
 data(graysize+1:end, :) = whiten(data(graysize+1:end, :));
 
 dict = lasso(data, k, iters, lambda, gamma);
@@ -129,7 +129,7 @@ ny = dim(1);
 nx = dim(2);
 
 fprintf('ihog: allocating data store: %.02fGB\n', ...
-        (ny+2)*(nx+2)*sbin^2+ny*nx*32*n*4/1024/1024/1024);
+        ((ny+2)*(nx+2)*sbin^2+ny*nx*32)*n*4/1024/1024/1024);
 data = zeros((ny+2)*(nx+2)*sbin^2+ny*nx*32, n, 'single');
 c = 1;
 
