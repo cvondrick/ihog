@@ -13,6 +13,8 @@ buff = 10;
 if min(w(:)) < 0
   pos = padarray(pos, [buff buff], 0.5, 'both');
   neg = padarray(neg, [buff buff], 0.5, 'both');
+
+  im = [pos neg];
 else
   im = pos;
 end

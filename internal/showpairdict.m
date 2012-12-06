@@ -18,7 +18,7 @@ sbin = pd.sbin;
 gny = (hny+2)*sbin;
 gnx = (hnx+2)*sbin;
 
-bord = 5;
+bord = 10;
 cy = (gny+bord);
 cx = (gnx*2+bord);
 

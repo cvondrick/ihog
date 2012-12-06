@@ -26,13 +26,13 @@ if ~exist('k', 'var'),
   k = 100;
 end
 if ~exist('ny', 'var'),
-  ny = 3;
+  ny = 5;
 end
 if ~exist('nx', 'var'),
-  nx = 3;
+  nx = 5;
 end
 if ~exist('lambda', 'var'),
-  lambda = 0.1;
+  lambda = 1;
 end
 if ~exist('gamma', 'var'),
   gamma = 0.05;
@@ -80,21 +80,19 @@ param.K = k;
 param.lambda = lambda;
 param.mode = 2;
 param.modeD = 0;
-param.gamma1 = gamma;
 param.iter = 100;
-param.numThreads = -1;
-param.verbose = 0;
+param.numThreads = 12;
+param.verbose = 1;
 param.batchsize = 400;
 
-fprintf('ihog: lasso: ');
+fprintf('ihog: lasso\n');
 model = struct();
 for i=1:(iters/param.iter),
-  fprintf('.');
+  fprintf('ihog: lasso: master iteration #%i\n', i);
   [dict, model] = mexTrainDL(data, param, model);
   model.iter = i*param.iter;
   param.D = dict;
 end
-fprintf('\n');
 
 
 
@@ -105,17 +103,11 @@ function data = whiten(data),
 fprintf('ihog: whiten: zero mean\n');
 mu = mean(data(:));
 for i=1:size(data,2),
-  data(:, i) = data(:, i) - mu;
+  data(:, i) = data(:, i) - mean(data(:, i));
 end
 fprintf('ihog: whiten: unit variance\n');
-sig = 0;
 for i=1:size(data,2),
-  sig = sig + sum(data(:, i).^2);
-end
-sig = sig / numel(data);
-sig = sqrt(sig);
-for i=1:size(data,2),
-  data(:, i) = data(:, i) / sig;
+  data(:, i) = data(:, i) / (std(data(:, i)) + 1);
 end
 
 
