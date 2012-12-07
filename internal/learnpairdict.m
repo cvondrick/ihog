@@ -9,7 +9,6 @@
 %   k         The size of the dictionary
 %   dim       The size of the template patch to invert
 %   lambda    Sparsity regularization parameter on alpha
-%   gamma     Dictionary L2 regularization parameter
 %   iters     Number of iterations 
 %   sbin      The HOG bin size
 % 
@@ -17,25 +16,22 @@
 %   dgray     A dictionary of gray elements
 %   dhog      A dictionary of HOG elements
 
-function pd = learnpairdict(stream, n, k, ny, nx, lambda, gamma, iters, sbin),
+function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, sbin),
 
 if ~exist('n', 'var'),
    n = 100000;
 end
 if ~exist('k', 'var'),
-  k = 100;
+  k = 1000;
 end
 if ~exist('ny', 'var'),
-  ny = 3;
+  ny = 5;
 end
 if ~exist('nx', 'var'),
-  nx = 3;
+  nx = 5;
 end
 if ~exist('lambda', 'var'),
-  lambda = 0.1;
-end
-if ~exist('gamma', 'var'),
-  gamma = 0.05;
+  lambda = 0.02; % 0.02 is best so far
 end
 if ~exist('iters', 'var'),
   iters = 2000;
@@ -44,14 +40,18 @@ if ~exist('sbin', 'var'),
   sbin = 8;
 end
 
+graysize = (ny+2)*(nx+2)*sbin^2;
+
 t = tic;
 
 stream = resolvestream(stream);
 data = getdata(stream, n, [ny nx], sbin);
-data = whiten(data);
-dict = lasso(data, k, iters, lambda, gamma);
 
-graysize = (ny+2)*(nx+2)*sbin^2;
+data(1:graysize, :) = whiten(data(1:graysize, :));
+data(graysize+1:end, :) = whiten(data(graysize+1:end, :));
+
+dict = lasso(data, k, iters, lambda);
+
 pd.dgray = dict(1:graysize, :);
 pd.dhog = dict(graysize+1:end, :);
 pd.n = n;
@@ -61,7 +61,6 @@ pd.nx = nx;
 pd.sbin = sbin;
 pd.iters = iters;
 pd.lambda = lambda;
-pd.gamma = gamma;
 
 fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 
@@ -70,37 +69,41 @@ fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 % lasso(data)
 %
 % Learns the pair of dictionaries for the data terms.
-function dict = lasso(data, k, iters, lambda, gamma),
+function dict = lasso(data, k, iters, lambda),
 
 param.K = k;
 param.lambda = lambda;
 param.mode = 2;
 param.modeD = 0;
-param.gamma1 = gamma;
 param.iter = 100;
-param.numThreads = -1;
-param.verbose = 0;
+param.numThreads = 12;
+param.verbose = 1;
 param.batchsize = 400;
 
-fprintf('ihog: lasso: ');
+fprintf('ihog: lasso\n');
 model = struct();
 for i=1:(iters/param.iter),
-  fprintf('.');
+  fprintf('ihog: lasso: master iteration #%i\n', i);
   [dict, model] = mexTrainDL(data, param, model);
   model.iter = i*param.iter;
   param.D = dict;
 end
-fprintf('\n');
 
 
 
 % whiten(in)
 %
 % Whitens the input feature with zero mean and unit variance
-function out = whiten(in),
-fprintf('ihog: whiten data\n');
-out=bsxfun(@minus, in, mean(in)); 
-out=bsxfun(@rdivide, out, sqrt(sum(out.^2) + 1));
+function data = whiten(data),
+fprintf('ihog: whiten: zero mean\n');
+mu = mean(data(:));
+for i=1:size(data,2),
+  data(:, i) = data(:, i) - mean(data(:, i));
+end
+fprintf('ihog: whiten: unit variance\n');
+for i=1:size(data,2),
+  data(:, i) = data(:, i) / (sqrt(sum(data(:, i).^2) + 1));
+end
 
 
 
@@ -112,7 +115,8 @@ function data = getdata(stream, n, dim, sbin),
 ny = dim(1);
 nx = dim(2);
 
-fprintf('ihog: initializing data stores\n');
+fprintf('ihog: allocating data store: %.02fGB\n', ...
+        ((ny+2)*(nx+2)*sbin^2+ny*nx*32)*n*4/1024/1024/1024);
 data = zeros((ny+2)*(nx+2)*sbin^2+ny*nx*32, n, 'single');
 c = 1;
 
@@ -163,9 +167,10 @@ if isstr(stream),
   files = dir(stream);
   clear stream;
   c = 1;
+  iii = randperm(length(files));
   for i=1:length(files);
-    if ~files(i).isdir,
-      stream{c} = [directory '/' files(i).name];
+    if ~files(iii(i)).isdir,
+      stream{c} = [directory '/' files(iii(i)).name];
       c = c + 1;
     end
   end
