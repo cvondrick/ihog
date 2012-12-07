@@ -22,7 +22,7 @@ if ~exist('n', 'var'),
    n = 100000;
 end
 if ~exist('k', 'var'),
-  k = 100;
+  k = 1000;
 end
 if ~exist('ny', 'var'),
   ny = 5;
