@@ -38,7 +38,7 @@ image on a modern computer.
 Visualizing HOG
 ---------------
 
-iHOG has functions to visualize HOG. The most basic is 'visualizeHOG()':
+iHOG has several functions to visualize HOG. The most basic is 'visualizeHOG()':
 
     >> feat = features(im, 8);
     >> visualizeHOG(feat);
@@ -47,7 +47,17 @@ The above displays a figure with the HOG glyph and the HOG inverse. This
 visualization is a drop-in replacement for more standard visualizations, and
 should work with existing code bases.
 
-Other visualizations are available. Check out the 'visualizations/' folder and
+Other visualizations are available. For example, the de-facto HOG has
+signed components, unsigned components, as well as texture components. 'dissectHOG()' 
+visualizes each of these components invidually: 
+
+    >> dissectHOG(feat);
+
+A similar visualization 'spreadHOG()' shows each dimension individually:
+
+    >> spreadHOG(feat);
+
+More visualizations are available. Check out the 'visualizations/' folder and
 read the comments for more.
 
 Learning
