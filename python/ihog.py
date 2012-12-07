@@ -109,10 +109,7 @@ if __name__ == "__main__":
     import Image
     import features
     im = Image.open("../2007_000272.jpg")
-    im = im.resize((int(im.size[0] * .5), int(im.size[1] * .5)))
     feat = features.hog(im)
-    print feat[0,0,:]
-    raise SystemExit()
     im = invertHOG(feat)
     im = Image.fromarray(im)
     im.convert("RGB").save("out.jpg")

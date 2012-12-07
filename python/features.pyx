@@ -184,10 +184,6 @@ cpdef hog(im, int sbin = 8):
                 if h4 > 0.2:
                     h4 = 0.2
                 feat[y, x, 18+o] = 0.5 * (h1 + h2 + h3 + h4)
-                t1 += h1
-                t2 += h2
-                t3 += h3
-                t4 += h4
                 srcptr += blocks0 * blocks1
 
             feat[y, x, 27] = 0.2357 * t1
