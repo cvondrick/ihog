@@ -33,7 +33,8 @@ To invert a HOG point, use the 'invertHOG()' function:
     >> imagesc(ihog); axis image;
 
 Computing the inverse should take no longer than a second for a typical sized
-image on a modern computer.
+image on a modern computer. (It may slower the first time you invoke it as it
+caches the paired dictionary from disk.)
 
 Visualizing HOG
 ---------------
