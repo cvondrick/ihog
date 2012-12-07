@@ -1,6 +1,19 @@
 """
 This file implements the paired dictionary inference algorithm for HOG
 inversion with Python. For learning the dictionary, see the MATLAB port.
+
+Usage is simple:
+
+    >>> import ihog
+    >>> ihog = invertHOG(feat)
+
+invertHOG() returns a numpy array. If you want an image, you can
+convert it to an image with Python Image Library:
+
+    >>> import Image
+    >>> im = Image.fromarray(ihog).convert("RGB")
+
+You can then display im on the screen, or save it to disk.
 """
 
 import os

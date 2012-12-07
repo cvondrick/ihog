@@ -1,2 +1,4 @@
 *.pyc
 *.pyo
+features.cc
+features.so
