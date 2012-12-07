@@ -45,7 +45,7 @@ cpdef hog(im, int sbin = 8):
     cdef int x, y, o, q
     cdef int dstptr, srcptr
 
-    width, height = im.size
+    height, width = im.size
     blocks0 = height / sbin 
     blocks1 = width / sbin
 
@@ -93,7 +93,7 @@ cpdef hog(im, int sbin = 8):
             best_dot = 0.
             best_o = 0
             for o from 0 <= o < 9:
-                dot = fabs(uu[o] * dx + vv[o] * dy)
+                dot = uu[o] * dx + vv[o] * dy
                 if dot > best_dot:
                     best_dot = dot
                     best_o = o
@@ -126,7 +126,9 @@ cpdef hog(im, int sbin = 8):
     # compute energy in each block by summing over orientations
     for o from 0 <= o < 9:
         for q from 0 <= q < blocks0 * blocks1:
-            norm[q] += hist[o * blocks0 * blocks1 + q] * hist[o * blocks0 * blocks1 + q] 
+            norm[q] += ((hist[o*blocks0*blocks1+q] + hist[(o+9)*blocks0*blocks1+q]) * 
+                        (hist[o*blocks0*blocks1+q] + hist[(o+9)*blocks0*blocks1+q]))
+
 
     # compute normalized values 
     for x from 0 <= x < out1:
@@ -146,7 +148,7 @@ cpdef hog(im, int sbin = 8):
             t4 = 0
 
             srcptr = (x+1) * blocks0 + y + 1
-            for o from 0 <= o < 19:
+            for o from 0 <= o < 18:
                 h1 = hist[srcptr] * n1
                 h2 = hist[srcptr] * n2
                 h3 = hist[srcptr] * n3
@@ -169,13 +171,10 @@ cpdef hog(im, int sbin = 8):
             srcptr = (x+1) * blocks0 + y + 1
             for o from 0 <= o < 9:
                 s = hist[srcptr] + hist[srcptr + 9*blocks0*blocks1]
-                h1 = hist[srcptr] * n1
-                h2 = hist[srcptr] * n2
-                h3 = hist[srcptr] * n3
-                h4 = hist[srcptr] * n4
-                # for some reason, gcc will not automatically inline
-                # the min function here, so we just do it ourselves
-                # for impressive speedups
+                h1 = s * n1
+                h2 = s * n2
+                h3 = s * n3
+                h4 = s * n4
                 if h1 > 0.2:
                     h1 = 0.2
                 if h2 > 0.2:

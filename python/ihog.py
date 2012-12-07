@@ -34,7 +34,7 @@ class PairedDictionary(object):
 
     @classmethod
     def load(cls, filepath):
-        mat = scipy.io.loadmat(filepath)
+        mat = scipy.io.loadmat(filepath, struct_as_record = True)
 
         sbin = mat['sbin'][0][0]
         lambda1 = mat['lambda'][0][0]
@@ -107,6 +107,12 @@ def invertHOG(feat, pd = None):
 
 if __name__ == "__main__":
     import Image
-    im = invertHOG(random.random((10, 10, 32)))
+    import features
+    im = Image.open("../2007_000272.jpg")
+    im = im.resize((int(im.size[0] * .5), int(im.size[1] * .5)))
+    feat = features.hog(im)
+    print feat[0,0,:]
+    raise SystemExit()
+    im = invertHOG(feat)
     im = Image.fromarray(im)
     im.convert("RGB").save("out.jpg")
