@@ -74,7 +74,8 @@ def invertHOG(feat, pd = None):
     c = 0
     for i in range(ny - pd.ny + 1):
         for j in range(nx - pd.nx + 1):
-            patch = recon[:, c].reshape(((pd.ny+2)*pd.sbin, (pd.nx+2)*pd.sbin))
+            patch = recon[:, c].reshape(((pd.ny+2)*pd.sbin,
+                                        (pd.nx+2)*pd.sbin))
 
             im[i*pd.sbin:i*pd.sbin+(pd.ny+2)*pd.sbin,
                j*pd.sbin:j*pd.sbin+(pd.nx+2)*pd.sbin] += patch
@@ -82,7 +83,6 @@ def invertHOG(feat, pd = None):
                     j*pd.sbin:j*pd.sbin+(pd.nx+2)*pd.sbin] += 1
 
             c = c + 1
-
 
     im = divide(im, weights)
     im -= im.flatten().min()
