@@ -52,4 +52,6 @@ fprintf('\n');
 
 im = im(1:end-bord, 1:end-bord);
 
-imagesc(im); axis image;
+imagesc(im);
+axis image;
+colormap gray;

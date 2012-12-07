@@ -9,7 +9,6 @@
 %   k         The size of the dictionary
 %   dim       The size of the template patch to invert
 %   lambda    Sparsity regularization parameter on alpha
-%   gamma     Dictionary L2 regularization parameter
 %   iters     Number of iterations 
 %   sbin      The HOG bin size
 % 
@@ -17,7 +16,7 @@
 %   dgray     A dictionary of gray elements
 %   dhog      A dictionary of HOG elements
 
-function pd = learnpairdict(stream, n, k, ny, nx, lambda, gamma, iters, sbin),
+function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, sbin),
 
 if ~exist('n', 'var'),
    n = 100000;
@@ -32,10 +31,7 @@ if ~exist('nx', 'var'),
   nx = 5;
 end
 if ~exist('lambda', 'var'),
-  lambda = 1;
-end
-if ~exist('gamma', 'var'),
-  gamma = 0.05;
+  lambda = 0.02; % 0.02 is best so far
 end
 if ~exist('iters', 'var'),
   iters = 2000;
@@ -54,7 +50,7 @@ data = getdata(stream, n, [ny nx], sbin);
 data(1:graysize, :) = whiten(data(1:graysize, :));
 data(graysize+1:end, :) = whiten(data(graysize+1:end, :));
 
-dict = lasso(data, k, iters, lambda, gamma);
+dict = lasso(data, k, iters, lambda);
 
 pd.dgray = dict(1:graysize, :);
 pd.dhog = dict(graysize+1:end, :);
@@ -65,7 +61,6 @@ pd.nx = nx;
 pd.sbin = sbin;
 pd.iters = iters;
 pd.lambda = lambda;
-pd.gamma = gamma;
 
 fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 
@@ -74,7 +69,7 @@ fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 % lasso(data)
 %
 % Learns the pair of dictionaries for the data terms.
-function dict = lasso(data, k, iters, lambda, gamma),
+function dict = lasso(data, k, iters, lambda),
 
 param.K = k;
 param.lambda = lambda;
@@ -107,7 +102,7 @@ for i=1:size(data,2),
 end
 fprintf('ihog: whiten: unit variance\n');
 for i=1:size(data,2),
-  data(:, i) = data(:, i) / (std(data(:, i)) + 1);
+  data(:, i) = data(:, i) / (sqrt(sum(data(:, i).^2) + 1));
 end
 
 
@@ -172,9 +167,10 @@ if isstr(stream),
   files = dir(stream);
   clear stream;
   c = 1;
+  iii = randperm(length(files));
   for i=1:length(files);
-    if ~files(i).isdir,
-      stream{c} = [directory '/' files(i).name];
+    if ~files(iii(i)).isdir,
+      stream{c} = [directory '/' files(iii(i)).name];
       c = c + 1;
     end
   end
