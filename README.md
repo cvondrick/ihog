@@ -47,9 +47,8 @@ The above displays a figure with the HOG glyph and the HOG inverse. This
 visualization is a drop-in replacement for more standard visualizations, and
 should work with existing code bases.
 
-Other visualizations are available. For example, the de-facto HOG has
-signed components, unsigned components, as well as texture components. 'dissectHOG()' 
-visualizes each of these components invidually: 
+The de-facto HOG has signed components, unsigned components, as well as texture
+components. 'dissectHOG()' visualizes each of these components invidually: 
 
     >> dissectHOG(feat);
 
