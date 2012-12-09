@@ -45,9 +45,9 @@ cpdef hog(im, int sbin = 8):
     cdef int x, y, o, q
     cdef int dstptr, srcptr
 
-    height, width = im.size
-    blocks0 = height / sbin 
-    blocks1 = width / sbin
+    width, height = im.size
+    blocks0 = round(height / <double>(sbin))
+    blocks1 = round(width / <double>(sbin))
 
     out0 = blocks0 - 2
     out1 = blocks1 - 2
@@ -66,8 +66,8 @@ cpdef hog(im, int sbin = 8):
     norm = np.zeros(shape=(blocks0 * blocks1), dtype=np.double)
     feat = np.zeros(shape=(out0, out1, out2), dtype=np.double)
 
-    for x from 1 <= x < visible1 - 1:
-        for y from 1 <= y < visible0 - 1:
+    for x from 1 <= x < width-1:
+        for y from 1 <= y < height-1:
             dy = data[y + 1, x, cc0] - data[y - 1, x, cc0]
             dx = data[y, x + 1, cc0] - data[y, x - 1, cc0]
             v = dx * dx + dy * dy

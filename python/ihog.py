@@ -20,6 +20,9 @@ import os
 import scipy.io
 from numpy import *
 import spams
+import logging
+
+logger = logging.getLogger("ihog")
 
 class PairedDictionary(object):
     def __init__(self, dgray, dhog, n, k, ny, nx, lambda1, sbin):
@@ -59,6 +62,7 @@ def invertHOG(feat, pd = None):
     if not pd:
         global pdcache
         if pdcache is None:
+            logger.debug("Loading PD")
             filepath = "{0}/../pd.mat".format(
                 os.path.dirname(os.path.abspath(__file__)))
             pdcache = PairedDictionary.load(filepath)
@@ -67,6 +71,7 @@ def invertHOG(feat, pd = None):
     ny = feat.shape[0]
     nx = feat.shape[1]
 
+    logger.debug("Construct lasso problem")
     windows = zeros((pd.ny*pd.nx*32, (ny-pd.ny+1)*(nx-pd.nx+1)),
                     dtype = float64, order = 'F')
     c = 0
@@ -78,10 +83,13 @@ def invertHOG(feat, pd = None):
             windows[:, c] = hog
             c += 1
 
+    logger.debug("Solve lasso problem")
     alpha = spams.lasso(windows, pd.dhog, lambda1 = pd.lambda1, mode = 2)
 
+    logger.debug("Reconstructing image patches")
     recon = dot(pd.dgray, alpha.todense())
 
+    logger.debug("Stiching patches")
     im = zeros(((ny+2)*pd.sbin, (nx+2)*pd.sbin))
     weights = zeros(((ny+2)*pd.sbin, (nx+2)*pd.sbin))
     c = 0
@@ -108,8 +116,11 @@ def invertHOG(feat, pd = None):
 if __name__ == "__main__":
     import Image
     import features
+    logging.basicConfig(level = logging.DEBUG)
     im = Image.open("../2007_000272.jpg")
+    #im = im.resize((int(im.size[0] * .5), int(im.size[1] * .5)))
     feat = features.hog(im)
+    scipy.io.savemat("features-python.mat", {'pyfeat': feat})
     im = invertHOG(feat)
     im = Image.fromarray(im)
     im.convert("RGB").save("out.jpg")
