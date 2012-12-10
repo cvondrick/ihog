@@ -53,13 +53,9 @@ while true,
     glyph(glyph < 0) = 0;
     glyph = repmat(glyph, [1 1 3]);
 
-    im = padarray(im, [10 10], 0.5);
-    ihog = padarray(ihog, [10 10], 0.5);
-    glyph = padarray(glyph, [10 10], 0.5);
-
-    vis = [glyph ihog im];
-
-    imwrite(vis, [outdir '/' files(i).name]);
+    imwrite(glyph, [outdir '/glyph-' files(i).name]);
+    imwrite(ihog, [outdir '/ihog-' files(i).name]);
+    imwrite(im, [outdir '/original-' files(i).name]);
 
     fprintf(', done in %f.2fs\n', toc(t));
 
