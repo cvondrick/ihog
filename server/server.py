@@ -30,7 +30,7 @@ show you a visualization of how a computer might see it.</p>
 <td></td><td>or</td></tr>
 <tr><td>&nbsp;</td></tr><tr>
 <td><strong>URL:</strong></td>
-<td><input type="text" id="url" name="url" size="50" value="http://"></td>
+<td><input type="text" id="url" name="url" style="width:300px;" value="http://"></td>
 <td><input type="submit" value="Process"></td>
 </tr>
 <tr><td>&nbsp;</td></tr><tr>
@@ -83,11 +83,17 @@ def process():
             return "File does not appear to be an image."
         image.convert("RGB").save("/scratch/hallucination-daemon/images/{0}.jpg".format(id))
 
-        while True:
-            if os.path.exists("/scratch/hallucination-daemon/out/original-{0}.jpg".format(id)):
-                redirect("/show/{0}".format(id))
+        redirect("/wait/{0}".format(id))
     else:
         return "You did not upload a file."
+
+@route('/wait/<id>')
+def wait(id):
+    if os.path.exists("/scratch/hallucination-daemon/out/original-{0}.jpg".format(id)):
+        redirect("/show/{0}".format(id))
+    else:
+        return "<html><head><title>Processing...</title></head><body><div style='margin-top : 50px; text-align:center;'>One second please...</div><script>window.setTimeout(function() {{ window.location.reload(); }}, 500);</script></body></html>".format(id)
+    
 
 @route('/show/<id>')
 def show(id):
@@ -119,4 +125,5 @@ def show(id):
 def getimage(id):
     return static_file("{0}.jpg".format(id), root="/scratch/hallucination-daemon/out")
 
-run(host="africa.csail.mit.edu", port=8080, debug=True, reloader=True)
+import socket
+run(host="{0}.csail.mit.edu".format(socket.gethostname()), port=8080, debug=True, reloader=True)
