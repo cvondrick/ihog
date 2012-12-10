@@ -2,6 +2,7 @@ from bottle import route, run, request, static_file, redirect
 import random
 import Image
 import os
+import urllib2
 
 @route('/')
 @route('/index')
@@ -13,10 +14,13 @@ def index():
 <p>How do computers see the world? Upload a photo, and we'll
 show you a visualization of how a computer might see it.</p>
 <form action="/process" method="post" enctype="multipart/form-data">
-<input type="file" name="data">
+<strong>Upload:</strong> <input type="file" name="data">
+<input type="submit" value="Process"><br>
+<br>or<br><br>
+<strong>URL:</strong> <input type="text" name="url" size="40">
 <input type="submit" value="Process">
 </form>
-<p>This demo is part of a research project to visualize how computers see the world. <a href="http://mit.edu/vondrick/ihog">Learn more &raquo;</a></p>
+<p>Wondering what's going on? <a href="http://mit.edu/vondrick/ihog">Learn more &raquo;</a></p>
 </body>
 </html>"""
     return resp
@@ -26,15 +30,20 @@ def process():
     buffersize = 1024 * 1024
     maxfilesize = 1024 * 1024 * 100
     data = request.files.data
+    datafile = None
     if data and data.file:
+        datafile = data.file
+    elif not data and request.forms.url:
+        datafile = urllib2.urlopen(request.forms.url)
+    if datafile:
         id = random.randint(0, 999999999999)
         print id
         with open("/scratch/hallucination-daemon/staging/{0}".format(id), "w") as f:
-            buffer = data.file.read(buffersize)
+            buffer = datafile.read(buffersize)
             f.write(buffer)
             bytesread = buffersize
             while buffer != "":
-                buffer = data.file.read(buffersize)
+                buffer = datafile.read(buffersize)
                 f.write(buffer)
                 bytesread += buffersize
                 if bytesread > maxfilesize:
@@ -58,10 +67,10 @@ def show(id):
 <div style="margin:20px auto; width:1000px;">
 <h1>HOG Glasses</h1>
 <p>The left shows the image you uploaded. The right shows how a computer sees the same photo. Notice how likely shadows are removed, fine details are lost, and noise is added. <a href="/">Upload another image &raquo;</a></p>
-<table><tr><th>What You See</th><th>What Computers See</th></tr><tr><td>
+<table><tr><th>What You See</th><th>What Computers See</th></tr><tr><td style="padding:20px;">
 <img src="/getimage/original-{0}">
 </td>
-<td>
+<td style="padding:20px;">
 <img src="/getimage/ihog-{0}">
 </td>
 </tr>
