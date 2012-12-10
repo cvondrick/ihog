@@ -7,20 +7,26 @@ import urllib2
 @route('/')
 @route('/index')
 def index():
-    resp = """<html><head><title>iHOG Demo</title></head>
+    resp = """<html><head><title>HOG Glasses</title></head>
 <body style="background-color:#EFEFEF;font-family:Arial;">
 <div style="margin : 20px auto; padding:20px; background-color:#fff;width:450px;">
 <h1>HOG Glasses</h1>
 <p>How do computers see the world? Upload a photo, and we'll
 show you a visualization of how a computer might see it.</p>
 <form action="/process" method="post" enctype="multipart/form-data">
-<strong>Upload:</strong> <input type="file" name="data">
-<input type="submit" value="Process"><br>
-<br>or<br><br>
-<strong>URL:</strong> <input type="text" name="url" size="40">
-<input type="submit" value="Process">
+<table><tr>
+<td><strong>Upload:</strong></td><td><input type="file" name="data"></td>
+<td><input type="submit" value="Process"></td>
+</tr><td>&nbsp;</td></tr><tr>
+<td></td><td>or</td></tr>
+<tr><td>&nbsp;</td></tr><tr>
+<td><strong>URL:</strong></td>
+<td><input type="text" name="url" size="50" value="http://"></td>
+<td><input type="submit" value="Process"></td>
+</tr>
+</table>
 </form>
-<p>Wondering what's going on? <a href="http://mit.edu/vondrick/ihog">Learn more &raquo;</a></p>
+<p>Wondering how this works? <a href="http://mit.edu/vondrick/ihog">Learn more &raquo;</a></p>
 </body>
 </html>"""
     return resp
@@ -62,14 +68,13 @@ def process():
 
 @route('/show/<id>')
 def show(id):
-    resp = """<html><head><title>iHOG Demo</title></head>
+    resp = """<html><head><title>HOG Glasses</title></head>
 <body style="font-family:Arial;">
 <div style="margin:20px auto; width:500px;">
 <h1>HOG Glasses</h1>
 <p>The left shows the image you uploaded. The right shows how a computer sees the same photo. Notice how shadows are removed, fine details are lost, and the image is more noisey. <a href="/">Upload another image &raquo;</a></p>
 </div>
-<div style="margin:0 auto; width:1000px;">
-<table><tr><th>What You See</th><th>What Computers See</th></tr><tr><td style="padding:0 20px;">
+<table style="margin:0 auto;"><tr><th>What You See</th><th>What Computers See</th></tr><tr><td style="padding:0 20px;">
 <img src="/getimage/original-{0}">
 </td>
 <td style="padding:0 20px;">
@@ -77,7 +82,6 @@ def show(id):
 </td>
 </tr>
 </table>
-</div>
 </body>
 </html>""".format(id)
     return resp
@@ -86,4 +90,4 @@ def show(id):
 def getimage(id):
     return static_file("{0}.jpg".format(id), root="/scratch/hallucination-daemon/out")
 
-run(host="africa.csail.mit.edu", port=8080, debug=True)
+run(host="africa.csail.mit.edu", port=8080, debug=True, reloader=True)
