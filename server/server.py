@@ -10,7 +10,7 @@ def index():
     resp = """<html><head><title>HOG Glasses</title></head>
 <body style="background-color:#EFEFEF;font-family:Arial;">
 <div style="margin : 20px auto; padding:20px; background-color:#fff;width:450px;">
-<h1>HOG Glasses</h1>
+<h1 style="text-align:center;">HOG Glasses</h1>
 <script>
 function go(url) {
 document.getElementById("url").value = url;
@@ -39,12 +39,12 @@ show you a visualization of how a computer might see it.</p>
 </tr>
 <tr><td>&nbsp;</td></tr><tr>
 <td><strong>Click One:</strong> </td>
-<td>
-<img src="http://www.brynosaurus.com/img/dscn5239.jpg" height="45" onclick="go(this.src);">
-<img src="http://www.cs.ubc.ca/~murphyk/Vision/placeRecognition_files/antonio_helmet.jpg" height="45" onclick="go(this.src);">
-<img src="http://familyofficesgroup.com/wp-content/uploads/2012/02/Boston_Ma.jpg" height="45" onclick="go(this.src);">
-<img src="http://web.mit.edu/jessiehl/Public/cannonhack2.jpg" height="45" onclick="go(this.src);">
-<img src="http://cloudfront2.bostinno.com/wp-content/uploads/2012/10/Campus-Police-Car-on-the-Great-Dome.jpeg" height="45" onclick="go(this.src);">
+<td colspan="2">
+<img src="http://www.brynosaurus.com/img/dscn5239.jpg" height="50" onclick="go(this.src);">
+<img src="http://www.cs.ubc.ca/~murphyk/Vision/placeRecognition_files/antonio_helmet.jpg" height="50" onclick="go(this.src);">
+<img src="http://familyofficesgroup.com/wp-content/uploads/2012/02/Boston_Ma.jpg" height="50" onclick="go(this.src);">
+<img src="http://web.mit.edu/jessiehl/Public/cannonhack2.jpg" height="50" onclick="go(this.src);">
+<img src="http://cloudfront2.bostinno.com/wp-content/uploads/2012/10/Campus-Police-Car-on-the-Great-Dome.jpeg" height="50" onclick="go(this.src);">
 </td>
 </tr>
 </table>
