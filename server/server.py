@@ -7,11 +7,16 @@ import os
 @route('/index')
 def index():
     resp = """<html><head><title>iHOG Demo</title></head>
-<body>
+<body style="background-color:#EFEFEF;font-family:Arial;">
+<div style="margin : 20px auto; padding:20px; background-color:#fff;width:450px;">
+<h1>HOG Glasses</h1>
+<p>How do computers see the world? Upload a photo, and we'll
+show you a visualization of how a computer might see it.</p>
 <form action="/process" method="post" enctype="multipart/form-data">
 <input type="file" name="data">
 <input type="submit" value="Process">
 </form>
+<p>This demo is part of a research project to visualize how computers see the world. <a href="http://mit.edu/vondrick/ihog">Learn more &raquo;</a></p>
 </body>
 </html>"""
     return resp
@@ -38,10 +43,10 @@ def process():
             image = Image.open("/scratch/hallucination-daemon/staging/{0}".format(id))        
         except:
             return "File does not appear to be an image."
-        image.save("/scratch/hallucination-daemon/images/{0}.jpg".format(id))
+        image.convert("RGB").save("/scratch/hallucination-daemon/images/{0}.jpg".format(id))
 
         while True:
-            if os.path.exists("/scratch/hallucination-daemon/out/{0}.jpg".format(id)):
+            if os.path.exists("/scratch/hallucination-daemon/out/original-{0}.jpg".format(id)):
                 redirect("/show/{0}".format(id))
     else:
         return "You did not upload a file."
@@ -49,8 +54,19 @@ def process():
 @route('/show/<id>')
 def show(id):
     resp = """<html><head><title>iHOG Demo</title></head>
-<body>
-<img src="/getimage/{0}">
+<body style="font-family:Arial;">
+<div style="margin:20px auto; width:1000px;">
+<h1>HOG Glasses</h1>
+<p>The left shows the image you uploaded. The right shows how a computer sees the same photo. Notice how likely shadows are removed, fine details are lost, and noise is added. <a href="/">Upload another image &raquo;</a></p>
+<table><tr><th>What You See</th><th>What Computers See</th></tr><tr><td>
+<img src="/getimage/original-{0}">
+</td>
+<td>
+<img src="/getimage/ihog-{0}">
+</td>
+</tr>
+</table>
+</div>
 </body>
 </html>""".format(id)
     return resp
