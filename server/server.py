@@ -64,13 +64,15 @@ def process():
 def show(id):
     resp = """<html><head><title>iHOG Demo</title></head>
 <body style="font-family:Arial;">
-<div style="margin:20px auto; width:1000px;">
+<div style="margin:20px auto; width:500px;">
 <h1>HOG Glasses</h1>
-<p>The left shows the image you uploaded. The right shows how a computer sees the same photo. Notice how likely shadows are removed, fine details are lost, and noise is added. <a href="/">Upload another image &raquo;</a></p>
-<table><tr><th>What You See</th><th>What Computers See</th></tr><tr><td style="padding:20px;">
+<p>The left shows the image you uploaded. The right shows how a computer sees the same photo. Notice how shadows are removed, fine details are lost, and the image is more noisey. <a href="/">Upload another image &raquo;</a></p>
+</div>
+<div style="margin:0 auto; width:1000px;">
+<table><tr><th>What You See</th><th>What Computers See</th></tr><tr><td style="padding:0 20px;">
 <img src="/getimage/original-{0}">
 </td>
-<td style="padding:20px;">
+<td style="padding:0 20px;">
 <img src="/getimage/ihog-{0}">
 </td>
 </tr>
