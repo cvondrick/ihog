@@ -7,10 +7,14 @@ import urllib2
 @route('/')
 @route('/index')
 def index():
-    resp = """<html><head><title>HOG Glasses</title></head>
-<body style="background-color:#EFEFEF;font-family:Arial;">
-<div style="margin : 20px auto; padding:20px; background-color:#fff;width:450px;">
-<h1 style="text-align:center;">HOG Glasses</h1>
+    resp = "<html><head><title>HOG Glasses</title></head>"
+
+    if request.query.embed:
+        resp = resp + """<body style="background-color:#fff;font-family:Arial;padding:0;margin:0;"><div style="width:400px;">"""
+    else:
+        resp = resp + """<body style="background-color:#EFEFEF;font-family:Arial;padding:0;margin:0;"><div style="width:400px;padding:25px;margin:50px auto; background-color:#fff;"><h1>HOG Glasses</h1>"""
+
+    resp = resp + """
 <script>
 function go(url) {
 document.getElementById("url").value = url;
@@ -21,8 +25,8 @@ document.forms["form"].submit();
 img { cursor : pointer; }
 </style>
 <p>How do computers see the world? Upload a photo, and we'll
-show you a visualization of how a computer might see it.</p>
-<form action="/process" id="form" method="post" enctype="multipart/form-data">
+show you!</p>
+<form target="_parent" action="/process" id="form" method="post" enctype="multipart/form-data">
 <table><tr>
 <td><strong>Upload:</strong></td><td><input type="file" name="data"></td>
 <td><input type="submit" value="Process"></td>
@@ -30,7 +34,7 @@ show you a visualization of how a computer might see it.</p>
 <td></td><td>or</td></tr>
 <tr><td>&nbsp;</td></tr><tr>
 <td><strong>URL:</strong></td>
-<td><input type="text" id="url" name="url" style="width:300px;" value="http://"></td>
+<td><input type="text" id="url" name="url" style="width:250px;" value="http://"></td>
 <td><input type="submit" value="Process"></td>
 </tr>
 <tr><td>&nbsp;</td></tr><tr>
@@ -40,16 +44,21 @@ show you a visualization of how a computer might see it.</p>
 <tr><td>&nbsp;</td></tr><tr>
 <td><strong>Click One:</strong> </td>
 <td colspan="2">
-<img src="http://www.brynosaurus.com/img/dscn5239.jpg" height="50" onclick="go(this.src);">
-<img src="http://www.cs.ubc.ca/~murphyk/Vision/placeRecognition_files/antonio_helmet.jpg" height="50" onclick="go(this.src);">
-<img src="http://familyofficesgroup.com/wp-content/uploads/2012/02/Boston_Ma.jpg" height="50" onclick="go(this.src);">
-<img src="http://web.mit.edu/jessiehl/Public/cannonhack2.jpg" height="50" onclick="go(this.src);">
-<img src="http://cloudfront2.bostinno.com/wp-content/uploads/2012/10/Campus-Police-Car-on-the-Great-Dome.jpeg" height="50" onclick="go(this.src);">
+<img src="http://www.brynosaurus.com/img/dscn5239.jpg" height="45" onclick="go(this.src);">
+<img src="http://www.cs.ubc.ca/~murphyk/Vision/placeRecognition_files/antonio_helmet.jpg" height="45" onclick="go(this.src);">
+<img src="http://web.mit.edu/jessiehl/Public/cannonhack2.jpg" height="45" onclick="go(this.src);">
+<img src="http://familyofficesgroup.com/wp-content/uploads/2012/02/Boston_Ma.jpg" height="45" onclick="go(this.src);">
+<img src="http://cloudfront2.bostinno.com/wp-content/uploads/2012/10/Campus-Police-Car-on-the-Great-Dome.jpeg" height="45" onclick="go(this.src);">
 </td>
 </tr>
 </table>
 </form>
-<p>Wondering how this works? <a href="http://mit.edu/vondrick/ihog">Learn more &raquo;</a></p>
+"""
+    if not request.query.embed:
+        resp = resp + "<p>Wondering how this works? <a href='http://mit.edu/vondrick/ihog'>Learn more &raquo;</a></p>"
+
+    resp = resp + """
+</div>
 </body>
 </html>"""
     return resp
@@ -126,4 +135,4 @@ def getimage(id):
     return static_file("{0}.jpg".format(id), root="/scratch/hallucination-daemon/out")
 
 import socket
-run(host="{0}.csail.mit.edu".format(socket.gethostname()), port=8080, debug=True, reloader=True)
+run(host="{0}.csail.mit.edu".format(socket.gethostname()), port=8080)
