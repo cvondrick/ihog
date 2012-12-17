@@ -1,3 +1,17 @@
+% visualizeSquare(output)
+%
+% This function translates a black square in a toy image, computes HOG on it,
+% inverts it. Notice how this function reveals some invariances of HOG: while
+% the square moves every frame, the inverse square snaps to the nearest HOG
+% cell boundary.
+%
+% This function takes a single parameter: the directory to output frames. These
+% frames can then be turned into a movie with the command:
+%
+%   $ ffmpeg -i %05d.jpg -b 1M out.mp4 -b 1M
+%
+% This function is not optimized and may be slow.
+
 function visualizeSquare(output),
 
 dim = [80 80];
