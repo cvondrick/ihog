@@ -96,7 +96,6 @@ end
 % Whitens the input feature with zero mean and unit variance
 function data = whiten(data),
 fprintf('ihog: whiten: zero mean\n');
-mu = mean(data(:));
 for i=1:size(data,2),
   data(:, i) = data(:, i) - mean(data(:, i));
 end
