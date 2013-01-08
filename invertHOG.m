@@ -37,12 +37,12 @@ if size(feat,2) < pd.nx,
 end
 
 % pad feat if dim lacks occlusion feature
-if size(feat,3) == 31,
+if size(feat,3) == features-1,
   feat(:, :, end+1) = 0;
 end
 
 % extract every window 
-windows = zeros(pd.ny*pd.nx*32, (ny-pd.ny+1)*(nx-pd.nx+1));
+windows = zeros(pd.ny*pd.nx*features, (ny-pd.ny+1)*(nx-pd.nx+1));
 c = 1;
 for i=1:size(feat,1) - pd.ny + 1,
   for j=1:size(feat,2) - pd.nx + 1,
