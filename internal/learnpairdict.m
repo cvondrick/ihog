@@ -10,19 +10,19 @@
 %   dim       The size of the template patch to invert
 %   lambda    Sparsity regularization parameter on alpha
 %   iters     Number of iterations 
-%   sbin      The HOG bin size
+%   dim       The gist dimension
 % 
 % Returns a struct with fields:
 %   dgray     A dictionary of gray elements
 %   dhog      A dictionary of HOG elements
 
-function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, sbin),
+function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, dim),
 
 if ~exist('n', 'var'),
-   n = 100000;
+   n = 10000;
 end
 if ~exist('k', 'var'),
-  k = 1000;
+  k = 100;
 end
 if ~exist('ny', 'var'),
   ny = 5;
@@ -36,16 +36,16 @@ end
 if ~exist('iters', 'var'),
   iters = 2000;
 end
-if ~exist('sbin', 'var'),
-  sbin = 8;
+if ~exist('dim', 'var'),
+  dim = 128;
 end
 
-graysize = (ny+2)*(nx+2)*sbin^2;
+graysize = dim^2;
 
 t = tic;
 
 stream = resolvestream(stream);
-data = getdata(stream, n, [ny nx], sbin);
+data = getdata(stream, n, [ny nx], dim);
 
 data(1:graysize, :) = whiten(data(1:graysize, :));
 data(graysize+1:end, :) = whiten(data(graysize+1:end, :));
@@ -58,7 +58,7 @@ pd.n = n;
 pd.k = k;
 pd.ny = ny;
 pd.nx = nx;
-pd.sbin = sbin;
+pd.dim = dim;
 pd.iters = iters;
 pd.lambda = lambda;
 
@@ -106,17 +106,17 @@ end
 
 
 
-% getdata(stream, n, dim, sbin)
+% getdata(stream, n, dim, dim)
 %
 % Reads in the stream and extracts windows along with their HOG features.
-function data = getdata(stream, n, dim, sbin),
+function data = getdata(stream, n, dim, gdim),
 
 ny = dim(1);
 nx = dim(2);
 
 fprintf('ihog: allocating data store: %.02fGB\n', ...
-        ((ny+2)*(nx+2)*sbin^2+ny*nx*features)*n*4/1024/1024/1024);
-data = zeros((ny+2)*(nx+2)*sbin^2+ny*nx*features, n, 'single');
+        (gdim^2+gistfeatures)*n*4/1024/1024/1024);
+data = zeros(gdim^2+gistfeatures, n, 'single');
 c = 1;
 
 fprintf('ihog: loading data: ');
@@ -124,30 +124,24 @@ while true,
   for i=1:length(stream),
     fprintf('.');
     im = double(imread(stream{i})) / 255.;
+    im = imresizecrop(im, gdim);
     im = mean(im,3);
-    feat = features(repmat(im, [1 1 3]), sbin);
+    feat = gistfeatures(repmat(im, [1 1 3]));
 
-    for i=1:size(feat,1) - dim(1),
-      for j=1:size(feat,2) - dim(2),
-        if n <= 100000 && rand() > 0.1,
-          continue;
-        end
+    figure(1);
+    imagesc(im);
+    axis image;
 
-        featpoint = feat(i:i+ny-1, ...
-                         j:j+ny-1, :);
-        graypoint = im((i-1)*sbin+1:(i+1+ny)*sbin, ...
-                       (j-1)*sbin+1:(j+1+nx)*sbin);
-        data(:, c) = single([graypoint(:); featpoint(:)]);
+    data(:, c) = single([im(:); feat(:)]);
 
-        c = c + 1;
-        if c >= n,
-          fprintf('\n');
-          fprintf('ihog: loaded %i windows\n', c);
-          return;
-        end
-      end
+    c = c + 1;
+    if c >= n,
+      fprintf('\n');
+      fprintf('ihog: loaded %i images\n', c);
+      return;
     end
   end
+
   fprintf('\n');
   fprintf('ihog: warning: wrapping around dataset!\n');
 end
