@@ -62,7 +62,7 @@ pd.dim = dim;
 pd.iters = iters;
 pd.lambda = lambda;
 
-fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
+fprintf('igist: paired dictionaries learned in %0.3fs\n', toc(t));
 
 
 
@@ -80,10 +80,10 @@ param.numThreads = 12;
 param.verbose = 1;
 param.batchsize = 400;
 
-fprintf('ihog: lasso\n');
+fprintf('igist: lasso\n');
 model = struct();
 for i=1:(iters/param.iter),
-  fprintf('ihog: lasso: master iteration #%i\n', i);
+  fprintf('igist: lasso: master iteration #%i\n', i);
   [dict, model] = mexTrainDL(data, param, model);
   model.iter = i*param.iter;
   param.D = dict;
@@ -95,11 +95,11 @@ end
 %
 % Whitens the input feature with zero mean and unit variance
 function data = whiten(data),
-fprintf('ihog: whiten: zero mean\n');
+fprintf('igist: whiten: zero mean\n');
 for i=1:size(data,2),
   data(:, i) = data(:, i) - mean(data(:, i));
 end
-fprintf('ihog: whiten: unit variance\n');
+fprintf('igist: whiten: unit variance\n');
 for i=1:size(data,2),
   data(:, i) = data(:, i) / (sqrt(sum(data(:, i).^2) + 1));
 end
@@ -116,15 +116,15 @@ nx = dim(2);
 
 if n == -1,
   n = length(stream);
-  fprintf('ihog: setting n to number of images: %i\n', n);
+  fprintf('igist: setting n to number of images: %i\n', n);
 end
 
-fprintf('ihog: allocating data store: %.02fGB\n', ...
+fprintf('igist: allocating data store: %.02fGB\n', ...
         (gdim^2+gistfeatures)*n*4/1024/1024/1024);
 data = zeros(gdim^2+gistfeatures, n, 'single');
 c = 1;
 
-fprintf('ihog: loading data: ');
+fprintf('igist: loading data: ');
 while true,
   for i=1:length(stream),
     fprintf('.');
@@ -138,13 +138,13 @@ while true,
     c = c + 1;
     if c >= n,
       fprintf('\n');
-      fprintf('ihog: loaded %i images\n', c);
+      fprintf('igist: loaded %i images\n', c);
       return;
     end
   end
 
   fprintf('\n');
-  fprintf('ihog: warning: wrapping around dataset!\n');
+  fprintf('igist: warning: wrapping around dataset!\n');
 end
 
 
@@ -156,7 +156,7 @@ end
 function stream = resolvestream(stream),
 
 if isstr(stream),
-  fprintf('ihog: reading images from directory: %s\n', stream);
+  fprintf('igist: reading images from directory: %s\n', stream);
   directory = stream;
   files = dir(stream);
   clear stream;
@@ -168,5 +168,5 @@ if isstr(stream),
       c = c + 1;
     end
   end
-  fprintf('ihog: stream resolved to %i images\n', length(stream));
+  fprintf('igist: stream resolved to %i images\n', length(stream));
 end

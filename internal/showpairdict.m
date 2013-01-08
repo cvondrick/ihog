@@ -26,7 +26,7 @@ im = ones(cy*sy, cx*sx);
 
 iii = randperm(size(pd.dgray,2));
 
-fprintf('ihog: show pair dict: ');
+fprintf('igist: show pair dict: ');
 for i=1:min(sy*sx, pd.k),
   fprintf('.');
 
