@@ -19,10 +19,10 @@
 function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, dim),
 
 if ~exist('n', 'var'),
-   n = 10000;
+   n = -1;
 end
 if ~exist('k', 'var'),
-  k = 100;
+  k = 1000;
 end
 if ~exist('ny', 'var'),
   ny = 5;
@@ -54,7 +54,7 @@ dict = lasso(data, k, iters, lambda);
 
 pd.dgray = dict(1:graysize, :);
 pd.dhog = dict(graysize+1:end, :);
-pd.n = n;
+pd.n = size(data,2);
 pd.k = k;
 pd.ny = ny;
 pd.nx = nx;
@@ -114,6 +114,11 @@ function data = getdata(stream, n, dim, gdim),
 ny = dim(1);
 nx = dim(2);
 
+if n == -1,
+  n = length(stream);
+  fprintf('ihog: setting n to number of images: %i\n', n);
+end
+
 fprintf('ihog: allocating data store: %.02fGB\n', ...
         (gdim^2+gistfeatures)*n*4/1024/1024/1024);
 data = zeros(gdim^2+gistfeatures, n, 'single');
@@ -127,10 +132,6 @@ while true,
     im = imresizecrop(im, gdim);
     im = mean(im,3);
     feat = gistfeatures(repmat(im, [1 1 3]));
-
-    figure(1);
-    imagesc(im);
-    axis image;
 
     data(:, c) = single([im(:); feat(:)]);
 
