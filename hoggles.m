@@ -7,12 +7,23 @@ imagesc(screen);
 axis image;
 title('Select a region');
 region = getrect();
+
+scale = 1;
+if region(3) > 400,
+  scale = 400 / region(3);
+end
+if region(4) * scale > 400,
+  scale = 400 / region(4);
+end
+newsize = ceil([region(3)*scale region(4)*scale]);
+
 region(3) = region(1) + region(3);
 region(4) = region(2) + region(4);
 
 while true,
   fprintf('capture ');
   im = capture_screen(region);
+  im = imresize(im, newsize, 'bilinear');
   im = double(im) / 255.;
   fprintf('hog ');
   feat = features(im, 8);
