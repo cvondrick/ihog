@@ -1,5 +1,8 @@
-iHOG: Inverting Histograms of Oriented Gradients
-================================================
+iGist: Inverting Gist
+=====================
+
+Warning: this branch of iHOG is experimental and many things may be
+broken.
 
 This software package contains tools to invert and visualize HOG features.
 It implements the Paired Dictionary Learning algorithm described in our
