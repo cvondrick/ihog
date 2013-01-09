@@ -19,7 +19,7 @@
 function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, dim),
 
 if ~exist('n', 'var'),
-   n = -1;
+   n = 300000;
 end
 if ~exist('k', 'var'),
   k = 1000;
@@ -124,22 +124,33 @@ fprintf('igist: allocating data store: %.02fGB\n', ...
 data = zeros(gdim^2+gistfeatures, n, 'single');
 c = 1;
 
+skipby = 32;
+
 fprintf('igist: loading data: ');
 while true,
   for i=1:length(stream),
     fprintf('.');
     im = double(imread(stream{i})) / 255.;
-    im = imresizecrop(im, gdim);
     im = mean(im,3);
-    feat = gistfeatures(repmat(im, [1 1 3]));
 
-    data(:, c) = single([im(:); feat(:)]);
+    figure(1);
+    imagesc(im);
+    axis image;
+    colormap gray;
 
-    c = c + 1;
-    if c >= n,
-      fprintf('\n');
-      fprintf('igist: loaded %i images\n', c);
-      return;
+    for x=1:skipby:size(im,2)-gdim,
+      for y=1:skipby:size(im,1)-gdim,
+        crop = im(y:y+gdim-1, x:x+gdim-1);
+        feat = gistfeatures(repmat(im, [1 1 3]));
+        data(:, c) = single([crop(:); feat(:)]);
+        c = c + 1;
+
+        if c >= n,
+          fprintf('\n');
+          fprintf('igist: loaded %i patches\n', c);
+          return;
+        end
+      end
     end
   end
 
