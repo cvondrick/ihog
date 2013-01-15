@@ -44,7 +44,7 @@ if ~exist('fast', 'var'),
   fast = false;
 end
 
-graysize = (ny+2)*(nx+2)*sbin^2;
+graysize = (ny+2)*(nx+2)*sbin^2*3;
 
 t = tic;
 
@@ -138,8 +138,8 @@ ny = dim(1);
 nx = dim(2);
 
 fprintf('ihog: allocating data store: %.02fGB\n', ...
-        ((ny+2)*(nx+2)*sbin^2+ny*nx*features)*n*4/1024/1024/1024);
-data = zeros((ny+2)*(nx+2)*sbin^2+ny*nx*features, n, 'single');
+        ((ny+2)*(nx+2)*sbin^2*3+ny*nx*features)*n*4/1024/1024/1024);
+data = zeros((ny+2)*(nx+2)*sbin^2*3+ny*nx*features, n, 'single');
 c = 1;
 
 fprintf('ihog: loading data: ');
@@ -147,8 +147,7 @@ while true,
   for i=1:length(stream),
     fprintf('.');
     im = double(imread(stream{i})) / 255.;
-    im = mean(im,3);
-    feat = features(repmat(im, [1 1 3]), sbin);
+    feat = features(im, sbin);
 
     for i=1:size(feat,1) - dim(1),
       for j=1:size(feat,2) - dim(2),
@@ -159,7 +158,7 @@ while true,
         featpoint = feat(i:i+ny-1, ...
                          j:j+ny-1, :);
         graypoint = im((i-1)*sbin+1:(i+1+ny)*sbin, ...
-                       (j-1)*sbin+1:(j+1+nx)*sbin);
+                       (j-1)*sbin+1:(j+1+nx)*sbin, :);
         data(:, c) = single([graypoint(:); featpoint(:)]);
 
         c = c + 1;
