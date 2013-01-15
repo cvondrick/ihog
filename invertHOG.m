@@ -87,5 +87,17 @@ im(:, :, 1) = im(:, :, 1) ./ weights;
 im(:, :, 2) = im(:, :, 2) ./ weights;
 im(:, :, 3) = im(:, :, 3) ./ weights;
 im = im(1:(ny+2)*pd.sbin, 1:(nx+2)*pd.sbin, :);
-im(:) = im(:) - min(im(:));
-im(:) = im(:) / max(im(:));
+
+r = im(:, :, 1);
+r(:) = r(:) - min(r(:));
+r(:) = r(:) / max(r(:));
+
+g = im(:, :, 2);
+g(:) = g(:) - min(g(:));
+g(:) = g(:) / max(g(:));
+
+b = im(:, :, 3);
+b(:) = b(:) - min(b(:));
+b(:) = b(:) / max(b(:));
+
+im = cat(3, r, g, b);
