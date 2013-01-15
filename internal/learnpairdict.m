@@ -185,7 +185,7 @@ function stream = resolvestream(stream),
 if isstr(stream),
   fprintf('ihog: reading images from directory: %s\n', stream);
   directory = stream;
-  files = dir(stream);
+  files = dir([stream '/*.jpg']);
   clear stream;
   c = 1;
   iii = randperm(length(files));

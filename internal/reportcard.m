@@ -5,11 +5,14 @@
 % is useful for diagnosis purposes.
 function reportcard(in, out, pd),
 
-images = dir(in);
-for i=1:length(images);
+images = dir([in '/*.jpg']);
+for i=1:25:length(images);
   if ~images(i).isdir,
     filepath = [in '/' images(i).name];
     im = double(imread(filepath)) / 255.;
+    im = imresize(im, 0.75);
+    im(im > 1) = 1;
+    im(im < 0) = 0;
     feat = features(im, 8);
     ihog = invertHOG(feat, pd);
 
