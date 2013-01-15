@@ -23,6 +23,9 @@ for i=1:length(images);
 
     graphic = cat(2, ihog, im); 
 
+    imagesc(graphic);
+    drawnow;
+
     imwrite(graphic, sprintf('%s/%s', out, images(i).name));
 
     fprintf('processed %s\n', filepath);
