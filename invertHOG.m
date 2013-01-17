@@ -26,7 +26,7 @@ if ~exist('pd', 'var'),
       fprintf('ihog: notice: attempting to download in 3');
       pause(1); fprintf(', 2'); pause(1); fprintf(', 1'); pause(1);
       fprintf(', now\n');
-      system('wget http://people.csail.mit.edu/vondrick/pd-color.mat');
+      urlwrite('http://people.csail.mit.edu/vondrick/pd-color.mat', 'pd-color.mat');
       fprintf('ihog: notice: download complete\n');
     end
     ihog_pd = load('pd-color.mat');
