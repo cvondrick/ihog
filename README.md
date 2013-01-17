@@ -21,7 +21,7 @@ SPAMS toolbox:
 
 You must also download a paired dictionary:
 
-    $ wget -O pd.mat http://people.csail.mit.edu/vondrick/pd-color.mat
+    $ wget http://people.csail.mit.edu/vondrick/pd-color.mat
     
 Remember to also adjust your path so MATLAB can find iHOG:
 
