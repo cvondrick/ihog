@@ -49,7 +49,7 @@ graysize = (ny+2)*(nx+2)*sbin^2*3;
 t = tic;
 
 stream = resolvestream(stream);
-data = getdata(stream, n, [ny nx], sbin);
+[data, trainims] = getdata(stream, n, [ny nx], sbin);
 
 data(1:graysize, :) = whiten(data(1:graysize, :));
 data(graysize+1:end, :) = whiten(data(graysize+1:end, :));
@@ -69,6 +69,7 @@ pd.nx = nx;
 pd.sbin = sbin;
 pd.iters = iters;
 pd.lambda = lambda;
+pd.trainims = trainims;
 
 fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 
@@ -132,7 +133,7 @@ end
 % getdata(stream, n, dim, sbin)
 %
 % Reads in the stream and extracts windows along with their HOG features.
-function data = getdata(stream, n, dim, sbin),
+function [data, images] = getdata(stream, n, dim, sbin),
 
 ny = dim(1);
 nx = dim(2);
@@ -144,9 +145,9 @@ c = 1;
 
 fprintf('ihog: loading data: ');
 while true,
-  for i=1:length(stream),
+  for k=1:length(stream),
     fprintf('.');
-    im = double(imread(stream{i})) / 255.;
+    im = double(imread(stream{k})) / 255.;
     feat = features(im, sbin);
 
     for i=1:size(feat,1) - dim(1),
@@ -163,6 +164,7 @@ while true,
 
         c = c + 1;
         if c >= n,
+          images = stream(1:k);
           fprintf('\n');
           fprintf('ihog: loaded %i windows\n', c);
           return;
