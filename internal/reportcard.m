@@ -11,12 +11,12 @@ for i=1:length(images);
   if ~images(i).isdir,
 
     if exist([out '/' images(i).name], 'file'),
-      fprintf('ihog: %s already finished\n', name);
+      fprintf('ihog: %s already finished\n', images(i).name);
       continue;
     end
 
     if exist([in '/' images(i).name '.lock']),
-      fprintf('ihog: %s is locked\n', name);
+      fprintf('ihog: %s is locked\n', images(i).name);
       continue;
     end
     mkdir([in '/' images(i).name '.lock']);
