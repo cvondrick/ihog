@@ -1,4 +1,4 @@
-im = double(imread('2007_000272.jpg')) / 255.;
+im = double(imread('2010_001803.jpg')) / 255.;
 feat = features(im, 8);
 ihog = invertHOG(feat);
 
