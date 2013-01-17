@@ -6,11 +6,23 @@
 function reportcard(in, out, pd),
 
 images = dir([in '/*.jpg']);
-for i=1:25:length(images);
+images = images(randperm(length(images)));
+for i=1:length(images);
   if ~images(i).isdir,
+
+    if exist([out '/' images(i).name], 'file'),
+      fprintf('ihog: %s already finished\n', name);
+      continue;
+    end
+
+    if exist([in '/' images(i).name '.lock']),
+      fprintf('ihog: %s is locked\n', name);
+      continue;
+    end
+    mkdir([in '/' images(i).name '.lock']);
+
     filepath = [in '/' images(i).name];
     im = double(imread(filepath)) / 255.;
-    im = imresize(im, 0.75);
     im(im > 1) = 1;
     im(im < 0) = 0;
     feat = features(im, 8);
@@ -32,6 +44,11 @@ for i=1:25:length(images);
 
     imwrite(graphic, sprintf('%s/%s', out, images(i).name));
 
-    fprintf('processed %s\n', filepath);
+    fprintf('ihog: processed %s\n', filepath);
+
+    try,
+      rmdir([in '/' images(i).name '.lock']);
+    catch
+    end
   end
 end
