@@ -26,6 +26,9 @@ if ~exist('pd', 'var'),
   pd = ihog_pd;
 end
 
+par = 5;
+feat = padarray(feat, [par par 0], 0);
+
 [ny, nx, ~] = size(feat);
 
 % pad feat with 0s if not big enough
@@ -66,7 +69,7 @@ weights = zeros((size(feat,1)+2)*pd.sbin, (size(feat,2)+2)*pd.sbin);
 c = 1;
 for i=1:size(feat,1) - pd.ny + 1,
   for j=1:size(feat,2) - pd.nx + 1,
-    fil = fspecial('gaussian', [(pd.ny+2)*pd.sbin (pd.nx+2)*pd.sbin], 75);
+    fil = fspecial('gaussian', [(pd.ny+2)*pd.sbin (pd.nx+2)*pd.sbin], 9);
     patch = reshape(recon(:, c), [(pd.ny+2)*pd.sbin (pd.nx+2)*pd.sbin]);
     patch = patch .* fil;
 
@@ -85,3 +88,5 @@ im = im ./ weights;
 im = im(1:(ny+2)*pd.sbin, 1:(nx+2)*pd.sbin);
 im(:) = im(:) - min(im(:));
 im(:) = im(:) / max(im(:));
+
+im = im(par*pd.sbin:end-par*pd.sbin, par*pd.sbin:end-par*pd.sbin, :);
