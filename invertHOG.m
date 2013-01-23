@@ -21,6 +21,14 @@ function im = invertHOG(feat, pd),
 if ~exist('pd', 'var'),
   global ihog_pd
   if isempty(ihog_pd),
+    if ~exist('pd.mat', 'file'),
+      fprintf('ihog: notice: unable to find paired dictionary\n');
+      fprintf('ihog: notice: attempting to download in 3');
+      pause(1); fprintf(', 2'); pause(1); fprintf(', 1'); pause(1);
+      fprintf(', now\n');
+      urlwrite('http://people.csail.mit.edu/vondrick/pd.mat', 'pd.mat');
+      fprintf('ihog: notice: download complete\n');
+    end
     ihog_pd = load('pd.mat');
   end
   pd = ihog_pd;
