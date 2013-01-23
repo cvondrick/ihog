@@ -2,13 +2,16 @@
 %
 % Visualizes a few random elements from the paired dictionaries 'pd'. The
 % parameters sy and sx are optional and specify the number of elements to show.
-function im = showpairdict(pd, sy, sx),
+function im = showpairdict(pd, sy, sx, random),
 
 if ~exist('sy', 'var'),
   sy = 10;
 end
 if ~exist('sx', 'var'),
   sx = 10;
+end
+if ~exist('random', 'var'),
+  random = 1;
 end
 
 hny = pd.ny;
@@ -24,7 +27,11 @@ cx = (gnx*2+bord);
 
 im = ones(cy*sy, cx*sx, 3);
 
-iii = randperm(size(pd.dgray,2));
+if random,
+  iii = randperm(size(pd.dgray,2));
+else
+  iii = 1:size(pd.dgray,2);
+end
 
 fprintf('ihog: show pair dict: ');
 for i=1:min(sy*sx, pd.k),

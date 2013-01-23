@@ -1,9 +1,12 @@
-iHOG: Inverting Histograms of Oriented Gradients
-================================================
+iHOG: Inverting Histograms of Oriented Gradients... with color!
+===============================================================
 
 This software package contains tools to invert and visualize HOG features.
 It implements the Paired Dictionary Learning algorithm described in our
 paper "Inverting and Visualizing Features for Object Detection" [1].
+
+You are using the color branch of iHOG. This version will attempt to recover
+the colors that generated a HOG descriptor. 
 
 Installation
 ------------
@@ -15,6 +18,10 @@ SPAMS toolbox:
     $ cd /path/to/ihog
     $ matlab
     >> compile
+
+You must also download a paired dictionary:
+
+    $ wget http://people.csail.mit.edu/vondrick/pd-color.mat
     
 Remember to also adjust your path so MATLAB can find iHOG:
 
@@ -63,7 +70,7 @@ read the comments for more.
 Learning
 --------
 
-We provide a prelearned dictionary in 'pd.mat', but you can learn your own if
+You downloaded a prelearned dictionary in 'pd.mat', but you can learn your own if
 you wish. Simply call the 'learnpairdict()' function and pass it a directory of
 images:
 

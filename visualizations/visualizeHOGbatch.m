@@ -6,6 +6,8 @@
 % this process many times without duplicating work.
 function visualizeHOGbatch(inframes, outframes),
 
+pd = load('pd-color.mat');
+
 files = dir(inframes);
 iii = randperm(length(files));
 for i=1:length(files);
@@ -33,7 +35,7 @@ for i=1:length(files);
   im = imread(filepath);
   im = double(im) / 255.;
   feat = features(im, 8);
-  ihog = invertHOG(feat);
+  ihog = invertHOG(feat, pd);
   glyph = HOGpicture(feat);
 
   ihog = imresize(ihog, [size(im,1) size(im,2)]);
@@ -44,7 +46,6 @@ for i=1:length(files);
   glyph(glyph > 1) = 1;
   glyph(glyph < 0) = 0;
 
-  ihog = repmat(ihog, [1 1 3]);
   glyph = repmat(glyph, [1 1 3]);
 
   imwrite(im, [outframes '/im-' name]);
