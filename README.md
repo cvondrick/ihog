@@ -19,10 +19,6 @@ SPAMS toolbox:
     $ matlab
     >> compile
 
-You must also download a paired dictionary:
-
-    $ wget http://people.csail.mit.edu/vondrick/pd-color.mat
-    
 Remember to also adjust your path so MATLAB can find iHOG:
 
     >> addpath(genpath('/path/to/ihog'))
@@ -34,7 +30,7 @@ In order to use iHOG, you must have a learned paired dictionary. By default,
 iHOG will attempt to download a pretrained one from MIT for you on the first
 execution. If you wish to download it manually, simply do:
 
-    $ wget http://people.csail.mit.edu/vondrick/pd.mat
+    $ wget http://people.csail.mit.edu/vondrick/pd-color.mat
 
 Inverting HOG
 -------------
@@ -76,9 +72,9 @@ read the comments for more.
 Learning
 --------
 
-You downloaded a prelearned dictionary in 'pd.mat', but you can learn your own if
-you wish. Simply call the 'learnpairdict()' function and pass it a directory of
-images:
+You downloaded a prelearned dictionary in 'pd-color.mat', but you can learn
+your own if you wish. Simply call the 'learnpairdict()' function and pass it a
+directory of images:
 
     >> pd = learnpairdict('/path/to/images/', 1000000, 1000, 5, 5);
 
