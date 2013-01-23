@@ -144,9 +144,14 @@ data = zeros((ny+2)*(nx+2)*sbin^2+ny*nx*features, n, 'single');
 c = 1;
 
 fprintf('ihog: loading data: ');
+lastmsg = '';
+fprintf(lastmsg);
 while true,
   for k=1:length(stream),
-    fprintf('.');
+    fprintf(repmat('\b', 1, length(sprintf(lastmsg))));
+    lastmsg = sprintf('%04.1f%%%%    #windows: %08i/%08i    #images: %05i', c/n*100, c, n, k);
+    fprintf(lastmsg);
+
     im = double(imread(stream{k})) / 255.;
     im = mean(im,3);
     feat = features(repmat(im, [1 1 3]), sbin);
