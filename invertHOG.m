@@ -24,10 +24,11 @@ if ~exist('pd', 'var'),
     if ~exist('pd-color.mat', 'file'),
       fprintf('ihog: notice: unable to find paired dictionary\n');
       fprintf('ihog: notice: attempting to download in 3');
-      pause(1); fprintf(', 2'); pause(1); fprintf(', 1'); pause(1);
-      fprintf(', now\n');
+      pause(1); fprintf('\b2'); pause(1); fprintf('\b1'); pause(1);
+      fprintf('\b0\n');
+      fprintf('ihog: notice: downloading...');
       urlwrite('http://people.csail.mit.edu/vondrick/pd-color.mat', 'pd-color.mat');
-      fprintf('ihog: notice: download complete\n');
+      fprintf('done\n');
     end
     ihog_pd = load('pd-color.mat');
   end
