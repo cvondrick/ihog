@@ -21,15 +21,15 @@ function im = invertHOG(feat, pd),
 if ~exist('pd', 'var'),
   global ihog_pd
   if isempty(ihog_pd),
-    if ~exist('pd-color.mat', 'file'),
+    if ~exist('pd-hoggles.mat', 'file'),
       fprintf('ihog: notice: unable to find paired dictionary\n');
       fprintf('ihog: notice: attempting to download in 3');
       pause(1); fprintf(', 2'); pause(1); fprintf(', 1'); pause(1);
       fprintf(', now\n');
-      urlwrite('http://people.csail.mit.edu/vondrick/pd-color.mat', 'pd-color.mat');
+      urlwrite('http://people.csail.mit.edu/vondrick/pd-hoggles.mat', 'pd-hoggles.mat');
       fprintf('ihog: notice: download complete\n');
     end
-    ihog_pd = load('pd-color.mat');
+    ihog_pd = load('pd-hoggles.mat');
   end
   pd = ihog_pd;
 end

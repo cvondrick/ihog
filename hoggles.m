@@ -21,6 +21,7 @@ region(3) = region(1) + region(3);
 region(4) = region(2) + region(4);
 
 while true,
+  tic;
   fprintf('capture ');
   im = capture_screen(region);
   im = imresize(im, newsize, 'bilinear');
@@ -38,7 +39,7 @@ while true,
   colormap gray;
   drawnow;
 
-  fprintf('done\n');
+  fprintf('done in %0.02fs\n', toc);
 end
 
 function imgData = capture_screen(capture_region)
