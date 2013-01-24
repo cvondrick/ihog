@@ -1,4 +1,4 @@
-function im = invertGist(feat, pd),
+function [im, err] = invertGist(feat, pd),
 
 feat(:) = feat(:) - mean(feat(:));
 feat(:) = feat(:) / (sqrt(sum(feat(:).^2) + 1));
@@ -12,3 +12,6 @@ recon = pd.dgray * a;
 im = reshape(recon, [128 128]);
 im(:) = im(:) - min(im(:));
 im(:) = im(:) / max(im(:));
+
+recovery = pd.dhog * a;
+err = norm(recovery(:) - feat(:));
