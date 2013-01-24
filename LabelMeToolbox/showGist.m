@@ -1,4 +1,4 @@
-function showGist(gist, param)
+function out = showGist(gist, param)
 %
 % Visualization of the gist descriptor
 %   showGist(gist, param)
@@ -54,13 +54,17 @@ for j = 1:Nimages
     mosaic = reshape(mosaic, [nrows ncols 3 Nblocks*Nblocks]);    
     mosaic = fftshift(fftshift(mosaic,1),2);
     mosaic = uint8(mosaic/max(mosaic(:))*255);
-    mosaic(1,:,:,:) = 255;
-    mosaic(end,:,:,:) = 255;
-    mosaic(:,1,:,:) = 255;
-    mosaic(:,end,:,:) = 255;
-    
+
     if Nimages>1
         subplottight(ny,nx,j,0.01);
     end
-    montage(mosaic, 'size', [Nblocks Nblocks])
+    %montage(mosaic, 'size', [Nblocks Nblocks])
+
+    out = zeros(Nblocks*nrows, Nblocks*ncols, 3, 'uint8');
+
+    for x=1:Nblocks,
+      for y=1:Nblocks,
+        out(ncols*(x-1)+1:ncols*x, nrows*(y-1)+1:nrows*y, :) = mosaic(:, :, :, y + (x-1) * Nblocks); 
+      end
+    end
 end

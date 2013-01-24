@@ -25,4 +25,3 @@ sr = floor((nr-M(1))/2);
 sc = floor((nc-M(2))/2);
 
 img = img(sr+1:sr+M(1), sc+1:sc+M(2),:);
-
