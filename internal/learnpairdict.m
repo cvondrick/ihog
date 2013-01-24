@@ -51,8 +51,13 @@ t = tic;
 stream = resolvestream(stream);
 [data, trainims] = getdata(stream, n, [ny nx], sbin);
 
-data(1:graysize, :) = whiten(data(1:graysize, :));
-data(graysize+1:end, :) = whiten(data(graysize+1:end, :));
+fprintf('ihog: normalize\n');
+for i=1:size(data,2),
+  data(1:graysize, i) = data(1:graysize, i) - mean(data(1:graysize, i));
+  data(1:graysize, i) = data(1:graysize, i) / (sqrt(sum(data(1:graysize, i).^2) + 1));
+  data(graysize+1:end, i) = data(graysize+1:end, i) - mean(data(graysize+1:end, i));
+  data(graysize+1:end, i) = data(graysize+1:end, i) / (sqrt(sum(data(graysize+1:end, i).^2) + 1));
+end
 
 if fast,
   dict = pickrandom(data, k); 
@@ -114,22 +119,6 @@ dict = data(:, order);
 
 
 
-
-% whiten(in)
-%
-% Whitens the input feature with zero mean and unit variance
-function data = whiten(data),
-fprintf('ihog: whiten: zero mean\n');
-for i=1:size(data,2),
-  data(:, i) = data(:, i) - mean(data(:, i));
-end
-fprintf('ihog: whiten: unit variance\n');
-for i=1:size(data,2),
-  data(:, i) = data(:, i) / (sqrt(sum(data(:, i).^2) + 1));
-end
-
-
-
 % getdata(stream, n, dim, sbin)
 %
 % Reads in the stream and extracts windows along with their HOG features.
@@ -144,12 +133,9 @@ data = zeros((ny+2)*(nx+2)*sbin^2*3+ny*nx*features, n, 'single');
 c = 1;
 
 fprintf('ihog: loading data: ');
-lastmsg = '';
 while true,
   for k=1:length(stream),
-    fprintf(repmat('\b', 1, length(sprintf(lastmsg))));
-    lastmsg = sprintf('%04.1f%%%%    #windows: %08i/%08i    #images: %05i', c/n*100, c, n, k);
-    fprintf(lastmsg);
+    fprintf('.');
 
     im = double(imread(stream{k})) / 255.;
     feat = features(im, sbin);
