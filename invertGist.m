@@ -1,5 +1,8 @@
 function im = invertGist(feat, pd),
 
+gist(:) = gist(:) - mean(gist(:));
+gist(:) = gist(:) / (sqrt(sum(gist(:).^2) + 1));
+
 % solve lasso problem
 param.lambda = pd.lambda;
 param.mode = 2;

@@ -20,6 +20,7 @@ cx = (dim*2+bord);
 im = ones(cy*sy, cx*sx, 3);
 
 iii = randperm(size(pd.dgray,2));
+iii = 1:size(pd.dgray,2);
 
 fprintf('ihog: show pair dict: ');
 for i=1:min(sy*sx, pd.k),
@@ -36,7 +37,7 @@ for i=1:min(sy*sx, pd.k),
   graypic(graypic < 0) = 0;
   graypic = repmat(graypic, [1 1 3]);
 
-  gistpic = visualizeGist(pd.dhog(:, iii(i))');
+  gistpic = visualizeGist(max(pd.dhog(:, iii(i))', 0));
   gistpic = imresize(gistpic, [dim dim]);
   gistpic(gistpic > 1) = 1;
   gistpic(gistpic < 0) = 0;
