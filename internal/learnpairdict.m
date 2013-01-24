@@ -145,7 +145,6 @@ c = 1;
 
 fprintf('ihog: loading data: ');
 lastmsg = '';
-fprintf(lastmsg);
 while true,
   for k=1:length(stream),
     fprintf(repmat('\b', 1, length(sprintf(lastmsg))));
