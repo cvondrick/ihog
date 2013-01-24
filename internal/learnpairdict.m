@@ -20,7 +20,7 @@
 function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, dim, fast),
 
 if ~exist('n', 'var'),
-   n = 300000;
+   n = 100000;
 end
 if ~exist('k', 'var'),
   k = 1000;
@@ -49,7 +49,7 @@ graysize = dim^2;
 t = tic;
 
 stream = resolvestream(stream);
-[data, trainims] = getdata(stream, n, [ny nx], sbin);
+[data, trainims] = getdata(stream, n, [ny nx], dim);
 
 fprintf('ihog: normalize\n');
 for i=1:size(data,2),
@@ -144,27 +144,16 @@ while true,
   for k=1:length(stream),
     fprintf('.');
 
-    im = double(imread(stream{k})) / 255.;
-    im = mean(im,3);
+    datum = load(stream{k});
 
-    figure(1);
-    imagesc(im);
-    axis image;
-    colormap gray;
-
-    for x=1:skipby:size(im,2)-gdim,
-      for y=1:skipby:size(im,1)-gdim,
-        crop = im(y:y+gdim-1, x:x+gdim-1);
-        feat = gistfeatures(repmat(im, [1 1 3]));
-        data(:, c) = single([crop(:); feat(:)]);
-        c = c + 1;
-
-        if c >= n,
-          images = stream(1:k);
-          fprintf('\n');
-          fprintf('igist: loaded %i patches\n', c);
-          return;
-        end
+    for x=1:length(datum.data),
+      data(:, c) = datum.data{x};
+      c = c + 1;
+      if c >= n,
+        images = stream(1:k);
+        fprintf('\n');
+        fprintf('igist: loaded %i patches\n', c);
+        return;
       end
     end
   end
@@ -175,6 +164,7 @@ end
 
 
 
+
 % resolvestream(stream)
 %
 % If stream is a directory, convert to list of paths. Otherwise,
@@ -182,7 +172,7 @@ end
 function stream = resolvestream(stream),
 
 if isstr(stream),
-  fprintf('igist: reading images from directory: %s\n', stream);
+  fprintf('igist: reading gist files from directory: %s\n', stream);
   directory = stream;
   files = dir(stream);
   clear stream;
