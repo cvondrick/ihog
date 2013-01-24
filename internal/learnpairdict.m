@@ -7,7 +7,6 @@
 %   stream    List of filepaths where images are located
 %   n         Number of window patches to extract in total
 %   k         The size of the dictionary
-%   dim       The size of the template patch to invert
 %   lambda    Sparsity regularization parameter on alpha
 %   iters     Number of iterations 
 %   dim       The gist dimension
@@ -17,19 +16,13 @@
 %   dgray     A dictionary of gray elements
 %   dhog      A dictionary of HOG elements
 
-function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, dim, fast),
+function pd = learnpairdict(stream, n, k, lambda, iters, dim, fast),
 
 if ~exist('n', 'var'),
-   n = 100000;
+   n = 10000;
 end
 if ~exist('k', 'var'),
   k = 1000;
-end
-if ~exist('ny', 'var'),
-  ny = 5;
-end
-if ~exist('nx', 'var'),
-  nx = 5;
 end
 if ~exist('lambda', 'var'),
   lambda = 0.02; % 0.02 is best so far
@@ -49,9 +42,9 @@ graysize = dim^2;
 t = tic;
 
 stream = resolvestream(stream);
-[data, trainims] = getdata(stream, n, [ny nx], dim);
+[data, trainims] = getdata(stream, n, dim);
 
-fprintf('ihog: normalize\n');
+fprintf('igist: normalize\n');
 for i=1:size(data,2),
   data(1:graysize, i) = data(1:graysize, i) - mean(data(1:graysize, i));
   data(1:graysize, i) = data(1:graysize, i) / (sqrt(sum(data(1:graysize, i).^2) + 1));
@@ -69,8 +62,6 @@ pd.dgray = dict(1:graysize, :);
 pd.dhog = dict(graysize+1:end, :);
 pd.n = size(data,2);
 pd.k = k;
-pd.ny = ny;
-pd.nx = nx;
 pd.dim = dim;
 pd.iters = iters;
 pd.lambda = lambda;
@@ -119,13 +110,10 @@ dict = data(:, order);
 
 
 
-% getdata(stream, n, dim, dim)
+% getdata(stream, n, dim)
 %
 % Reads in the stream and extracts windows along with their HOG features.
-function [data, images] = getdata(stream, n, dim, gdim), 
-
-ny = dim(1);
-nx = dim(2);
+function [data, images] = getdata(stream, n, dim), 
 
 if n == -1,
   n = length(stream);
@@ -133,8 +121,8 @@ if n == -1,
 end
 
 fprintf('igist: allocating data store: %.02fGB\n', ...
-        (gdim^2+gistfeatures)*n*4/1024/1024/1024);
-data = zeros(gdim^2+gistfeatures, n, 'single');
+        (dim^2+gistfeatures)*n*4/1024/1024/1024);
+data = zeros(dim^2+gistfeatures, n, 'single');
 c = 1;
 
 skipby = 32;
