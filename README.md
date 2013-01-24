@@ -1,5 +1,5 @@
-iGist: Inverting Gist
-=====================
+iGist: Inverting the Spatial Envelope of a Scene
+================================================
 
 Warning: this branch of iHOG is experimental and many things may be
 broken.
