@@ -37,7 +37,7 @@ for i=1:min(sy*sx, pd.k),
   graypic(:) = graypic(:) - min(graypic(:));
   graypic(:) = graypic(:) / max(graypic(:));
 
-  hogfeat = reshape(pd.dhog(:, iii(i)), [hny hnx 32]);
+  hogfeat = reshape(pd.dhog(:, iii(i)), [hny hnx features]);
   hogpic = HOGpicture(hogfeat);
   hogpic = imresize(hogpic, [gny gnx]);
   hogpic(hogpic < 0) = 0;

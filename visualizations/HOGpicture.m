@@ -1,3 +1,5 @@
+% HOGpicture(w)
+%
 % Make picture of positive HOG weights.
 %   im = HOGpicture(w, bs)
 function im = HOGpicture(w, bs)

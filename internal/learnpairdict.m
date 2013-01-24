@@ -11,12 +11,13 @@
 %   lambda    Sparsity regularization parameter on alpha
 %   iters     Number of iterations 
 %   sbin      The HOG bin size
+%   fast      If true, 'learn' a dictionary in real time (default false)
 % 
 % Returns a struct with fields:
 %   dgray     A dictionary of gray elements
 %   dhog      A dictionary of HOG elements
 
-function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, sbin),
+function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, sbin, fast),
 
 if ~exist('n', 'var'),
    n = 100000;
@@ -34,10 +35,13 @@ if ~exist('lambda', 'var'),
   lambda = 0.02; % 0.02 is best so far
 end
 if ~exist('iters', 'var'),
-  iters = 2000;
+  iters = 1000;
 end
 if ~exist('sbin', 'var'),
   sbin = 8;
+end
+if ~exist('fast', 'var'),
+  fast = false;
 end
 
 graysize = (ny+2)*(nx+2)*sbin^2;
@@ -45,12 +49,16 @@ graysize = (ny+2)*(nx+2)*sbin^2;
 t = tic;
 
 stream = resolvestream(stream);
-data = getdata(stream, n, [ny nx], sbin);
+[data, trainims] = getdata(stream, n, [ny nx], sbin);
 
 data(1:graysize, :) = whiten(data(1:graysize, :));
 data(graysize+1:end, :) = whiten(data(graysize+1:end, :));
 
-dict = lasso(data, k, iters, lambda);
+if fast,
+  dict = pickrandom(data, k); 
+else,
+  dict = lasso(data, k, iters, lambda);
+end
 
 pd.dgray = dict(1:graysize, :);
 pd.dhog = dict(graysize+1:end, :);
@@ -61,6 +69,7 @@ pd.nx = nx;
 pd.sbin = sbin;
 pd.iters = iters;
 pd.lambda = lambda;
+pd.trainims = trainims;
 
 fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 
@@ -91,12 +100,26 @@ end
 
 
 
+% pickrandom(data, k)
+%
+% Picks a random 'k' elements from 'data' for fast training. This option is mostly
+% useful for debugging purposes. The learned dictionary is usually always better than
+% this mode. But, this method still produces surprisingly good reconstructions.
+function dict = pickrandom(data, k),
+
+fprintf('ihog: sampling %i random elements for dictionary instead of learning\n', k)
+order = randperm(size(data, 2));
+order = order(1:k);
+dict = data(:, order);
+
+
+
+
 % whiten(in)
 %
 % Whitens the input feature with zero mean and unit variance
 function data = whiten(data),
 fprintf('ihog: whiten: zero mean\n');
-mu = mean(data(:));
 for i=1:size(data,2),
   data(:, i) = data(:, i) - mean(data(:, i));
 end
@@ -110,21 +133,26 @@ end
 % getdata(stream, n, dim, sbin)
 %
 % Reads in the stream and extracts windows along with their HOG features.
-function data = getdata(stream, n, dim, sbin),
+function [data, images] = getdata(stream, n, dim, sbin),
 
 ny = dim(1);
 nx = dim(2);
 
 fprintf('ihog: allocating data store: %.02fGB\n', ...
-        ((ny+2)*(nx+2)*sbin^2+ny*nx*32)*n*4/1024/1024/1024);
-data = zeros((ny+2)*(nx+2)*sbin^2+ny*nx*32, n, 'single');
+        ((ny+2)*(nx+2)*sbin^2+ny*nx*features)*n*4/1024/1024/1024);
+data = zeros((ny+2)*(nx+2)*sbin^2+ny*nx*features, n, 'single');
 c = 1;
 
 fprintf('ihog: loading data: ');
+lastmsg = '';
+fprintf(lastmsg);
 while true,
-  for i=1:length(stream),
-    fprintf('.');
-    im = double(imread(stream{i})) / 255.;
+  for k=1:length(stream),
+    fprintf(repmat('\b', 1, length(sprintf(lastmsg))));
+    lastmsg = sprintf('%04.1f%%%%    #windows: %08i/%08i    #images: %05i', c/n*100, c, n, k);
+    fprintf(lastmsg);
+
+    im = double(imread(stream{k})) / 255.;
     im = mean(im,3);
     feat = features(repmat(im, [1 1 3]), sbin);
 
@@ -142,6 +170,7 @@ while true,
 
         c = c + 1;
         if c >= n,
+          images = stream(1:k);
           fprintf('\n');
           fprintf('ihog: loaded %i windows\n', c);
           return;
