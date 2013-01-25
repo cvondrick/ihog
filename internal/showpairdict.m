@@ -20,7 +20,7 @@ cx = (dim*2+bord);
 im = ones(cy*sy, cx*sx, 3);
 
 iii = randperm(size(pd.dgray,2));
-iii = 1:size(pd.dgray,2);
+%iii = 1:size(pd.dgray,2);
 
 fprintf('ihog: show pair dict: ');
 for i=1:min(sy*sx, pd.k),

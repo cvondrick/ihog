@@ -24,12 +24,8 @@ for i=1:length(images);
 
     graphic = cat(2, ihog, im); 
 
-    subplot(121);
     imagesc(graphic);
     axis image;
-    subplot(122);
-    hist(errors);
-    drawnow;
 
     imwrite(graphic, sprintf('%s/%s', out, images(i).name));
 
