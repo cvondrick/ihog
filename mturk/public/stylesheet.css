@@ -8,3 +8,43 @@
 {
     background-color : #E4E4E4;
 }
+
+body {
+    font-family : Arial;
+    font-size : 16px;
+}
+
+#container
+{
+    width : 900px;
+    margin : 0 auto;
+}
+
+#windows
+{
+    text-align : center;
+    height : 500px;
+}
+
+#buttons 
+{
+    text-align : center;
+    margin : 25px;
+}
+
+#buttons span
+{
+    padding : 20px;
+}
+
+#status
+{
+    text-align : center;
+    font-weight : bold;
+    padding : 5px;
+}
+
+#debug
+{
+    color : #ccc;
+}

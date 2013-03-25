@@ -1,7 +1,7 @@
-signature = ""
-accesskey = ""
+signature = "umtn2ZUWgNy50Gxmq6g+iqNnWuQtnIgEQmq4W7Pa"
+accesskey = "1M30EJTD3F4Q4XN3TKR2"
 sandbox   = True
-localhost = "http://localhost:8080/"
+localhost = "http://reason.csail.mit.edu:8080/"
 database  = "mysql://root@localhost/ihog"
 geolocation = ""
 

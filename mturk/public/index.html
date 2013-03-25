@@ -7,12 +7,34 @@
 <link rel="stylesheet" type="text/css" href="turkic/stylesheet.css">
 <script src="turkic/javascript.js"></script>
 <link rel="stylesheet" type="text/css" href="stylesheet.css">
+<script src="preload.js"></script>
 <script src="javascript.js"></script>
 
 </head>
 <body>
 
-Hello, world!
+<div id="container">
+
+<h1>Image Classification</h1>
+
+<p>In each image below, indicate whether you think it contains a person or not.</p>
+
+<div id="status"></div>
+
+<div id="windows"></div>
+
+<div id="buttons">
+<span><input type="button" id="previm" value="Previous Image"></span>
+<span><input type="radio" id="doescontain" name="contain"> <label for="doescontain">Does Contain (press c)</label></span>
+<span><input type="radio" id="doesnotcontain" name="contain"> <label for="doesnotcontain">Does NOT Contain (press n)</label></span>
+<span><input type="button" id="nextim" value="Next Image"></span>
+</div>
+
+</div>
+
+</div>
+
+<div id="debug"></div>
 
 </body>
 </html>
