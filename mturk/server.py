@@ -11,11 +11,5 @@ def getjob(id):
     job = session.query(Job).get(id)
     windows = []
     for interconnect in job.interconnect:
-        windows.append(interconnect.window.id)
+        windows.append((interconnect.window.id, interconnect.window.filepath))
     return {"windows": windows}
-
-@handler("image/jpeg", False)
-def getwindow(id):
-    window = session.query(DetectionWindow).get(id)
-    f = open(window.filepath)
-    return str(f.read())

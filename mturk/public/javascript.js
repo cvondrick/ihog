@@ -24,7 +24,7 @@ $(document).ready(function()
         var urls = [];
         for (var i = 0; i < data["windows"].length; i++)
         {
-            urls.push("/server/getwindow/" + data["windows"][i]);
+            urls.push("/images/" + data["windows"][i][1]);
         }
         preload(urls, function(p) { $("#debug").html(p); } );
 
@@ -66,7 +66,7 @@ $(document).ready(function()
 
         function showwindow(i)
         {
-            $("#windows").html("<img src='/server/getwindow/" + data["windows"][i] + "'>");
+            $("#windows").html("<img src='/images/" + data["windows"][i][1] + "'>");
         }
 
         function update()

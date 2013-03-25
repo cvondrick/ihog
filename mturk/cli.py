@@ -38,7 +38,7 @@ class load(LoadCommand):
         for file in os.listdir(args.dirpath):
             if not file.endswith(".jpg"):
                 continue
-            window = DetectionWindow(filepath = os.path.join(args.dirpath, file))
+            window = DetectionWindow(filepath = file) 
             windows.append(window)
             session.add(window)
 
@@ -46,6 +46,15 @@ class load(LoadCommand):
             print "No windows found."
             return
         print "Found {0} windows".format(len(windows))
+
+        print "Creating symbolic links..."
+        for window in windows:
+            symlink = "public/images/{0}".format(window.filepath)
+            try:
+                os.remove(symlink)
+            except:
+                pass
+            os.symlink(os.path.join(args.dirpath, window.filepath), symlink)
 
         windows = windows * args.trials
         random.shuffle(windows)
