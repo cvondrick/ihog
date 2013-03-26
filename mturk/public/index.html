@@ -17,17 +17,21 @@
 
 <h1>Image Classification</h1>
 
-<p>In each image below, indicate whether you think it contains a person or not.</p>
+<p>In each image below, indicate whether you think it is a <span class="category"></span> or not.
+We know the answers to some of the images, and we will use this to verify your work.</p>
 
 <div id="status"></div>
 
 <div id="windows"></div>
 
 <div id="buttons">
+<span><input type="radio" id="doesnotcontain" name="contain"> <label for="doesnotcontain">Image is NOT a <span class="category"></span> (press n)</label></span>
+<span><input type="radio" id="doescontain" name="contain"> <label for="doescontain">Image is a <span class="category"></span> (press y)</label></span>
+<br><br><br>
 <span><input type="button" id="previm" value="Previous Image"></span>
-<span><input type="radio" id="doescontain" name="contain"> <label for="doescontain">Does Contain (press c)</label></span>
-<span><input type="radio" id="doesnotcontain" name="contain"> <label for="doesnotcontain">Does NOT Contain (press n)</label></span>
 <span><input type="button" id="nextim" value="Next Image"></span>
+<br><br>
+<span><input type="button" id="submit" value="Submit HIT"></span>
 </div>
 
 </div>

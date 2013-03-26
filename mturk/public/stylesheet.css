@@ -37,6 +37,11 @@ body {
     padding : 20px;
 }
 
+#buttons label span
+{
+    padding : 0;
+}
+
 #status
 {
     text-align : center;

@@ -9,6 +9,7 @@ class Job(turkic.models.HIT):
     __mapper_args__ = {"polymorphic_identity": "jobs"}
 
     id = Column(Integer, ForeignKey(turkic.models.HIT.id), primary_key = True)
+    category = Column(String(250))
 
     def getpage(self):
         return "?id={0}".format(self.id)

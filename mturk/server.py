@@ -12,4 +12,4 @@ def getjob(id):
     windows = []
     for interconnect in job.interconnect:
         windows.append((interconnect.window.id, interconnect.window.filepath))
-    return {"windows": windows}
+    return {"windows": windows, "category": job.category}

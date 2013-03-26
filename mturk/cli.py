@@ -11,6 +11,7 @@ from models import *
 class load(LoadCommand):
     def setup(self):
         parser = argparse.ArgumentParser(parents = [importparser])
+        parser.add_argument("category")
         parser.add_argument("dirpath")
         parser.add_argument("--trials", type=int, default = 10)
         parser.add_argument("--pertask", type=int, default = 100)
@@ -62,7 +63,7 @@ class load(LoadCommand):
         print "Creating jobs..."
         counter = 0
         for chunk in chunker(windows, args.pertask):
-            job = Job(group = group)
+            job = Job(group = group,  category = args.category)
             session.add(job)
             for window in chunk:
                 ic = Interconnect(window=window, job=job)

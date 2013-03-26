@@ -21,6 +21,8 @@ $(document).ready(function()
     var marks = {};
 
     server_request("getjob", [parameters["id"]], function(data) {
+        $(".category").html(data["category"]);
+
         var urls = [];
         for (var i = 0; i < data["windows"].length; i++)
         {
@@ -54,7 +56,7 @@ $(document).ready(function()
         });
 
         $(window).keypress(function(e) {
-            if (e.which == 99) {
+            if (e.which == 121) {
                 $("#doescontain").click();
                 $("#nextim").click();
             }
