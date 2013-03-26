@@ -48,6 +48,19 @@ $(document).ready(function()
             showing++;
             update();
 
+            if (!mturk_isassigned()) {
+                $("#turkic_acceptfirst").hide();
+                window.setTimeout(function() {
+                    $("#turkic_acceptfirst").show();
+                    window.setTimeout(function() {
+                        $("#turkic_acceptfirst").hide();
+                        window.setTimeout(function() {
+                            $("#turkic_acceptfirst").show();
+                        }, 200);
+                    }, 200);
+                }, 200);
+            }
+
             lastimts = (new Date()).getTime();
         });
         $("#previm").click(function() {
