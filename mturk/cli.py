@@ -75,3 +75,22 @@ class load(LoadCommand):
 
 def chunker(iterable, chunksize):
     return izip_longest(*[iter(iterable)]*chunksize)
+
+@handler("Dumps everything out")
+class report(Command):
+    def setup(self):
+        parser = argparse.ArgumentParser()
+        return parser
+
+    def __call__(self, args):
+        windows = session.query(DetectionWindow)
+        for window in windows:
+            isgoods = 0
+            isbads = 0
+            for interconnect in window.interconnect:
+                if interconnect.isgood is True:
+                    isgoods += 1 
+                elif interconnect.isgood is False:
+                    isbads += 1
+            if isgoods != 0 or isbads != 0:
+                print "{0}\t\t{1}\t{2}\t{3}".format(window.filepath, isgoods, isbads, isgoods / float(isgoods + isbads))

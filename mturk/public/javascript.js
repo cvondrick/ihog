@@ -55,6 +55,28 @@ $(document).ready(function()
             marks[showing] = 1;
         });
 
+        $("#submit").click(function() {
+            var counter = 0;
+            var payload = "[";
+            for (var i in marks) {
+                payload += "[" + data["windows"][i][0] + "," + marks[i] + "],";
+                counter++;
+            }
+            payload = payload.substr(0, payload.length - 1) + "]";
+
+            if (counter != data["windows"].length)
+            {
+                alert("You must have made a decision for every image before you can submit.");
+                return;
+            }
+
+            mturk_submit(function(redirect) {
+                server_post("savejob", [parameters["id"]], payload, function(data) {
+                    redirect();
+                });
+            });
+        });
+
         $(window).keypress(function(e) {
             if (e.which == 121) {
                 $("#doescontain").click();

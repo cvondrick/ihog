@@ -13,3 +13,16 @@ def getjob(id):
     for interconnect in job.interconnect:
         windows.append((interconnect.window.id, interconnect.window.filepath))
     return {"windows": windows, "category": job.category}
+
+@handler(post = "json")
+def savejob(id, decisions):
+    decisions = dict(decisions)
+    job = session.query(Job).get(id)
+    for interconnect in job.interconnect:
+        decision = decisions[interconnect.window.id]
+        if decision == 1:
+            interconnect.isgood = True
+        elif decision == -1:
+            interconnect.isgood = False
+        session.add(interconnect)
+    session.commit()
