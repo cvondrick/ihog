@@ -30,7 +30,14 @@ $(document).ready(function()
         }
         preload(urls, function(p) { $("#debug").html(p); } );
 
+        var lastimts = 0;
+
         $("#nextim").click(function() {
+            if ((new Date()).getTime() - lastimts < 300)
+            {
+                alert("You are going too fast. Please look at the image again.");
+                return;
+            }
             if (marks[showing] == undefined)
             {
                 alert("Please make a choice before proceeding.");
@@ -40,6 +47,8 @@ $(document).ready(function()
             $("#window" + showing).hide();
             showing++;
             update();
+
+            lastimts = (new Date()).getTime();
         });
         $("#previm").click(function() {
             if (showing == 0) return;
