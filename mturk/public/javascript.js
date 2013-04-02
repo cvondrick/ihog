@@ -1,5 +1,18 @@
 $(document).ready(function()
 {
+    $("#container").hide();
+    $("#instructions").show();
+
+    $("#showinstructions").click(function() {
+        $("#container").hide();
+        $("#instructions").show();
+    });
+
+    $("#start").click(function() {
+        $("#container").show();
+        $("#instructions").hide();
+    });
+
     var showing = 0;
 
     if (!mturk_isassigned())

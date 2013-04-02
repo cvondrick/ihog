@@ -13,12 +13,76 @@
 </head>
 <body>
 
+<div id="instructions">
+<h1>Instructions</h1>
+
+<p>In this HIT, we are going to show you images and we want you to indicate
+whether you think the image is a <span class="category"></span> or not.</p>
+
+<p>However, the images are not typical images. We have transformed them using a variety
+of operations. Please do the task to the best of your ability.</p>
+
+<p>Study the examples below so you understand the images:</p>
+
+<table style="margin:0 auto;">
+<tr>
+<th style="width:250px;">You Will See</th>
+<th style="width:250px;">Original Image</th>
+<th style="width:250px;">Is it a chair?</th>
+</tr>
+<tr>
+<td style="text-align:center;"><img src="examples/ihog/chair_image1518_box1.jpg"></td>
+<td style="text-align:center;"><img src="examples/original/chair_image1518_box1.jpg"></td>
+<td style="text-align:center;">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center;"><img src="examples/ihog/chair_image476_box1.jpg"></td>
+<td style="text-align:center;"><img src="examples/original/chair_image476_box1.jpg"></td>
+<td style="text-align:center;">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center;"><img src="examples/ihog/chair_image599_box1.jpg"></td>
+<td style="text-align:center;"><img src="examples/original/chair_image599_box1.jpg"></td>
+<td style="text-align:center;">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center;"><img src="examples/ihog/chair_image98_box1.jpg"></td>
+<td style="text-align:center;"><img src="examples/original/chair_image98_box1.jpg"></td>
+<td style="text-align:center;">Yes</td>
+</tr>
+<tr>
+<td style="text-align:center;"><img src="examples/ihog/chair_image102_box1.jpg"></td>
+<td style="text-align:center;"><img src="examples/original/chair_image102_box1.jpg"></td>
+<td style="text-align:center;">No (not a chair)</td>
+</tr>
+<tr>
+<td style="text-align:center;"><img src="examples/ihog/chair_image45_box1.jpg"></td>
+<td style="text-align:center;"><img src="examples/original/chair_image45_box1.jpg"></td>
+<td style="text-align:center;">No (not a chair)</td>
+</tr>
+<tr>
+<td style="text-align:center;"><img src="examples/ihog/chair_image184_box1.jpg"></td>
+<td style="text-align:center;"><img src="examples/original/chair_image184_box1.jpg" width="150"></td>
+<td style="text-align:center;">No (too big)</td>
+</tr>
+</table>
+
+<br>
+
+<p>When you are ready, press the start button below.</p>
+
+<div style="text-align:center;">
+<input type="button" value="Start HIT" id="start">
+</div>
+
+</div>
+
 <div id="container">
 
 <h1>Image Classification</h1>
 
 <p>In each image below, indicate whether you think it is a <span class="category"></span> or not.
-We know the answers to some of the easy images, and we will use this to verify your work.</p>
+We know the answers to some of the easy images, and we will use this to verify your work. <input type="button" value="Instructions" id="showinstructions"></p>
 
 <div id="status"></div>
 

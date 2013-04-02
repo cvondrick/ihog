@@ -60,3 +60,9 @@ body {
     font-size : 18px;
     font-weight : bold;
 }
+
+#instructions
+{
+    width : 500px;
+    margin : 0 auto;
+}
