@@ -24,7 +24,7 @@ class load(LoadCommand):
         return "Look at images and tell us if an object appears inside it."
 
     def cost(self, args):
-        return 0.05
+        return 0.1
 
     def duration(self, args):
         return 7200 * 3
@@ -84,6 +84,7 @@ class report(Command):
 
     def __call__(self, args):
         windows = session.query(DetectionWindow)
+        data = [];
         for window in windows:
             isgoods = 0
             isbads = 0
@@ -93,4 +94,8 @@ class report(Command):
                 elif interconnect.isgood is False:
                     isbads += 1
             if isgoods != 0 or isbads != 0:
-                print "{0}\t\t{1}\t{2}\t{3}".format(window.filepath, isgoods, isbads, isgoods / float(isgoods + isbads))
+                data.append((isgoods / float(isgoods + isbads), window.filepath, isgoods, isbads));
+
+        data.sort()
+        for score, filepath, isgoods, isbads in data:
+            print "{0}\t\t{1}\t{2}\t{3}".format(filepath, isgoods, isbads, score) 
