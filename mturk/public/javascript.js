@@ -1,5 +1,68 @@
+var passedtest = false;
+
+var exams = [
+["chair_image1354_box2.jpg", 0],
+["chair_image1407_box1.jpg", 0],
+["chair_image1492_box1.jpg", 0],
+["chair_image1613_box1.jpg", 1],
+["chair_image1632_box1.jpg", 0],
+["chair_image1643_box1.jpg", 0],
+["chair_image599_box1.jpg", 1],
+["chair_image1672_box1.jpg", 0],
+["chair_image1726_box1.jpg", 0],
+["chair_image1759_box1.jpg", 0],
+["chair_image6_box1.jpg", 1],
+["chair_image1757_box1.jpg", 0],
+["chair_image93_box1.jpg", 1]
+];
+
 $(document).ready(function()
 {
+    for (var i = 0; i < exams.length; i++)
+    {
+        $("#testtable").append("<tr><td><img src='test/ihog/" + exams[i][0] + "'></td><td><input type='radio' id='exam" + i + "yes' name='exam" + i + "'> <label for='exam" + i + "yes'>Yes, it is a chair</label><br><br><input type='radio' id='exam" + i + "no' name='exam" + i + "'> <label for='exam" + i + "no'>No, it is not a chair</label></td></tr>");
+    }
+
+    function testuser() 
+    {
+        window.scrollTo(0, 0);
+        $("#test").show();
+        $("#submittest").click(function() {
+            var score = 0;
+
+            for (var i = 0; i < exams.length; i++)
+            {
+                var truth = exams[i][1];
+
+                if (truth) {
+                    if ($("#exam" + i + "yes").is(":checked")) {
+                        score++;
+                    }
+                }
+                else
+                {
+                    if ($("#exam" + i + "no").is(":checked")) {
+                        score++;
+                    }
+                }
+            }
+
+            score = score / exams.length;
+
+            if (score < 0.8)
+            {
+                alert("You scored less than 80%. Please try again.");
+            }
+            else
+            {
+                alert("Congratulations! You scored " + (Math.round(score * 100)) + "%. You may now start the task. You won't have to take this test again.");
+                passedtest = true;
+                $("#test").hide();
+                $("#container").show();
+            }
+        });
+    }
+
     $("#container").hide();
     $("#instructions").show();
 
@@ -9,8 +72,24 @@ $(document).ready(function()
     });
 
     $("#start").click(function() {
-        $("#container").show();
-        $("#instructions").hide();
+        if (!mturk_isassigned())
+        {
+            $("#container").show();
+            $("#instructions").hide();
+            return;
+        }
+        server_jobstats(function(data) {
+            if (data["newuser"] && !passedtest)
+            {
+                $("#instructions").hide();
+                testuser();
+            }
+            else
+            {
+                $("#container").show();
+                $("#instructions").hide();
+            }
+        });
     });
 
     var showing = 0;

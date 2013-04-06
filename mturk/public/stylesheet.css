@@ -66,3 +66,11 @@ body {
     width : 500px;
     margin : 0 auto;
 }
+
+#test
+{
+    width : 500px;
+    margin : 0 auto;
+    display : none;
+}
+

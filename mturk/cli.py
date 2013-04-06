@@ -14,7 +14,7 @@ class load(LoadCommand):
         parser.add_argument("category")
         parser.add_argument("dirpath")
         parser.add_argument("--trials", type=int, default = 10)
-        parser.add_argument("--pertask", type=int, default = 100)
+        parser.add_argument("--pertask", type=int, default = 10)
         return parser
 
     def title(self, args):
@@ -24,7 +24,7 @@ class load(LoadCommand):
         return "Look at images and tell us if an object appears inside it."
 
     def cost(self, args):
-        return 0.1
+        return 0.01
 
     def duration(self, args):
         return 7200 * 3
