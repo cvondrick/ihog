@@ -5,14 +5,12 @@ var exams = [
 ["chair_image1407_box1.jpg", 0],
 ["chair_image1492_box1.jpg", 0],
 ["chair_image1613_box1.jpg", 1],
-["chair_image1632_box1.jpg", 0],
 ["chair_image1643_box1.jpg", 0],
 ["chair_image599_box1.jpg", 1],
 ["chair_image1672_box1.jpg", 0],
 ["chair_image1726_box1.jpg", 0],
 ["chair_image1759_box1.jpg", 0],
 ["chair_image6_box1.jpg", 1],
-["chair_image1757_box1.jpg", 0],
 ["chair_image93_box1.jpg", 1]
 ];
 
@@ -49,9 +47,9 @@ $(document).ready(function()
 
             score = score / exams.length;
 
-            if (score < 0.8)
+            if (score < 0.75)
             {
-                alert("You scored less than 80%. Please try again.");
+                alert("You scored " + (Math.round(score * 100)) + "%. You need 80% to pass. Please try again.");
             }
             else
             {

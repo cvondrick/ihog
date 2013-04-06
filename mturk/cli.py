@@ -13,7 +13,7 @@ class load(LoadCommand):
         parser = argparse.ArgumentParser(parents = [importparser])
         parser.add_argument("category")
         parser.add_argument("dirpath")
-        parser.add_argument("--trials", type=int, default = 10)
+        parser.add_argument("--trials", type=int, default = 25)
         parser.add_argument("--pertask", type=int, default = 10)
         return parser
 
@@ -94,8 +94,8 @@ class report(Command):
                 elif interconnect.isgood is False:
                     isbads += 1
             if isgoods != 0 or isbads != 0:
-                data.append((isgoods / float(isgoods + isbads), window.filepath, isgoods, isbads));
+                data.append((isgoods / float(isgoods + isbads), isgoods, isbads, window.filepath))
 
         data.sort()
-        for score, filepath, isgoods, isbads in data:
+        for score, isgoods, isbads, filepath in data:
             print "{0}\t\t{1}\t{2}\t{3}".format(filepath, isgoods, isbads, score) 
