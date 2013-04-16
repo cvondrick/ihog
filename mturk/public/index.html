@@ -8,7 +8,7 @@
 <script src="turkic/javascript.js"></script>
 <link rel="stylesheet" type="text/css" href="stylesheet.css?v=1">
 <script src="preload.js"></script>
-<script src="javascript.js?v=2"></script>
+<script src="javascript.js?v=3"></script>
 
 </head>
 <body>
@@ -20,8 +20,8 @@
 
 <table style="margin:0 auto;" id="testtable">
 <tr>
-<th style="width:250px;">Image</th>
-<th style="width:250px;">Is it a chair?</th>
+<th style="width:450px;">Image</th>
+<th style="width:350px;">Is it a <span class="category"></span>?</th>
 </tr>
 </table>
 
@@ -36,51 +36,10 @@
 <p>In this HIT, we are going to show you images and we want you to indicate
 whether you think the image is a <span class="category"></span> or not.</p>
 
-<p>However, the images are not typical images. We have transformed them using a variety
-of operations. Please do the task to the best of your ability.</p>
-
-<p>Study the examples below so you understand the images:</p>
-
-<table style="margin:0 auto;">
+<table style="margin:0 auto;" id="examples">
 <tr>
 <th style="width:250px;">You Will See</th>
-<th style="width:250px;">Original Image</th>
-<th style="width:250px;">Is it a chair?</th>
-</tr>
-<tr>
-<td style="text-align:center;"><img src="examples/ihog/chair_image1518_box1.jpg"></td>
-<td style="text-align:center;"><img src="examples/original/chair_image1518_box1.jpg"></td>
-<td style="text-align:center;">Yes</td>
-</tr>
-<tr>
-<td style="text-align:center;"><img src="examples/ihog/chair_image476_box1.jpg"></td>
-<td style="text-align:center;"><img src="examples/original/chair_image476_box1.jpg"></td>
-<td style="text-align:center;">Yes</td>
-</tr>
-<tr>
-<td style="text-align:center;"><img src="examples/ihog/chair_image599_box1.jpg"></td>
-<td style="text-align:center;"><img src="examples/original/chair_image599_box1.jpg"></td>
-<td style="text-align:center;">Yes</td>
-</tr>
-<tr>
-<td style="text-align:center;"><img src="examples/ihog/chair_image98_box1.jpg"></td>
-<td style="text-align:center;"><img src="examples/original/chair_image98_box1.jpg"></td>
-<td style="text-align:center;">Yes</td>
-</tr>
-<tr>
-<td style="text-align:center;"><img src="examples/ihog/chair_image102_box1.jpg"></td>
-<td style="text-align:center;"><img src="examples/original/chair_image102_box1.jpg"></td>
-<td style="text-align:center;">No (not a chair)</td>
-</tr>
-<tr>
-<td style="text-align:center;"><img src="examples/ihog/chair_image45_box1.jpg"></td>
-<td style="text-align:center;"><img src="examples/original/chair_image45_box1.jpg"></td>
-<td style="text-align:center;">No (not a chair)</td>
-</tr>
-<tr>
-<td style="text-align:center;"><img src="examples/ihog/chair_image184_box1.jpg"></td>
-<td style="text-align:center;"><img src="examples/original/chair_image184_box1.jpg" width="150"></td>
-<td style="text-align:center;">No (too big)</td>
+<th style="width:250px;">Is it a <span class="category"></span>?</th>
 </tr>
 </table>
 
@@ -101,6 +60,8 @@ of operations. Please do the task to the best of your ability.</p>
 <p>In each image below, indicate whether you think it is a <span class="category"></span> or not.
 We know the answers to some of the easy images, and we will use this to verify your work. <input type="button" value="Instructions" id="showinstructions"></p>
 
+<p><strong style="color:red;">If you have absolutely no idea, mark "Image is NOT a <span class="category"></span>". Do not label stools, sofas, baby chairs, or wheel chairs as chairs.</strong></p>
+
 <div id="status"></div>
 
 <div id="windows"></div>
@@ -110,9 +71,17 @@ We know the answers to some of the easy images, and we will use this to verify y
 </div>
 
 <div id="buttons">
-<span><input type="radio" id="doesnotcontain" name="contain"> <label for="doesnotcontain">Image is NOT a <span class="category"></span> (press n)</label></span>
-<span><input type="radio" id="doescontain" name="contain"> <label for="doescontain">Image is a <span class="category"></span> (press y)</label></span>
-<br><br><br>
+<table style="margin:0 auto;">
+<tr>
+<td style="padding:10px 20px; text-align:center;">
+<input type="radio" id="doesnotcontain" name="contain"> <label for="doesnotcontain">Image is NOT a <span class="category"></span> (press n)</label>
+</td>
+<td style="padding:10px 20px; text-align:center;">
+<input type="radio" id="doescontain" name="contain"> <label for="doescontain">Image is a <span class="category"></span> (press y)</label>
+</td>
+</tr>
+</table>
+<br><br>
 <span><input type="button" id="previm" value="Previous Image"></span>
 <span><input type="button" id="nextim" value="Next Image"></span>
 <br><br>

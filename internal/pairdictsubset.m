@@ -13,6 +13,7 @@ if strcmp(mode, 'stdhog'),
 
 elseif strcmp(mode, 'stdgray'),
   norms = std(pd.dgray);
+  norms = sum(pd.dgray.^2);
 
 end
 

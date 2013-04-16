@@ -23,7 +23,7 @@ body {
 #windows
 {
     text-align : center;
-    height : 250px;
+    height : 400px;
 }
 
 #buttons 
@@ -45,7 +45,6 @@ body {
 #status
 {
     text-align : center;
-    font-weight : bold;
     padding : 5px;
 }
 
@@ -63,13 +62,13 @@ body {
 
 #instructions
 {
-    width : 500px;
+    width : 900px;
     margin : 0 auto;
 }
 
 #test
 {
-    width : 500px;
+    width : 900px;
     margin : 0 auto;
     display : none;
 }

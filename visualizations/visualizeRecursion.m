@@ -1,35 +1,36 @@
-function visualizerRecursion(im),
+function bigim = visualizerRecursion(im),
+
+s = size(im);
 
 im = im2double(im);
+im = rgb2gray(im);
+im = repmat(im, [1 1 3]);
 
-origfeat = features(im, 8);
-
-history = [];
-
-subplot(321);
 feat = features(im, 8);
-showHOG(feat);
+hogim = imresize(showHOG(feat), [s(1) s(2)]);
+hogim(hogim > 1) = 1;
+hogim(hogim < 0) = 0;
+hogim = repmat(hogim, [1 1 3]);
 
-subplot(322);
-imagesc(invertHOG(feat));
+bigim = padarray([im; hogim], [0 5], 1);
+imagesc(bigim);
 axis image;
+drawnow;
 
-for i=1:100,
+for i=1:5,
   feat = features(im, 8);
+  hogim = imresize(showHOG(feat), [s(1) s(2)]);
+  hogim(hogim > 1) = 1;
+  hogim(hogim < 0) = 0;
+  hogim = repmat(hogim, [1 1 3]);
+
   im = repmat(invertHOG(feat), [1 1 3]);
+  im = imresize(im, [s(1) s(2)]);
+  im(im > 1) = 1;
+  im(im < 0) = 0;
 
-  subplot(323);
-  showHOG(feat);
-
-  subplot(324);
-  imagesc(im); axis image;
-
-  subplot(325);
-  showHOG(feat - origfeat);
-
-  subplot(326);
-  history = [history norm(origfeat(:) - feat(:))];
-  plot(history);
-
+  bigim = [bigim padarray([im; hogim], [0 5], 1)];
+  imagesc(bigim);
+  axis image;
   drawnow;
 end

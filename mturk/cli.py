@@ -14,17 +14,17 @@ class load(LoadCommand):
         parser.add_argument("category")
         parser.add_argument("dirpath")
         parser.add_argument("--trials", type=int, default = 25)
-        parser.add_argument("--pertask", type=int, default = 10)
+        parser.add_argument("--pertask", type=int, default = 50)
         return parser
 
     def title(self, args):
-        return "Classify images"
+        return "Classify {0} images".format(args.category)
 
     def description(self, args):
         return "Look at images and tell us if an object appears inside it."
 
     def cost(self, args):
-        return 0.01
+        return 0.05
 
     def duration(self, args):
         return 7200 * 3
@@ -95,6 +95,8 @@ class report(Command):
                     isbads += 1
             if isgoods != 0 or isbads != 0:
                 data.append((isgoods / float(isgoods + isbads), isgoods, isbads, window.filepath))
+            else:
+                data.append((0, 0, 0, window.filepath))
 
         data.sort()
         for score, isgoods, isbads, filepath in data:
