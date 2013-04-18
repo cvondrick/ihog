@@ -2,6 +2,10 @@
 
 function hoggles(),
 
+if ~exist('features'),
+  addpath(genpath(pwd));
+end
+
 screen = capture_screen();
 imagesc(screen);
 axis image;
