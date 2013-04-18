@@ -35,7 +35,7 @@ if ~exist('lambda', 'var'),
   lambda = 0.02; % 0.02 is best so far
 end
 if ~exist('iters', 'var'),
-  iters = 1000;
+  iters = 2000;
 end
 if ~exist('sbin', 'var'),
   sbin = 8;
