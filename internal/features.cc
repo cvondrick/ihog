@@ -234,11 +234,7 @@ mxArray *process(const mxArray *mximage, const mxArray *mxsbin, int normalize, d
 // F = features(image, bin)
 // image should be color with double values
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) { 
-  if (nrhs == 0) {
-    plhs[0] = mxCreateDoubleScalar(32);
-    return;
-  } 
-  else if (nrhs < 2 || nrhs > 4)
+  if (nrhs < 2 || nrhs > 4)
     mexErrMsgTxt("Wrong number of inputs"); 
   if (nlhs != 1)
     mexErrMsgTxt("Wrong number of outputs");

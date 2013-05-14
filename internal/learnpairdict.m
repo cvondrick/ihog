@@ -128,8 +128,8 @@ ny = dim(1);
 nx = dim(2);
 
 fprintf('ihog: allocating data store: %.02fGB\n', ...
-        ((ny+2)*(nx+2)*sbin^2+ny*nx*features)*n*4/1024/1024/1024);
-data = zeros((ny+2)*(nx+2)*sbin^2+ny*nx*features, n, 'single');
+        ((ny+2)*(nx+2)*sbin^2+ny*nx*featuresdim())*n*4/1024/1024/1024);
+data = zeros((ny+2)*(nx+2)*sbin^2+ny*nx*featuresdim(), n, 'single');
 c = 1;
 
 fprintf('ihog: loading data: ');
