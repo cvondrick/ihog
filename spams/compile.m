@@ -1,4 +1,3 @@
-clear all;
 get_architecture;
 
 %%%%%%%%%%%%% COMPILER CONFIGURATION %%%%%%%%%%%%%%%%
