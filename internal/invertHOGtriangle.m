@@ -91,7 +91,6 @@ for iter=1:iters,
   end
   fprintf('\n');
 
-
   if mod(iter, 100) == 0,
     subplot(231);
     imagesc(reconstruction); axis image;
@@ -106,14 +105,11 @@ for iter=1:iters,
     plot(objhistory(1:goodtrials));
     title('Objective');
     subplot(224);
-    cla;
-    acc = find(acceptances == 1);
-    rej = find(acceptances == -1);
-    plot(acc, ones(length(acc),1), 'bo');
-    hold on;
-    plot(rej, -ones(length(rej),1), 'ro');
+    accim = zeros(1, iter, 3);
+    accim(:, find(acceptances == 1), 2) = 1;
+    accim(:, find(acceptances == -1),  1) = 1;
+    imagesc(accim);
     title('Acceptances');
-    ylim([-10, 10]);
     drawnow;
   end
 end
