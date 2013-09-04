@@ -1,3 +1,11 @@
+% invertHOGtriangle(feat)
+%
+% Attempts to reconstruct the image for the HOG features 'feat' using a brute
+% force algorithm that repeatedly adds triangles to an image only if doing
+% so improves the reconstruction.
+%
+% Optionally, you can specify an initialization image 'init' to use as
+% the starting point. Otherwise, by default it initializes with gray.
 function im = invertHOGtriangle(feat, init, iters, sbin),
 
 [ny, nx, ~] = size(feat);
