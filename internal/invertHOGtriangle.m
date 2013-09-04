@@ -6,7 +6,7 @@
 %
 % Optionally, you can specify an initialization image 'init' to use as
 % the starting point. Otherwise, by default it initializes with gray.
-function im = invertHOGtriangle(feat, init, iters, sbin),
+function reconstruction = invertHOGtriangle(feat, init, iters, sbin),
 
 [ny, nx, ~] = size(feat);
 
