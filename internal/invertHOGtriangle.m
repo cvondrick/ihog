@@ -11,7 +11,7 @@ function reconstruction = invertHOGtriangle(feat, init, iters, sbin),
 [ny, nx, ~] = size(feat);
 
 if ~exist('iters', 'var'),
-  iters = 100000;
+  iters = 1000000;
 end
 if ~exist('sbin', 'var'),
   sbin = 8;
@@ -31,6 +31,7 @@ goodtrials = 0;
 acceptances = zeros(iters, 1);
 
 reconstruction = init;
+changes = zeros(size(init));
 objective = -1;
 
 for iter=1:iters,
@@ -73,14 +74,20 @@ for iter=1:iters,
 
   candidate = reconstruction;
   candidate(iy:iy+h-1, ix:ix+w-1) = candidate(iy:iy+h-1, ix:ix+w-1) + trial;
+  candidate(candidate > 1) = 1;
+  candidate(candidate < 0) = 0;
+
+  candidatechanges = changes;
+  candidatechanges(iy:iy+h-1, ix:ix+w-1) = candidatechanges(iy:iy+h-1, ix:ix+w-1) + trial;
 
   candidatefeat = features(repmat(candidate, [1 1 3]), sbin);
-  candidateobj = norm(candidatefeat(:) - feat(:), 2);
+  candidateobj = norm(candidatefeat(:) - feat(:), 2) / (ny*nx);
 
   fprintf('old=%f, new=%f', objective, candidateobj);
 
   if iter==1 || candidateobj < objective,
     reconstruction = candidate;
+    changes = candidatechanges;
     objective = candidateobj;
     goodtrials = goodtrials + 1;
     objhistory(goodtrials) = candidateobj;
@@ -91,14 +98,17 @@ for iter=1:iters,
   end
   fprintf('\n');
 
-  if mod(iter, 100) == 0,
-    subplot(231);
+  if mod(iter, 1000) == 0,
+    subplot(241);
     imagesc(reconstruction); axis image;
     title('Reconstruction');
-    subplot(232);
+    subplot(242);
+    imagesc(changes); axis image;
+    title('Changes');
+    subplot(243);
     showHOG(candidatefeat - mean(candidatefeat(:))); axis image;
     title('Reconstruction HOG');
-    subplot(233);
+    subplot(244);
     showHOG(feat - mean(feat(:)));
     title('Target HOG');
     subplot(223);
