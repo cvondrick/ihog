@@ -1,3 +1,6 @@
+% pd2txt(out, pd)
+%
+% Dumps the paired dictionary 'pd' to output file 'file'
 function pd2txt(out, pd),
 
 f = fopen(out, 'w');
