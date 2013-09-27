@@ -20,10 +20,10 @@
 function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, sbin, fast),
 
 if ~exist('n', 'var'),
-   n = 100000;
+   n = 1000000;
 end
 if ~exist('k', 'var'),
-  k = 1000;
+  k = 1024;
 end
 if ~exist('ny', 'var'),
   ny = 5;
@@ -93,6 +93,7 @@ param.iter = 100;
 param.numThreads = 12;
 param.verbose = 1;
 param.batchsize = 400;
+param.posAlpha = true;
 
 fprintf('ihog: lasso\n');
 model = struct();

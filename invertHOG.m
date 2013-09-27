@@ -69,6 +69,7 @@ end
 % solve lasso problem
 param.lambda = pd.lambda;
 param.mode = 2;
+param.pos = true;
 a = full(mexLasso(single(windows), pd.dhog, param));
 recon = pd.dgray * a;
 
