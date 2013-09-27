@@ -6,16 +6,21 @@
 %
 % Optionally, you can specify an initialization image 'init' to use as
 % the starting point. Otherwise, by default it initializes with gray.
-function reconstruction = invertHOGtriangle(feat, init, iters, sbin),
+function reconstruction = invertHOGtriangle(feat, init, time, draw, sbin),
 
 [ny, nx, ~] = size(feat);
 
-if ~exist('iters', 'var'),
-  iters = 1000000;
+if ~exist('time', 'var'),
+  time = 86400;
+end
+if ~exist('draw', 'var'),
+  draw = false;
 end
 if ~exist('sbin', 'var'),
   sbin = 8;
 end
+
+iters = time * 25;
 
 ry = (ny+2)*sbin;
 rx = (nx+2)*sbin;
@@ -34,8 +39,12 @@ reconstruction = init;
 changes = zeros(size(init));
 objective = -1;
 
+starttime = tic();
+
 for iter=1:iters,
-  fprintf('ihog: iter#%i: ', iter);
+  itertime = toc(starttime);
+
+  fprintf('ihog: iter#%i: timeleft=%0.2fs, rate=%0.2fps, ', iter, (time - itertime), iter / itertime);
 
   rot = rand() * 360;             % rotate
   w = floor(rand() * sbin*4)+1;   % width
@@ -98,7 +107,7 @@ for iter=1:iters,
   end
   fprintf('\n');
 
-  if mod(iter, 1000) == 0,
+  if draw && mod(iter, 1000) == 0,
     subplot(241);
     imagesc(reconstruction); axis image;
     title('Reconstruction');
@@ -121,5 +130,10 @@ for iter=1:iters,
     imagesc(accim);
     title('Acceptances');
     drawnow;
+  end
+
+  if itertime > time,
+    fprintf('ihog: breaking after %0.2fs\n', itertime);
+    break;
   end
 end
