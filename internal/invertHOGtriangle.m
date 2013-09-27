@@ -44,7 +44,7 @@ starttime = tic();
 for iter=1:iters,
   itertime = toc(starttime);
 
-  fprintf('ihog: iter#%i: timeleft=%0.2fs, rate=%0.2fps, ', iter, (time - itertime), iter / itertime);
+  fprintf('ihog: iter#%i: timeleft=%0.2fs, rate=%0.2fhz, ', iter, time - itertime, iter / itertime);
 
   rot = rand() * 360;             % rotate
   w = floor(rand() * sbin*4)+1;   % width
