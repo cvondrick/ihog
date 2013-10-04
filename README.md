@@ -3,7 +3,7 @@ iHOG: Inverting Histograms of Oriented Gradients
 
 This software package contains tools to invert and visualize HOG features.
 It implements the Paired Dictionary Learning algorithm described in our
-paper "Inverting and Visualizing Features for Object Detection" [1].
+paper "HOGgles: Visualizing Object Detection Features" [1].
 
 Installation
 ------------
@@ -104,9 +104,8 @@ If you have any feedback, please write to Carl Vondrick at <vondrick@mit.edu>.
 References
 ----------
 
-The conference paper for this software is currently under submission. In
-the mean time, please see our technical report:
+If you use our software, please cite our conference paper:
 
 [1] Carl Vondrick, Aditya Khosla, Tomasz Malisiewicz, Antonio Torralba.
-"Inverting and Visualizing Features for Object Detection." Technical Report.
-2013.
+"HOGgles: Visualizing Object Detection Features"  International Conference
+on Computer Vision (ICCV), Sydney, Australia, December 2013.
