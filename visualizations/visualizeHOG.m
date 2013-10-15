@@ -14,7 +14,7 @@
 
 function out = visualizeHOG(feat),
 
-s = [size(feat,1)*8+17 size(feat,2)*8+17];
+s = [size(feat,1)*8+16 size(feat,2)*8+16];
 
 im = invertHOG(max(feat, 0));
 hog = HOGpicture(feat);
