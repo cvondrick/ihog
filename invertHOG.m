@@ -99,4 +99,4 @@ im = im(1:(ny+2)*pd.sbin, 1:(nx+2)*pd.sbin);
 im(:) = im(:) - min(im(:));
 im(:) = im(:) / max(im(:));
 
-im = im(par*pd.sbin:end-par*pd.sbin, par*pd.sbin:end-par*pd.sbin, :);
+im = im(par*pd.sbin:end-par*pd.sbin-1, par*pd.sbin:end-par*pd.sbin-1, :);
