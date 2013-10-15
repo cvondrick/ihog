@@ -54,9 +54,9 @@ stream = resolvestream(stream);
 fprintf('ihog: normalize\n');
 for i=1:size(data,2),
   data(1:graysize, i) = data(1:graysize, i) - mean(data(1:graysize, i));
-  data(1:graysize, i) = data(1:graysize, i) / (sqrt(sum(data(1:graysize, i).^2) + 1));
+  data(1:graysize, i) = data(1:graysize, i) / (sqrt(sum(data(1:graysize, i).^2) + eps));
   data(graysize+1:end, i) = data(graysize+1:end, i) - mean(data(graysize+1:end, i));
-  data(graysize+1:end, i) = data(graysize+1:end, i) / (sqrt(sum(data(graysize+1:end, i).^2) + 1));
+  data(graysize+1:end, i) = data(graysize+1:end, i) / (sqrt(sum(data(graysize+1:end, i).^2) + eps));
 end
 
 if fast,

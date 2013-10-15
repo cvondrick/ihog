@@ -60,7 +60,7 @@ for i=1:size(feat,1) - pd.ny + 1,
   for j=1:size(feat,2) - pd.nx + 1,
     hog = feat(i:i+pd.ny-1, j:j+pd.nx-1, :);
     hog = hog(:) - mean(hog(:));
-    hog = hog(:) / sqrt(sum(hog(:).^2) + 1);
+    hog = hog(:) / sqrt(sum(hog(:).^2) + eps);
     windows(:,c)  = hog(:);
     c = c + 1;
   end
