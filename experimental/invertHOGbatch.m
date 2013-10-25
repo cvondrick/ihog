@@ -2,17 +2,21 @@
 %
 % This function is a candidate to become main invertHOG(), but it is more
 % complex.
-function im = invertHOGbatch(feat, pd),
+function im = invertHOGbatch(feat, pd, verbose),
 
-if ~exist('pd', 'var'),
+if ~exist('pd', 'var') || isempty(pd),
   global ihog_pd
   if isempty(ihog_pd),
     ihog_pd = load('pd.mat');
   end
   pd = ihog_pd;
 end
+if ~exist('verbose', 'var'),
+  verbose = true;
+end
 
-t = tic(); fprintf('ihog: preprocess... ');
+start = tic();
+if verbose, t = tic(); fprintf('ihog: batch: preprocess... '); end;
 
 par = 5;
 feat = padarray(feat, [par par 0 0], 0);
@@ -32,9 +36,9 @@ if size(feat,3) == featuresdim()-1,
   feat(:, :, end+1, :) = 0;
 end
 
-fprintf('%0.2fs sec\n', toc(t));
+if verbose, fprintf('%0.2fs sec\n', toc(t)); end
 
-t = tic(); fprintf('ihog: extract... ');
+if verbose, t = tic(); fprintf('ihog: batch: extract... '); end;
 
 % extract every window 
 windows = zeros(pd.ny*pd.nx*featuresdim(), (ny-pd.ny+1)*(nx-pd.nx+1)*nn);
@@ -51,9 +55,9 @@ for k=1:nn,
   end
 end
 
-fprintf('%0.2fs sec\n', toc(t));
+if verbose, fprintf('%0.2fs sec\n', toc(t)); end;
 
-t = tic(); fprintf('ihog: lasso... ');
+if verbose, t = tic(); fprintf('ihog: batch: lasso... '); end;
 
 % solve lasso problem
 param.lambda = pd.lambda;
@@ -62,9 +66,9 @@ param.pos = true;
 a = full(mexLasso(single(windows), pd.dhog, param));
 recon = pd.dgray * a;
 
-fprintf('%0.2fs sec\n', toc(t));
+if verbose, fprintf('%0.2fs sec\n', toc(t)); end;
 
-t = tic(); fprintf('ihog: reconstruct... ');
+if verbose, t = tic(); fprintf('ihog: batch: reconstruct... '); end;
 
 % reconstruct
 im      = zeros((size(feat,1)+2)*pd.sbin, (size(feat,2)+2)*pd.sbin, nn);
@@ -88,9 +92,9 @@ for k=1:nn,
   end
 end
 
-fprintf('%0.2fs sec\n', toc(t));
+if verbose, fprintf('%0.2fs sec\n', toc(t)); end;
 
-t = tic(); fprintf('ihog: postprocess... ');
+if verbose, t = tic(); fprintf('ihog: batch: postprocess... '); end;
 
 % post processing averaging and clipping
 im = im ./ weights;
@@ -100,4 +104,6 @@ im(:) = im(:) / max(im(:));
 
 im = im(par*pd.sbin:end-par*pd.sbin-1, par*pd.sbin:end-par*pd.sbin-1, :);
 
-fprintf('%0.2fs sec\n', toc(t));
+if verbose, fprintf('%0.2fs sec\n', toc(t)); end;
+
+if verbose, fprintf('ihog: batch: inverted %i points of %ix%i in %0.2f sec\n', nn, ny-2*par, nx-2*par, toc(start)); end;
