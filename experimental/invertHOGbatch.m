@@ -1,7 +1,8 @@
 % invertHOGbatch(feats, pd)
 %
-% This function is a candidate to become 
-function im = invertHOG(feat, pd),
+% This function is a candidate to become main invertHOG(), but it is more
+% complex.
+function im = invertHOGbatch(feat, pd),
 
 if ~exist('pd', 'var'),
   global ihog_pd
@@ -65,8 +66,8 @@ for k=1:nn,
       iii = (i-1)*pd.sbin+1:(i-1)*pd.sbin+(pd.ny+2)*pd.sbin;
       jjj = (j-1)*pd.sbin+1:(j-1)*pd.sbin+(pd.nx+2)*pd.sbin;
 
-      im(iii, jjj, nn) = im(iii, jjj, nn) + patch;
-      weights(iii, jjj, nn) = weights(iii, jjj, nn) + 1;
+      im(iii, jjj, k) = im(iii, jjj, k) + patch;
+      weights(iii, jjj, k) = weights(iii, jjj, k) + 1;
 
       c = c + 1;
     end
