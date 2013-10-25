@@ -12,6 +12,8 @@ if ~exist('pd', 'var'),
   pd = ihog_pd;
 end
 
+t = tic(); fprintf('ihog: preprocess... ');
+
 par = 5;
 feat = padarray(feat, [par par 0 0], 0);
 
@@ -30,6 +32,10 @@ if size(feat,3) == featuresdim()-1,
   feat(:, :, end+1, :) = 0;
 end
 
+fprintf('%0.2fs sec\n', toc(t));
+
+t = tic(); fprintf('ihog: extract... ');
+
 % extract every window 
 windows = zeros(pd.ny*pd.nx*featuresdim(), (ny-pd.ny+1)*(nx-pd.nx+1)*nn);
 c = 1;
@@ -45,12 +51,20 @@ for k=1:nn,
   end
 end
 
+fprintf('%0.2fs sec\n', toc(t));
+
+t = tic(); fprintf('ihog: lasso... ');
+
 % solve lasso problem
 param.lambda = pd.lambda;
 param.mode = 2;
 param.pos = true;
 a = full(mexLasso(single(windows), pd.dhog, param));
 recon = pd.dgray * a;
+
+fprintf('%0.2fs sec\n', toc(t));
+
+t = tic(); fprintf('ihog: reconstruct... ');
 
 % reconstruct
 im      = zeros((size(feat,1)+2)*pd.sbin, (size(feat,2)+2)*pd.sbin, nn);
@@ -74,6 +88,10 @@ for k=1:nn,
   end
 end
 
+fprintf('%0.2fs sec\n', toc(t));
+
+t = tic(); fprintf('ihog: postprocess... ');
+
 % post processing averaging and clipping
 im = im ./ weights;
 im = im(1:(ny+2)*pd.sbin, 1:(nx+2)*pd.sbin, :);
@@ -81,3 +99,5 @@ im(:) = im(:) - min(im(:));
 im(:) = im(:) / max(im(:));
 
 im = im(par*pd.sbin:end-par*pd.sbin-1, par*pd.sbin:end-par*pd.sbin-1, :);
+
+fprintf('%0.2fs sec\n', toc(t));
