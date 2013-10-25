@@ -71,13 +71,13 @@ if verbose, fprintf('%0.2fs sec\n', toc(t)); end;
 if verbose, t = tic(); fprintf('ihog: batch: reconstruct... '); end;
 
 % reconstruct
+fil     = fspecial('gaussian', [(pd.ny+2)*pd.sbin (pd.nx+2)*pd.sbin], 9);
 im      = zeros((size(feat,1)+2)*pd.sbin, (size(feat,2)+2)*pd.sbin, nn);
 weights = zeros((size(feat,1)+2)*pd.sbin, (size(feat,2)+2)*pd.sbin, nn);
 c = 1;
 for k=1:nn,
   for i=1:size(feat,1) - pd.ny + 1,
     for j=1:size(feat,2) - pd.nx + 1,
-      fil = fspecial('gaussian', [(pd.ny+2)*pd.sbin (pd.nx+2)*pd.sbin], 9);
       patch = reshape(recon(:, c), [(pd.ny+2)*pd.sbin (pd.nx+2)*pd.sbin]);
       patch = patch .* fil;
 
