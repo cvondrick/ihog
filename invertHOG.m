@@ -42,10 +42,10 @@ feat = padarray(feat, [par par 0], 0);
 
 % pad feat with 0s if not big enough
 if size(feat,1) < pd.ny,
-  x = padarray(x, [pd.ny - size(x,1) 0 0], 0, 'post');
+  feat = padarray(feat, [pd.ny - size(feat,1) 0 0], 0, 'post');
 end
 if size(feat,2) < pd.nx,
-  x = padarray(x, [0 pd.nx - size(x,2) 0], 0, 'post');
+  feat = padarray(feat, [0 pd.nx - size(feat,2) 0], 0, 'post');
 end
 
 % pad feat if dim lacks occlusion feature
