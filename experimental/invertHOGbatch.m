@@ -99,8 +99,12 @@ if verbose, t = tic(); fprintf('ihog: batch: postprocess... '); end;
 % post processing averaging and clipping
 im = im ./ weights;
 im = im(1:(ny+2)*pd.sbin, 1:(nx+2)*pd.sbin, :);
-im(:) = im(:) - min(im(:));
-im(:) = im(:) / max(im(:));
+for k=1:nn,
+  img = im(:, :, k);
+  img(:) = img(:) - min(img(:));
+  img(:) = img(:) / max(img(:));
+  im(:, :, k) = img;
+end
 
 im = im(par*pd.sbin:end-par*pd.sbin-1, par*pd.sbin:end-par*pd.sbin-1, :);
 
