@@ -41,8 +41,10 @@ use_multithread=true;   % (might not compatible with compiler=mex)
 if strcmp(compiler,'gcc') 
     if linux || mac
        % example when compiler='gcc' for Linux/Mac:   (path containing the files libgcc_s.*)
+       % NOTE: you might try using one of these libraries
        %path_to_compiler_libraries='/usr/lib/x86_64-linux-gnu/gcc/x86_64-linux-gnu/4.5/';
-       path_to_compiler_libraries='/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/x86_64/';
+       %path_to_compiler_libraries='/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/x86_64/';
+       path_to_compiler_libraries='/usr/local/lib/gcc/x86_64-apple-darwin13.0.0/4.7.3/';
        path_to_compiler='/usr/bin/';
     else
        % example when compiler='gcc' for Windows+cygwin:   (the script does not
@@ -318,14 +320,24 @@ DEFS=[DEFBLAS ' ' DEFCOMMON ' ' DEFCOMP];
 for k = 1:length(COMPILE),
     str = COMPILE{k};
     fprintf('compilation of: %s\n',str);
-    if windows
-       str = [str ' -outdir ' out_dir, ' ' DEFS ' ' links_lib ' OPTIMFLAGS="' compile_flags '" ']; 
-    else
-       str = [str ' -outdir ' out_dir, ' ' DEFS ' CXXOPTIMFLAGS="' compile_flags '" LDOPTIMFLAGS="' link_flags '" ' links_lib];
-    end
-    args = regexp(str, '\s+', 'split');
-    args = args(find(~cellfun(@isempty, args)));
-    mex(args{:});
+    try,
+      if windows
+        str = [str ' -outdir ' out_dir, ' ' DEFS ' ' links_lib ' OPTIMFLAGS="' compile_flags '" ']; 
+      else
+        str = [str ' -outdir ' out_dir, ' ' DEFS ' CXXOPTIMFLAGS="' compile_flags '" LDOPTIMFLAGS="' link_flags '" ' links_lib];
+      end
+      args = regexp(str, '\s+', 'split');
+      args = args(find(~cellfun(@isempty, args)));
+      mex(args{:});
+  catch e,
+    fprintf('error: failed to compile: %s\n', str); 
+    fprintf('error: reason: %s\n', e.message);
+    fprintf('error: you might consider adjusting spams/compile.m settings\n');
+    fprintf('error: in particular, adjust path_to_compiler_libraries\n');
+    fprintf('error: we will continue to attempt to compile the rest of the system\n');
+    fprintf('error: since it might be ok that this failed to compile, but if the\n');
+    fprintf('error: full system does not work, please fix this error\n');
+  end
 end
 
 copyfile src_release/*.m build/
