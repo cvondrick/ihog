@@ -17,11 +17,8 @@
 %   dgray     A dictionary of gray elements
 %   dhog      A dictionary of HOG elements
 
-function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, sbin, fast),
+function pd = learnpairdict(data, k, ny, nx, lambda, iters, sbin, fast),
 
-if ~exist('n', 'var'),
-   n = 1000000;
-end
 if ~exist('k', 'var'),
   k = 1024;
 end
@@ -44,12 +41,12 @@ if ~exist('fast', 'var'),
   fast = false;
 end
 
-graysize = (ny+2)*(nx+2)*sbin^2;
+n = size(data.features,1);
+graysize = ny*nx*3;
 
 t = tic;
 
-stream = resolvestream(stream);
-[data, trainims] = getdata(stream, n, [ny nx], sbin);
+data = cat(2, data.features, data.images)';
 
 fprintf('ihog: normalize\n');
 for i=1:size(data,2),
@@ -74,7 +71,6 @@ pd.nx = nx;
 pd.sbin = sbin;
 pd.iters = iters;
 pd.lambda = lambda;
-pd.trainims = trainims;
 
 fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 
