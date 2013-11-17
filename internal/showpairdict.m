@@ -48,7 +48,7 @@ for i=1:min(sy*sx, pd.k),
 end
 fprintf('\n');
 
-im = im(1:end-bord, 1:end-bord);
+im = im(1:end-bord, 1:end-bord, :);
 
 imagesc(im);
 axis image;

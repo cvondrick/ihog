@@ -1,5 +1,8 @@
 function im = invertCNN(feat, pd),
 
+feat(:) = feat(:) - mean(feat(:));
+feat(:) = feat(:) / (sqrt(sum(feat(:).^2) + eps));
+
 % solve lasso problem
 param.lambda = pd.lambda;
 param.mode = 2;

@@ -10,14 +10,12 @@
 %   dim       The size of the template patch to invert
 %   lambda    Sparsity regularization parameter on alpha
 %   iters     Number of iterations 
-%   sbin      The HOG bin size
 %   fast      If true, 'learn' a dictionary in real time (default false)
 % 
 % Returns a struct with fields:
 %   dgray     A dictionary of gray elements
 %   dhog      A dictionary of HOG elements
-
-function pd = learnpairdict(data, k, ny, nx, lambda, iters, sbin, fast),
+function pd = learnpairdict(data, k, ny, nx, lambda, iters, fast),
 
 if ~exist('k', 'var'),
   k = 1024;
@@ -34,9 +32,6 @@ end
 if ~exist('iters', 'var'),
   iters = 1000;
 end
-if ~exist('sbin', 'var'),
-  sbin = 8;
-end
 if ~exist('fast', 'var'),
   fast = false;
 end
@@ -46,7 +41,8 @@ graysize = ny*nx*3;
 
 t = tic;
 
-data = cat(2, data.features, data.images)';
+fprintf('ihog: concatenate data\n');
+data = cat(2, data.images, data.features)';
 
 fprintf('ihog: normalize\n');
 for i=1:size(data,2),
@@ -68,7 +64,6 @@ pd.n = n;
 pd.k = k;
 pd.ny = ny;
 pd.nx = nx;
-pd.sbin = sbin;
 pd.iters = iters;
 pd.lambda = lambda;
 
@@ -113,53 +108,3 @@ fprintf('ihog: sampling %i random elements for dictionary instead of learning\n'
 order = randperm(size(data, 2));
 order = order(1:k);
 dict = data(:, order);
-
-
-
-% getdata(stream, n, dim, sbin)
-%
-% Reads in the stream and extracts windows along with their HOG features.
-function [data, images] = getdata(stream, n, dim, sbin),
-
-ny = dim(1);
-nx = dim(2);
-
-fprintf('ihog: allocating data store: %.02fGB\n', ...
-        ((ny+2)*(nx+2)*sbin^2+ny*nx*featuresdim())*n*4/1024/1024/1024);
-data = zeros((ny+2)*(nx+2)*sbin^2+ny*nx*featuresdim(), n, 'single');
-c = 1;
-
-fprintf('ihog: loading data: ');
-while true,
-  for k=1:length(stream),
-    fprintf('.');
-
-    im = double(imread(stream{k})) / 255.;
-    im = mean(im,3);
-    feat = features(repmat(im, [1 1 3]), sbin);
-
-    for i=1:size(feat,1) - dim(1),
-      for j=1:size(feat,2) - dim(2),
-        if n <= 100000 && rand() > 0.1,
-          continue;
-        end
-
-        featpoint = feat(i:i+ny-1, ...
-                         j:j+ny-1, :);
-        graypoint = im((i-1)*sbin+1:(i+1+ny)*sbin, ...
-                       (j-1)*sbin+1:(j+1+nx)*sbin);
-        data(:, c) = single([graypoint(:); featpoint(:)]);
-
-        c = c + 1;
-        if c >= n,
-          images = stream(1:k);
-          fprintf('\n');
-          fprintf('ihog: loaded %i windows\n', c);
-          return;
-        end
-      end
-    end
-  end
-  fprintf('\n');
-  fprintf('ihog: warning: wrapping around dataset!\n');
-end
