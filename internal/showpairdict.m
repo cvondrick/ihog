@@ -37,7 +37,7 @@ for i=1:min(sy*sx, pd.k),
   hogpic(:) = hogpic(:) - min(hogpic(:));
   hogpic(:) = hogpic(:) / max(hogpic(:));
   hogpic = repmat(hogpic, [1 1 3]);
-  hogpic = imresize(hogpic, [pd.ny pd.nx]);
+  hogpic = imresize(hogpic, [pd.ny pd.nx], 'nearest');
   hogpic(hogpic > 1) = 1;
   hogpic(hogpic < 0) = 0;
 
