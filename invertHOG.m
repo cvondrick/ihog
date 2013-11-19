@@ -74,12 +74,12 @@ a = full(mexLasso(single(windows), pd.dhog, param));
 recon = pd.dgray * a;
 
 % reconstruct
+fil     = fspecial('gaussian', [(pd.ny+2)*pd.sbin (pd.nx+2)*pd.sbin], 9);
 im      = zeros((size(feat,1)+2)*pd.sbin, (size(feat,2)+2)*pd.sbin);
 weights = zeros((size(feat,1)+2)*pd.sbin, (size(feat,2)+2)*pd.sbin);
 c = 1;
 for i=1:size(feat,1) - pd.ny + 1,
   for j=1:size(feat,2) - pd.nx + 1,
-    fil = fspecial('gaussian', [(pd.ny+2)*pd.sbin (pd.nx+2)*pd.sbin], 9);
     patch = reshape(recon(:, c), [(pd.ny+2)*pd.sbin (pd.nx+2)*pd.sbin]);
     patch = patch .* fil;
 
