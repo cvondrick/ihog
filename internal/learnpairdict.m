@@ -1,20 +1,4 @@
 % learnpairdict(stream, n, k, size)
-%
-% This function learns a pair of dictionaries 'dgray' and 'dhog' to allow for
-% regression between HOG and grayscale images.
-%
-% Arguments:
-%   stream    List of filepaths where images are located
-%   n         Number of window patches to extract in total
-%   k         The size of the dictionary
-%   dim       The size of the template patch to invert
-%   lambda    Sparsity regularization parameter on alpha
-%   iters     Number of iterations 
-%   fast      If true, 'learn' a dictionary in real time (default false)
-% 
-% Returns a struct with fields:
-%   dgray     A dictionary of gray elements
-%   dhog      A dictionary of HOG elements
 function pd = learnpairdict(data, k, ny, nx, lambda, iters, fast),
 
 if ~exist('k', 'var'),
@@ -36,10 +20,12 @@ if ~exist('fast', 'var'),
   fast = false;
 end
 
-n = size(data,1);
+n = size(data,2);
 graysize = ny*nx*3;
 
 t = tic;
+
+fprintf('ihog: graydim=%i, featdim=%i, n=%i, k=%i\n', graysize, size(data,1)-graysize, n, k);
 
 fprintf('ihog: normalize\n');
 for i=1:size(data,2),

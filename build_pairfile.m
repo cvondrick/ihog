@@ -1,7 +1,7 @@
 function build_pairfile,
 
-rootdir = '/data/vision/torralba/hallucination/data-pool5';
-outdir = '/data/vision/torralba/hallucination/data-pool5';
+rootdir = '/Users/vondrick/decaf-release/data-pool5/';
+outdir = rootdir;
 featdim = 9216;
 imagedim = 64;
 imagedimorig = 256;
