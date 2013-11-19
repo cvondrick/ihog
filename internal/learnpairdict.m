@@ -36,13 +36,10 @@ if ~exist('fast', 'var'),
   fast = false;
 end
 
-n = size(data.features,1);
+n = size(data,1);
 graysize = ny*nx*3;
 
 t = tic;
-
-fprintf('ihog: concatenate data\n');
-data = cat(2, data.images, data.features)';
 
 fprintf('ihog: normalize\n');
 for i=1:size(data,2),
