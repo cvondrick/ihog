@@ -33,7 +33,8 @@ for i=1:min(sy*sx, pd.k),
   graypic(:) = graypic(:) - min(graypic(:));
   graypic(:) = graypic(:) / max(graypic(:));
 
-  hogpic = zeros(64, 64); 
+  hogpic = reshape(pd.dhog(:, iii(i)), [6*6 256]);
+  hogpic = exp(hogpic.^2 / .01);
   hogpic(:) = hogpic(:) - min(hogpic(:));
   hogpic(:) = hogpic(:) / max(hogpic(:));
   hogpic = repmat(hogpic, [1 1 3]);
