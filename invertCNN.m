@@ -1,17 +1,23 @@
 function im = invertCNN(feat, pd),
 
-feat(:) = feat(:) - mean(feat(:));
-feat(:) = feat(:) / (sqrt(sum(feat(:).^2) + eps));
+for i=1:size(feat,2),
+  feat(:, i) = feat(:, i) - mean(feat(:, i));
+  feat(:, i) = feat(:, i) / (sqrt(sum(feat(:, i).^2) + eps));
+end
 
 % solve lasso problem
 param.lambda = pd.lambda;
 param.mode = 2;
 param.pos = true;
-a = full(mexLasso(single(feat'), pd.dhog, param));
+a = full(mexLasso(single(feat), pd.dhog, param));
 recon = pd.dgray * a;
 
 fprintf('sparsity = %f\n', sum(a(:) == 0) / numel(a));
 
-im = reshape(recon, [pd.ny pd.nx 3]);
-im(:) = im(:) - min(im(:));
-im(:) = im(:) / max(im(:));
+im = reshape(recon, [pd.ny pd.nx 3 size(feat,2)]);
+for i=1:size(feat,2),
+  img = im(:, :, :, i);
+  img(:) = img(:) - min(img(:));
+  img(:) = img(:) / max(img(:));
+  im(:, :, :, i) = img;
+end
