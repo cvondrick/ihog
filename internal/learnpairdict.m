@@ -17,7 +17,7 @@
 %   dgray     A dictionary of gray elements
 %   dhog      A dictionary of HOG elements
 
-function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, sbin, fast),
+function pd = learnpairdict(stream, n, k, ny, nx, lambda, reggray, reghog, iters, sbin, fast),
 
 if ~exist('n', 'var'),
    n = 1000000;
@@ -34,6 +34,12 @@ end
 if ~exist('lambda', 'var'),
   lambda = 0.02; % 0.02 is best so far
 end
+if ~exist('reggray', 'var'),
+  reggray = .01;
+end
+if ~exist('reghog', 'var'),
+  reghog = 0.01;
+end
 if ~exist('iters', 'var'),
   iters = 1000;
 end
@@ -41,7 +47,7 @@ if ~exist('sbin', 'var'),
   sbin = 8;
 end
 if ~exist('fast', 'var'),
-  fast = false;
+  fast = true;
 end
 
 graysize = (ny+2)*(nx+2)*sbin^2;
@@ -51,13 +57,43 @@ t = tic;
 stream = resolvestream(stream);
 [data, trainims] = getdata(stream, n, [ny nx], sbin);
 
-fprintf('ihog: normalize\n');
+fprintf('ihog: compute whitening mean\n');
+graymu = mean(data(1:graysize, :), 2);
+hogmu  = mean(data(graysize+1:end, :), 2);
+
 for i=1:size(data,2),
-  data(1:graysize, i) = data(1:graysize, i) - mean(data(1:graysize, i));
-  data(1:graysize, i) = data(1:graysize, i) / (sqrt(sum(data(1:graysize, i).^2) + eps));
-  data(graysize+1:end, i) = data(graysize+1:end, i) - mean(data(graysize+1:end, i));
-  data(graysize+1:end, i) = data(graysize+1:end, i) / (sqrt(sum(data(graysize+1:end, i).^2) + eps));
+  data(1:graysize, i) = data(1:graysize, i) - graymu;
+  data(graysize+1:end, i) = data(graysize+1:end, i) - hogmu;
 end
+
+fprintf('ihog: compute whitening covariance\n');
+graysig = 1/(n-1) * data(1:graysize, :) * data(1:graysize, :)';
+graysig = graysig + reggray * eye(size(graysig));
+graysig = (graysig + graysig') / 2;
+
+hogsig = 1/(n-1) * data(graysize+1:end, :) * data(graysize+1:end, :)';
+hogsig = hogsig + reghog * eye(size(hogsig));
+hogsig = (hogsig + hogsig') / 2;
+
+fprintf('ihog: compute whitening matrix\n');
+[v,d] = eig(graysig);
+if any(diag(d) <= 0),
+  fprintf('ihog: warning: eigenvalues for graysig <= 0\n');
+end
+wgray = v * diag(1./sqrt(diag(d))) * v';
+cgray = v * sqrt(d) * v';
+
+[v,d] = eig(hogsig);
+if any(diag(d) <= 0),
+  fprintf('ihog: warning: eigenvalues for hogsig <= 0\n');
+end
+whog = v * diag(1./sqrt(diag(d))) * v';
+
+fprintf('ihog: whitening data\n');
+data(1:graysize, :) = wgray * data(1:graysize, :);
+data(graysize+1:end, :) = whog * data(graysize+1:end, :);
+
+keyboard
 
 if fast,
   dict = pickrandom(data, k); 
@@ -75,6 +111,10 @@ pd.sbin = sbin;
 pd.iters = iters;
 pd.lambda = lambda;
 pd.trainims = trainims;
+pd.cgray = cgray;
+pd.whog = whog;
+pd.mugray = graymu;
+pd.muhog = hogmu;
 
 fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 
