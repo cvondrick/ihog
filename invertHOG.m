@@ -12,7 +12,7 @@ if ~exist('whiten', 'var'),
   whiten = false;
 end
 
-par = 5;
+par = 6;
 feat = padarray(feat, [par par 0 0], 0);
 
 [ny, nx, ~, nn] = size(feat);
@@ -43,10 +43,9 @@ end
 
 % solve lasso problem
 param.lambda = pd.lambda;
-param.mode = 0;
+param.mode = 2;
 a = full(mexLasso(single(windows), pd.dhog, param));
-recon = pd.dgray * a;
-recon = pd.cgray * recon;
+recon = pd.cgray * pd.dgray * a;
 recon = bsxfun(@plus, recon, pd.mugray);
 
 fprintf('sparsity = %f\n', sum(a(:) == 0) / length(a(:)));

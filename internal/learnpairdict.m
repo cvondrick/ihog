@@ -32,7 +32,7 @@ if ~exist('nx', 'var'),
   nx = 5;
 end
 if ~exist('lambda', 'var'),
-  lambda = 1;
+  lambda = .5;
 end
 if ~exist('reggray', 'var'),
   reggray = .001;
@@ -67,11 +67,11 @@ for i=1:size(data,2),
 end
 
 fprintf('ihog: compute dataset covariance\n');
-graysig = 1/(n-1) * data(1:graysize, :) * data(1:graysize, :)';
-graysig = (graysig + graysig') / 2;
+graysig = data(1:graysize, :) * data(1:graysize, :)';
+graysig = 1/(n-1) * (graysig + graysig') / 2;
 
-hogsig = 1/(n-1) * data(graysize+1:end, :) * data(graysize+1:end, :)';
-hogsig = (hogsig + hogsig') / 2;
+hogsig = data(graysize+1:end, :) * data(graysize+1:end, :)';
+hogsig = 1/(n-1) * (hogsig + hogsig') / 2;
 
 fprintf('ihog: compute whitening matrix\n');
 [wgray, cgray] = whiten(graysig, reggray);
@@ -114,7 +114,7 @@ function dict = lasso(data, k, iters, lambda),
 
 param.K = k;
 param.lambda = lambda;
-param.mode = 0;
+param.mode = 2;
 param.modeD = 0;
 param.iter = 100;
 param.numThreads = 12;
