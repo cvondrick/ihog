@@ -34,13 +34,12 @@ for i=1:min(sy*sx, pd.k),
   col = floor((i-1) / sx)+1;
 
   graypic = pd.dgray(:, iii(i));
-  graypic = pd.cgray * graypic + pd.mugray;
   graypic = reshape(graypic, [gny gnx]);
   graypic(:) = graypic(:) - min(graypic(:));
   graypic(:) = graypic(:) / max(graypic(:) + eps);
 
   hogfeat = pd.dhog(:, iii(i));
-  hogfeat = pd.chog * hogfeat;% + pd.muhog;
+  hogfeat = pd.whog \ hogfeat;% + pd.muhog;
   hogfeat = reshape(hogfeat, [hny hnx featuresdim()]);
   hogpic = HOGpicture(max(hogfeat, 0));
   hogpic = imresize(hogpic, [gny gnx]);

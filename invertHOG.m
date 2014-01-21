@@ -45,8 +45,7 @@ end
 param.lambda = pd.lambda;
 param.mode = 2;
 a = full(mexLasso(single(windows), pd.dhog, param));
-recon = pd.cgray * pd.dgray * a;
-recon = bsxfun(@plus, recon, pd.mugray);
+recon = pd.dgray * a;
 
 fprintf('sparsity = %f\n', sum(a(:) == 0) / length(a(:)));
 

@@ -17,7 +17,7 @@
 %   dgray     A dictionary of gray elements
 %   dhog      A dictionary of HOG elements
 
-function pd = learnpairdict(stream, n, k, ny, nx, lambda, reggray, reghog, iters, sbin, fast),
+function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, sbin, fast),
 
 if ~exist('n', 'var'),
    n = 1000000;
@@ -33,12 +33,6 @@ if ~exist('nx', 'var'),
 end
 if ~exist('lambda', 'var'),
   lambda = .5;
-end
-if ~exist('reggray', 'var'),
-  reggray = .001;
-end
-if ~exist('reghog', 'var'),
-  reghog = .001;
 end
 if ~exist('iters', 'var'),
   iters = 1000;
@@ -57,28 +51,19 @@ t = tic;
 stream = resolvestream(stream);
 [data, trainims] = getdata(stream, n, [ny nx], sbin);
 
-fprintf('ihog: compute dataset mean\n');
-mu = mean(data, 2);
-graymu = mu(1:graysize);
-hogmu  = mu(graysize+1:end);
+[whog, muhog] = whiteningmatrix(ny, nx);
+muhog = padarray(muhog, [ny*nx 0], 0, 'post');
 
+fprintf('ihog: normalize\n');
 for i=1:size(data,2),
-  data(:, i) = data(:, i) - mu;
+  data(1:graysize, i) = data(1:graysize, i) - mean(data(1:graysize, i));
+  data(1:graysize, i) = data(1:graysize, i) / (sqrt(sum(data(1:graysize, i).^2) + eps));
+  data(graysize+1:end, i) = data(graysize+1:end, i) - muhog;
 end
 
-fprintf('ihog: compute dataset covariance\n');
-graysig = data(1:graysize, :) * data(1:graysize, :)';
-graysig = 1/(n-1) * (graysig + graysig') / 2;
-
-hogsig = data(graysize+1:end, :) * data(graysize+1:end, :)';
-hogsig = 1/(n-1) * (hogsig + hogsig') / 2;
-
-fprintf('ihog: compute whitening matrix\n');
-[wgray, cgray] = whiten(graysig, reggray);
-[whog,  chog]  = whiten(hogsig, reghog);
-
 fprintf('ihog: whitening data\n');
-data = blkdiag(wgray, whog) * data;
+wbig = blkdiag(eye(graysize), whog, eye(ny*nx));
+data = wbig * data;
 
 if fast,
   dict = pickrandom(data, k); 
@@ -96,12 +81,8 @@ pd.sbin = sbin;
 pd.iters = iters;
 pd.lambda = lambda;
 pd.trainims = trainims;
-pd.wgray = wgray;
-pd.cgray = cgray;
 pd.whog = whog;
-pd.chog = chog;
-pd.mugray = graymu;
-pd.muhog = hogmu;
+pd.muhog = muhog;
 
 fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 
@@ -129,17 +110,6 @@ for i=1:(iters/param.iter),
   model.iter = i*param.iter;
   param.D = dict;
 end
-
-
-
-% calculate whitening and coloring
-function [w, c] = whiten(sig, r),
-[v,d] = eig(sig);
-d = diag(d);
-d(d < r) = r;
-w = v * diag(1./sqrt(d)) * v';
-c = v * diag(sqrt(d)) * v';
-
 
 
 % pickrandom(data, k)
