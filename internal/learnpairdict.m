@@ -45,6 +45,7 @@ if ~exist('fast', 'var'),
 end
 
 graysize = (ny+2)*(nx+2)*sbin^2;
+hogsize = ny*nx*featuresdim();
 
 t = tic;
 
@@ -58,15 +59,20 @@ muhog = padarray(muhog, [ny*nx 0], 0, 'post');
 whog = padarray(whog, [ny*nx ny*nx], 0, 'post');
 chog = padarray(chog, [ny*nx ny*nx], 0, 'post');
 
-fprintf('ihog: normalize\n');
-for i=1:size(data,2),
-  data(1:graysize, i) = data(1:graysize, i) - mean(data(1:graysize, i));
-  data(1:graysize, i) = data(1:graysize, i) / (sqrt(sum(data(1:graysize, i).^2) + eps));
-  data(graysize+1:end, i) = data(graysize+1:end, i) - muhog;
-end
+fprintf('ihog: normalize and whiten: ');
+blocksize = 100000;
+for i=1:ceil(size(data,2)/blocksize),
+  fprintf('.');
 
-fprintf('ihog: whitening data\n');
-data(graysize+1:end, :) = whog * data(graysize+1:end, :);
+  iii = (i-1)*blocksize+1:min(i*blocksize, size(data,2));
+  
+  data(1:graysize, iii) = data(1:graysize, iii) - repmat(mean(data(1:graysize, iii)), [graysize 1]);
+  data(1:graysize, iii) = data(1:graysize, iii) ./ repmat(sqrt(sum(data(1:graysize, iii).^2) + eps), [graysize 1]);
+
+  data(graysize+1:end, iii) = data(graysize+1:end, iii) - repmat(muhog, [1 blocksize]);
+  data(graysize+1:end, iii) = whog * data(graysize+1:end, iii);
+end
+fprintf('\n');
 
 if fast,
   dict = pickrandom(data, k); 
