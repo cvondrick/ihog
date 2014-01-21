@@ -33,7 +33,9 @@ for i=1:min(sy*sx, pd.k),
   row = mod(i-1, sx)+1;
   col = floor((i-1) / sx)+1;
 
-  graypic = reshape(pd.dgray(:, iii(i)), [gny gnx]);
+  %graypic = pd.cgray * pd.dgray(:, iii(i)) + pd.mugray;
+  graypic = pd.dgray(:, iii(i));
+  graypic = reshape(graypic, [gny gnx]);
   graypic(:) = graypic(:) - min(graypic(:));
   graypic(:) = graypic(:) / max(graypic(:));
 

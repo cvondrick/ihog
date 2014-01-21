@@ -32,7 +32,7 @@ if ~exist('nx', 'var'),
   nx = 5;
 end
 if ~exist('lambda', 'var'),
-  lambda = 0.02; % 0.02 is best so far
+  lambda = .01;
 end
 if ~exist('reggray', 'var'),
   reggray = .01;
@@ -47,7 +47,7 @@ if ~exist('sbin', 'var'),
   sbin = 8;
 end
 if ~exist('fast', 'var'),
-  fast = true;
+  fast = false;
 end
 
 graysize = (ny+2)*(nx+2)*sbin^2;
@@ -93,8 +93,6 @@ fprintf('ihog: whitening data\n');
 data(1:graysize, :) = wgray * data(1:graysize, :);
 data(graysize+1:end, :) = whog * data(graysize+1:end, :);
 
-keyboard
-
 if fast,
   dict = pickrandom(data, k); 
 else,
@@ -127,13 +125,12 @@ function dict = lasso(data, k, iters, lambda),
 
 param.K = k;
 param.lambda = lambda;
-param.mode = 2;
+param.mode = 0;
 param.modeD = 0;
 param.iter = 100;
 param.numThreads = 12;
 param.verbose = 1;
 param.batchsize = 400;
-param.posAlpha = true;
 
 fprintf('ihog: lasso\n');
 model = struct();
