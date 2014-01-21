@@ -32,13 +32,13 @@ if ~exist('nx', 'var'),
   nx = 5;
 end
 if ~exist('lambda', 'var'),
-  lambda = .01;
+  lambda = 1;
 end
 if ~exist('reggray', 'var'),
-  reggray = .01;
+  reggray = .001;
 end
 if ~exist('reghog', 'var'),
-  reghog = 0.01;
+  reghog = .001;
 end
 if ~exist('iters', 'var'),
   iters = 1000;
@@ -57,41 +57,28 @@ t = tic;
 stream = resolvestream(stream);
 [data, trainims] = getdata(stream, n, [ny nx], sbin);
 
-fprintf('ihog: compute whitening mean\n');
-graymu = mean(data(1:graysize, :), 2);
-hogmu  = mean(data(graysize+1:end, :), 2);
+fprintf('ihog: compute dataset mean\n');
+mu = mean(data, 2);
+graymu = mu(1:graysize);
+hogmu  = mu(graysize+1:end);
 
 for i=1:size(data,2),
-  data(1:graysize, i) = data(1:graysize, i) - graymu;
-  data(graysize+1:end, i) = data(graysize+1:end, i) - hogmu;
+  data(:, i) = data(:, i) - mu;
 end
 
-fprintf('ihog: compute whitening covariance\n');
+fprintf('ihog: compute dataset covariance\n');
 graysig = 1/(n-1) * data(1:graysize, :) * data(1:graysize, :)';
-graysig = graysig + reggray * eye(size(graysig));
 graysig = (graysig + graysig') / 2;
 
 hogsig = 1/(n-1) * data(graysize+1:end, :) * data(graysize+1:end, :)';
-hogsig = hogsig + reghog * eye(size(hogsig));
 hogsig = (hogsig + hogsig') / 2;
 
 fprintf('ihog: compute whitening matrix\n');
-[v,d] = eig(graysig);
-if any(diag(d) <= 0),
-  fprintf('ihog: warning: eigenvalues for graysig <= 0\n');
-end
-wgray = v * diag(1./sqrt(diag(d))) * v';
-cgray = v * sqrt(d) * v';
-
-[v,d] = eig(hogsig);
-if any(diag(d) <= 0),
-  fprintf('ihog: warning: eigenvalues for hogsig <= 0\n');
-end
-whog = v * diag(1./sqrt(diag(d))) * v';
+[wgray, cgray] = whiten(graysig, reggray);
+[whog,  chog]  = whiten(hogsig, reghog);
 
 fprintf('ihog: whitening data\n');
-data(1:graysize, :) = wgray * data(1:graysize, :);
-data(graysize+1:end, :) = whog * data(graysize+1:end, :);
+data = blkdiag(wgray, whog) * data;
 
 if fast,
   dict = pickrandom(data, k); 
@@ -109,8 +96,10 @@ pd.sbin = sbin;
 pd.iters = iters;
 pd.lambda = lambda;
 pd.trainims = trainims;
+pd.wgray = wgray;
 pd.cgray = cgray;
 pd.whog = whog;
+pd.chog = chog;
 pd.mugray = graymu;
 pd.muhog = hogmu;
 
@@ -140,6 +129,16 @@ for i=1:(iters/param.iter),
   model.iter = i*param.iter;
   param.D = dict;
 end
+
+
+
+% calculate whitening and coloring
+function [w, c] = whiten(sig, r),
+[v,d] = eig(sig);
+d = diag(d);
+d(d < r) = r;
+w = v * diag(1./sqrt(d)) * v';
+c = v * diag(sqrt(d)) * v';
 
 
 

@@ -8,7 +8,7 @@ if ~exist('pd', 'var') || isempty(pd),
   end
   pd = ihog_pd;
 end
-if ~exist('pd', 'var'),
+if ~exist('whiten', 'var'),
   whiten = false;
 end
 
@@ -16,14 +16,6 @@ par = 5;
 feat = padarray(feat, [par par 0 0], 0);
 
 [ny, nx, ~, nn] = size(feat);
-
-% pad feat with 0s if not big enough
-if size(feat,1) < pd.ny,
-  feat = padarray(feat, [pd.ny - size(x,1) 0 0 0], 0, 'post');
-end
-if size(feat,2) < pd.nx,
-  feat = padarray(feat, [0 pd.nx - size(x,2) 0 0], 0, 'post');
-end
 
 % pad feat if dim lacks occlusion feature
 if size(feat,3) == featuresdim()-1,
@@ -57,7 +49,7 @@ recon = pd.dgray * a;
 recon = pd.cgray * recon;
 recon = bsxfun(@plus, recon, pd.mugray);
 
-keyboard
+fprintf('sparsity = %f\n', sum(a(:) == 0) / length(a(:)));
 
 % reconstruct
 fil     = fspecial('gaussian', [(pd.ny+2)*pd.sbin (pd.nx+2)*pd.sbin], 9);
