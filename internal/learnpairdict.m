@@ -180,7 +180,7 @@ while true,
 
     for i=1:size(feat,1) - dim(1),
       for j=1:size(feat,2) - dim(2),
-        if n <= 100000 && rand() > 0.1,
+        if n <= 1000000 && rand() > 0.05,
           continue;
         end
 
