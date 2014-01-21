@@ -32,7 +32,7 @@ if ~exist('nx', 'var'),
   nx = 5;
 end
 if ~exist('lambda', 'var'),
-  lambda = .5;
+  lambda = 1;
 end
 if ~exist('iters', 'var'),
   iters = 1000;
@@ -51,8 +51,12 @@ t = tic;
 stream = resolvestream(stream);
 [data, trainims] = getdata(stream, n, [ny nx], sbin);
 
-[whog, muhog] = whiteningmatrix(ny, nx);
+[whog, muhog, chog] = whiteningmatrix(ny, nx);
+
+% add the occlusion feature back in
 muhog = padarray(muhog, [ny*nx 0], 0, 'post');
+whog = padarray(whog, [ny*nx ny*nx], 0, 'post');
+chog = padarray(chog, [ny*nx ny*nx], 0, 'post');
 
 fprintf('ihog: normalize\n');
 for i=1:size(data,2),
@@ -62,8 +66,7 @@ for i=1:size(data,2),
 end
 
 fprintf('ihog: whitening data\n');
-wbig = blkdiag(eye(graysize), whog, eye(ny*nx));
-data = wbig * data;
+data(graysize+1:end, :) = whog * data(graysize+1:end, :);
 
 if fast,
   dict = pickrandom(data, k); 
@@ -82,6 +85,7 @@ pd.iters = iters;
 pd.lambda = lambda;
 pd.trainims = trainims;
 pd.whog = whog;
+pd.chog = chog;
 pd.muhog = muhog;
 
 fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
@@ -150,7 +154,7 @@ while true,
 
     for i=1:size(feat,1) - dim(1),
       for j=1:size(feat,2) - dim(2),
-        if n <= 1000000 && rand() > 0.05,
+        if n < 1000000 && rand() > 0.05,
           continue;
         end
 
