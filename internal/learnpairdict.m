@@ -32,7 +32,7 @@ if ~exist('nx', 'var'),
   nx = 5;
 end
 if ~exist('lambda', 'var'),
-  lambda = 1;
+  lambda = .8;
 end
 if ~exist('iters', 'var'),
   iters = 1000;
@@ -120,6 +120,7 @@ for i=1:(iters/param.iter),
   model.iter = i*param.iter;
   param.D = dict;
 end
+
 
 
 % pickrandom(data, k)
