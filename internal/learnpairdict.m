@@ -56,6 +56,14 @@ if ~exist('fast', 'var'),
   fast = false;
 end
 
+fprintf('ihog: train configuration:\n');
+fprintf('ihog:       n = %i\n', n);
+fprintf('ihog:       k = %i\n', k);
+fprintf('ihog:     dim = %ix%i\n', ny, nx);
+fprintf('ihog:  lambda = %0.3f\n', lambda);
+fprintf('ihog:  whiten = %i\n', whiten);
+fprintf('ihog:    fast = %i\n', fast);
+
 graysize = (ny+2)*(nx+2)*sbin^2;
 hogsize = ny*nx*featuresdim();
 
