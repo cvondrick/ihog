@@ -23,12 +23,6 @@ Remember to also adjust your path so MATLAB can find iHOG:
 If you want to use iHOG in your own project, you can simply drop the iHOG
 directory into the root of your project.
 
-In order to use iHOG, you must have a learned paired dictionary. By default,
-iHOG will attempt to download a pretrained one from MIT for you on the first
-execution. If for some reason this fails, you can manually download it:
-
-    $ cd /path/to/ihog
-    $ wget http://people.csail.mit.edu/vondrick/pd.mat
 
 Inverting HOG
 -------------
@@ -79,6 +73,13 @@ Known Issues
 
 iHOG has not been tested on Windows yet. It may work, but some users have reported
 issues installing iHOG on Windows.
+
+In order to use iHOG, you must have a learned paired dictionary. By default,
+iHOG will attempt to download a pretrained one from MIT for you on the first
+execution. If for some reason this fails, you can manually download it:
+
+    $ cd /path/to/ihog
+    $ wget http://people.csail.mit.edu/vondrick/pd.mat
 
 Questions and Comments
 ----------------------
