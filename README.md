@@ -25,8 +25,9 @@ directory into the root of your project.
 
 In order to use iHOG, you must have a learned paired dictionary. By default,
 iHOG will attempt to download a pretrained one from MIT for you on the first
-execution. If you wish to download it manually, simply do:
+execution. If for some reason this fails, you can manually download it:
 
+    $ cd /path/to/ihog
     $ wget http://people.csail.mit.edu/vondrick/pd.mat
 
 Inverting HOG
@@ -42,29 +43,12 @@ Computing the inverse should take no longer than a second for a typical sized
 image on a modern computer. (It may slower the first time you invoke it as it
 caches the paired dictionary from disk.)
 
-Visualizing HOG
----------------
-
-iHOG has several functions to visualize HOG. The most basic is 'visualizeHOG()':
+We also provide a function 'visualizeHOG()' that is useful for interactive
+debugging. This function will show the HOG inverse and the HOG gradients
+in the current figure. Usage is simple:
 
     >> feat = features(im, 8);
     >> visualizeHOG(feat);
-
-The above displays a figure with the HOG glyph and the HOG inverse. This
-visualization is a drop-in replacement for more standard visualizations, and
-should work with existing code bases.
-
-The de-facto HOG has signed components, unsigned components, as well as texture
-components. 'dissectHOG()' visualizes each of these components invidually: 
-
-    >> dissectHOG(feat);
-
-A similar visualization 'spreadHOG()' shows each dimension individually:
-
-    >> spreadHOG(feat);
-
-More visualizations are available. Check out the 'visualizations/' folder and
-read the comments for more.
 
 Learning
 --------
