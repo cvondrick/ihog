@@ -1,4 +1,4 @@
-% invertHOG(feats)
+% invertHOG(feat)
 %
 % This function recovers the natural image that may have generated the HOG
 % feature 'feat'. Usage is simple:
@@ -18,16 +18,16 @@
 %   >> ihog = invertHOG(feat, pd);
 %
 % This function also supports inverting whitened HOG if the paired dictionary
-% is whitened. If 'pd.whitened' is true, then 'feat' should be white. If 'feat'
-% is not white, you can set 'whiten' to true to have invertHOG() do the
-% whitening on your behalf.
+% is whitened. If 'pd.whitened' is true, then the input feature 'feat' will
+% be whitened automatically. If you wish to suppress this behavior, set
+% 'whiten' to false.
 %
 % If you have many points you wish to invert, this function can be vectorized.
 % If 'feat' is size AxBxCxK, then it will invert K HOG features each of size
 % AxBxC. It will return an PxQxK image tensor where the last channel is the kth
 % inversion. This is usually significantly faster than calling invertHOG() 
 % multiple times.
-function im = invertHOG(feat, pd, whiten),
+function im = invertHOG(feat, pd, whiten, verbose),
 
 if ~exist('pd', 'var') || isempty(pd),
   global ihog_pd
@@ -35,18 +35,18 @@ if ~exist('pd', 'var') || isempty(pd),
     ihog_pd = load('pd-who.mat');
   end
   pd = ihog_pd;
-  if ~isfield(pd, 'whitened'),
-    pd.whitened = false;
-  end
+end
+if ~isfield(pd, 'whitened'),
+  pd.whitened = false;
 end
 if ~exist('whiten', 'var'),
-  whiten = false;
+  whiten = true;
+end
+if ~exist('verbose', 'var'),
+  verbose = false;
 end
 
-if whiten && ~pd.whitened,
-  fprintf(['ihog: warning: paired dictionary is not whitened, so ignoring' ...
-           'request to pre-whiten input features\n');
-end
+t = tic();
 
 par = 6;
 feat = padarray(feat, [par par 0 0], 0);
@@ -56,6 +56,10 @@ feat = padarray(feat, [par par 0 0], 0);
 % pad feat if dim lacks occlusion feature
 if size(feat,3) == featuresdim()-1,
   feat(:, :, end+1, :) = 0;
+end
+
+if verbose,
+  fprintf('ihog: extracting windows\n');
 end
 
 % extract every window 
@@ -75,13 +79,23 @@ end
 if whiten && pd.whitened,
   windows = bsxfun(@minus, windows, pd.muhog);
   windows = pd.whog * windows;
-else,
-  for c=1:size(windows,2),
-    hog = windows(:, c);
-    hog = hog(:) - mean(hog(:));
-    hog = hog(:) / sqrt(sum(hog(:).^2) + eps);
-    windows(:, c) = hog;
+  if verbose,
+    fprintf('ihog: whitening input\n');
   end
+elseif ~pd.whitened,
+  if verbose,
+    fprintf('ihog: normalizing input\n');
+  end
+  windows = bsxfun(@minus, windows, mean(windows));
+  windows = bsxfun(@rdivide, windows, sqrt(sum(windows.^2) + eps));
+else,
+  if verbose,
+    fprintf('ihog: not applying whitening or normalization to input\n');
+  end
+end
+
+if verbose,
+  fprintf('ihog: solving lasso\n');
 end
 
 % solve lasso problem
@@ -90,7 +104,13 @@ param.mode = 2;
 a = full(mexLasso(single(windows), pd.dhog, param));
 recon = pd.dgray * a;
 
-fprintf('sparsity = %f\n', sum(a(:) == 0) / length(a(:)));
+if verbose,
+  fprintf('ihog: sparsity = %f\n', sum(a(:) == 0) / length(a(:)));
+end
+
+if verbose,
+  fprintf('ihog: reconstructing images\n');
+end
 
 % reconstruct
 fil     = fspecial('gaussian', [(pd.ny+2)*pd.sbin (pd.nx+2)*pd.sbin], 9);
@@ -125,3 +145,7 @@ for k=1:nn,
 end
 
 im = im(par*pd.sbin:end-par*pd.sbin-1, par*pd.sbin:end-par*pd.sbin-1, :);
+
+if verbose,
+  fprintf('ihog: took %0.1fs to invert\n', toc(t));
+end

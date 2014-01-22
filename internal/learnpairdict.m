@@ -38,6 +38,9 @@ end
 if ~exist('muhog', 'var'),
   muhog = [];
 end
+if isscalar(whog) || isscalar(muhog),
+  [whog, mhog] = getwhiteningmatrix(ny, nx);
+end
 whiten = ~isempty(whog) && ~isempty(muhog);
 if ~exist('lambda', 'var'),
   if whiten,
