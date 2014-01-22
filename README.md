@@ -76,7 +76,8 @@ issues installing iHOG on Windows.
 
 In order to use iHOG, you must have a learned paired dictionary. By default,
 iHOG will attempt to download a pretrained one from MIT for you on the first
-execution. If for some reason this fails, you can manually download it:
+execution. If for some reason this fails, you can manually download it from our
+servers:
 
     $ cd /path/to/ihog
     $ wget http://people.csail.mit.edu/vondrick/pd.mat
