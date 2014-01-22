@@ -3,24 +3,28 @@
 % This function recovers the natural image that may have generated the HOG
 % feature 'feat'. Usage is simple:
 %
-%   >> feat = features(im, 8);
-%   >> ihog = invertHOG(feat);
-%   >> imagesc(ihog); axis image;
+%   >> feat = features(im, 8); >> ihog = invertHOG(feat); >> imagesc(ihog);
+%   axis image;
 %
 % By default, invertHOG() will load a prelearned paired dictionary to perform
 % the inversion. However, if you want to pass your own, you can specify the
 % optional second parameter to use your own parameters:
 % 
-%   >> pd = learnpairdict('/path/to/images');
-%   >> ihog = invertHOG(feat, pd);
+%   >> pd = learnpairdict('/path/to/images'); >> ihog = invertHOG(feat, pd);
 %
 % This function also supports inverting whitened HOG if the paired dictionary
-% is whitened. If 'pd.whitened' is true, then 'feat' should be white. If 'feat' 
-% is not white, you can set 'whiten' to true to have invertHOG() do the whitening
-% on your behalf.
+% is whitened. If 'pd.whitened' is true, then 'feat' should be white. If 'feat'
+% is not white, you can set 'whiten' to true to have invertHOG() do the
+% whitening on your behalf.
 %
-% This function should take no longer than a second to invert any reasonably sized
-% HOG feature point on a 12 core machine.
+% If you have many points you wish to invert, this function can be vectorized.
+% If 'feat' is size AxBxCxK, then it will invert K HOG features each of size
+% AxBxC. It will return an PxQxK image tensor where the last channel is the kth
+% inversion. This is usually significantly faster than calling invertHOG() K
+% times.
+%
+% This function should take no longer than a second to invert any reasonably
+% sized HOG feature point on a 12 core machine.
 function im = invertHOG(feat, pd, whiten),
 
 if ~exist('pd', 'var') || isempty(pd),
