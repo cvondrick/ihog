@@ -1,3 +1,38 @@
+% showHOG(w)
+%
+% Legacy HOG visualization
+function out = showHOG(w)
+
+% Make pictures of positive and negative weights
+bs = 20;
+pos = HOGpicture(w, bs);
+
+% Put pictures together and draw
+if min(w(:)) < 0
+  buff = 10;
+  neg = HOGpicture(-w, bs);
+
+  pos = padarray(pos, [buff buff], 0.5, 'both');
+  neg = padarray(neg, [buff buff], 0.5, 'both');
+
+  im = [pos neg];
+else
+  im = pos;
+end
+
+im(im < 0) = 0;
+im(im > 1) = 1;
+
+if nargout == 0,
+  imagesc(im); 
+  colormap gray;
+  axis image;
+else,
+  out = im;
+end
+
+
+
 % HOGpicture(w)
 %
 % Make picture of positive HOG weights.
