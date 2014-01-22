@@ -21,7 +21,7 @@
 %
 % This function should take no longer than a second to invert any reasonably sized
 % HOG feature point on a 12 core machine.
-function im = invertHOGbatch(feat, pd, whiten),
+function im = invertHOG(feat, pd, whiten),
 
 if ~exist('pd', 'var') || isempty(pd),
   global ihog_pd
