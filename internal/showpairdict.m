@@ -43,7 +43,7 @@ for i=1:min(sy*sx, pd.k),
     hogfeat = pd.whog \ hogfeat;
   end
   hogfeat = reshape(hogfeat, [hny hnx featuresdim()]);
-  hogpic = HOGpicture(max(hogfeat, 0));
+  hogpic = showHOG(max(hogfeat, 0));
   hogpic = imresize(hogpic, [gny gnx]);
   hogpic(hogpic < 0) = 0;
   hogpic(hogpic > 1) = 1;
