@@ -7,8 +7,10 @@
 %   stream    List of filepaths where images are located
 %   n         Number of window patches to extract in total
 %   k         The size of the dictionary
-%   dim       The size of the template patch to invert
+%   ny,nx     The size of the template patch to invert
 %   lambda    Sparsity regularization parameter on alpha
+%   whog      If non-empty, a matrix to whiten HOG
+%   muhog     If non-empty, a vector to zero-mean HOG
 %   iters     Number of iterations 
 %   sbin      The HOG bin size
 %   fast      If true, 'learn' a dictionary in real time (default false)
@@ -16,8 +18,7 @@
 % Returns a struct with fields:
 %   dgray     A dictionary of gray elements
 %   dhog      A dictionary of HOG elements
-
-function pd = learnpairdict(stream, n, k, ny, nx, lambda, iters, sbin, fast),
+function pd = learnpairdict(stream, n, k, ny, nx, lambda, whog, muhog, iters, sbin, fast),
 
 if ~exist('n', 'var'),
    n = 1000000;
@@ -31,8 +32,19 @@ end
 if ~exist('nx', 'var'),
   nx = 5;
 end
+if ~exist('whog', 'var'),
+  whog = [];
+end
+if ~exist('muhog', 'var'),
+  muhog = [];
+end
+whiten = ~isempty(whog) && ~isempty(muhog);
 if ~exist('lambda', 'var'),
-  lambda = .8;
+  if whiten,
+    lambda = .8;
+  else,
+    lambda = .02;
+  end
 end
 if ~exist('iters', 'var'),
   iters = 1000;
@@ -47,19 +59,26 @@ end
 graysize = (ny+2)*(nx+2)*sbin^2;
 hogsize = ny*nx*featuresdim();
 
+if whiten,
+  if size(whog,1) ~= hogsize || size(whog,2) ~= hogsize,
+    error(sprintf('expected whog to be %ix%i', hogsize, hogsize));
+  end
+  if size(muhog,1) ~= hogsize || size(muhog,2) ~= 1,
+    error(sprintf('expected muhog to be %ix1', hogsize));
+  end
+end
+
 t = tic;
 
 stream = resolvestream(stream);
 [data, trainims] = getdata(stream, n, [ny nx], sbin);
 
-[whog, muhog, chog] = whiteningmatrix(ny, nx);
+if whiten,
+  fprintf('ihog: normalize images and whiten HOG: ');
+else,
+  fprintf('ihog: normalize images and HOG: ');
+end
 
-% add the occlusion feature back in
-muhog = padarray(muhog, [ny*nx 0], 0, 'post');
-whog = padarray(whog, [ny*nx ny*nx], 0, 'post');
-chog = padarray(chog, [ny*nx ny*nx], 0, 'post');
-
-fprintf('ihog: normalize and whiten: ');
 blocksize = 100000;
 for i=1:ceil(size(data,2)/blocksize),
   fprintf('.');
@@ -69,8 +88,13 @@ for i=1:ceil(size(data,2)/blocksize),
   data(1:graysize, iii) = data(1:graysize, iii) - repmat(mean(data(1:graysize, iii)), [graysize 1]);
   data(1:graysize, iii) = data(1:graysize, iii) ./ repmat(sqrt(sum(data(1:graysize, iii).^2) + eps), [graysize 1]);
 
-  data(graysize+1:end, iii) = data(graysize+1:end, iii) - repmat(muhog, [1 blocksize]);
-  data(graysize+1:end, iii) = whog * data(graysize+1:end, iii);
+  if whiten,
+    data(graysize+1:end, iii) = data(graysize+1:end, iii) - repmat(muhog, [1 length(iii)]);
+    data(graysize+1:end, iii) = whog * data(graysize+1:end, iii);
+  else,
+    data(graysize+1:end, iii) = data(graysize+1:end, iii) - repmat(mean(data(graysize+1:end, iii)), [hogsize 1]);
+    data(graysize+1:end, iii) = data(graysize+1:end, iii) ./ repmat(sqrt(sum(data(graysize+1:end, iii).^2) + eps), [hogsize 1]);
+  end
 end
 fprintf('\n');
 
@@ -90,9 +114,12 @@ pd.sbin = sbin;
 pd.iters = iters;
 pd.lambda = lambda;
 pd.trainims = trainims;
-pd.whog = whog;
-pd.chog = chog;
-pd.muhog = muhog;
+
+pd.whitened = whiten;
+if whiten,
+  pd.whog = whog;
+  pd.muhog = muhog;
+end
 
 fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 

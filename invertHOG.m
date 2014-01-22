@@ -1,4 +1,26 @@
-% invertHOG(feats, pd)
+% invertHOG(feats)
+%
+% This function recovers the natural image that may have generated the HOG
+% feature 'feat'. Usage is simple:
+%
+%   >> feat = features(im, 8);
+%   >> ihog = invertHOG(feat);
+%   >> imagesc(ihog); axis image;
+%
+% By default, invertHOG() will load a prelearned paired dictionary to perform
+% the inversion. However, if you want to pass your own, you can specify the
+% optional second parameter to use your own parameters:
+% 
+%   >> pd = learnpairdict('/path/to/images');
+%   >> ihog = invertHOG(feat, pd);
+%
+% This function also supports inverting whitened HOG if the paired dictionary
+% is whitened. If 'pd.whitened' is true, then 'feat' should be white. If 'feat' 
+% is not white, you can set 'whiten' to true to have invertHOG() do the whitening
+% on your behalf.
+%
+% This function should take no longer than a second to invert any reasonably sized
+% HOG feature point on a 12 core machine.
 function im = invertHOGbatch(feat, pd, whiten),
 
 if ~exist('pd', 'var') || isempty(pd),
@@ -7,9 +29,17 @@ if ~exist('pd', 'var') || isempty(pd),
     ihog_pd = load('pd-who.mat');
   end
   pd = ihog_pd;
+  if ~isfield(pd, 'whitened'),
+    pd.whitened = false;
+  end
 end
 if ~exist('whiten', 'var'),
   whiten = false;
+end
+
+if whiten && ~pd.whitened,
+  fprintf(['ihog: warning: paired dictionary is not whitened, so ignoring' ...
+           'request to pre-whiten input features\n');
 end
 
 par = 6;
@@ -36,9 +66,16 @@ for k=1:nn,
 end
 
 % whiten HOG if needed
-if whiten,
+if whiten && pd.whitened,
   windows = bsxfun(@minus, windows, pd.muhog);
   windows = pd.whog * windows;
+else,
+  for c=1:size(windows,2),
+    hog = windows(:, c);
+    hog = hog(:) - mean(hog(:));
+    hog = hog(:) / sqrt(sum(hog(:).^2) + eps);
+    windows(:, c) = hog;
+  end
 end
 
 % solve lasso problem
