@@ -18,10 +18,10 @@ sqr = sqrt(d);
 
 % compute whitening matrix:
 % since d is diagonal, we can efficiently invert 
-w = diag(1./diag(sqr)) * v';
+w = v * diag(1./diag(sqr)) * v';
 
 % compute coloring matrix:
-c = v * sqr;
+c = v * sqr * v';
 
 
 

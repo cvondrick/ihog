@@ -38,16 +38,8 @@ end
 if ~exist('muhog', 'var'),
   muhog = [];
 end
-if isscalar(whog) || isscalar(muhog),
-  [whog, mhog] = getwhiteningmatrix(ny, nx);
-end
-whiten = ~isempty(whog) && ~isempty(muhog);
 if ~exist('lambda', 'var'),
-  if whiten,
-    lambda = .8;
-  else,
-    lambda = .02;
-  end
+  lambda = .02;
 end
 if ~exist('iters', 'var'),
   iters = 1000;
@@ -59,12 +51,23 @@ if ~exist('fast', 'var'),
   fast = false;
 end
 
+mywhiten = false;
+if isscalar(whog) || isscalar(muhog),
+  [whog, muhog] = getwhiteningmatrix(ny, nx);
+  mywhiten = true;
+end
+whiten = ~isempty(whog) && ~isempty(muhog);
+
 fprintf('ihog: train configuration:\n');
 fprintf('ihog:       n = %i\n', n);
 fprintf('ihog:       k = %i\n', k);
 fprintf('ihog:     dim = %ix%i\n', ny, nx);
 fprintf('ihog:  lambda = %0.3f\n', lambda);
-fprintf('ihog:  whiten = %i\n', whiten);
+if mywhiten,
+  fprintf('ihog:  whiten = %i (builtin)\n', whiten);
+else,
+  fprintf('ihog:  whiten = %i\n', whiten);
+end
 fprintf('ihog:    fast = %i\n', fast);
 
 graysize = (ny+2)*(nx+2)*sbin^2;
