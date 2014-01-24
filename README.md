@@ -16,6 +16,10 @@ SPAMS toolbox:
     $ matlab
     >> compile
     
+If you run into trouble compiling the SPAMS code, you might try opening 
+the file `/path/to/ihog/spams/compile.m` and adjusting the settings for
+your computer.
+    
 Remember to also adjust your path so MATLAB can find iHOG:
 
     >> addpath(genpath('/path/to/ihog'))
