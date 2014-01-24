@@ -1,3 +1,0 @@
-[submodule "feature-extraction"]
-	path = feature-extraction
-	url = https://github.com/adikhosla/feature-extraction.git
