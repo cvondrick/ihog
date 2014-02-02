@@ -22,7 +22,7 @@ load(datafile); % loads: data, imdim, featdim
 n = size(data,2);
 rgbsize = prod(imdim);
 
-fprintf('icnn: graydim=%i, featdim=%i, n=%i, k=%i\n', rgbsize, size(data,1)-rgbsize, n, k);
+fprintf('icnn: imdim=%i, featdim=%i, n=%i, k=%i\n', rgbsize, size(data,1)-rgbsize, n, k);
 
 fprintf('icnn: normalize\n');
 for i=1:size(data,2),
@@ -43,6 +43,7 @@ pd.dcnn = dict(rgbsize+1:end, :);
 pd.n = n;
 pd.k = k;
 pd.imdim = imdim;
+pd.featdim = featdim;
 pd.iters = iters;
 pd.lambda = lambda;
 pd.feat = 'CNN';
