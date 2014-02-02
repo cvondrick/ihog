@@ -20,7 +20,7 @@ if ~exist('fast', 'var'),
   fast = false;
 end
 
-fprintf('ihog: loading data...\n');
+fprintf('icnn: loading data...\n');
 load(datafile);
 
 n = size(data,2);
@@ -28,9 +28,9 @@ graysize = prod(imdim);
 
 t = tic;
 
-fprintf('ihog: graydim=%i, featdim=%i, n=%i, k=%i\n', graysize, size(data,1)-graysize, n, k);
+fprintf('icnn: graydim=%i, featdim=%i, n=%i, k=%i\n', graysize, size(data,1)-graysize, n, k);
 
-fprintf('ihog: normalize\n');
+fprintf('icnn: normalize\n');
 for i=1:size(data,2),
   data(1:graysize, i) = data(1:graysize, i) - mean(data(1:graysize, i));
   data(1:graysize, i) = data(1:graysize, i) / (sqrt(sum(data(1:graysize, i).^2) + eps));
@@ -53,7 +53,7 @@ pd.nx = nx;
 pd.iters = iters;
 pd.lambda = lambda;
 
-fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
+fprintf('icnn: paired dictionaries learned in %0.3fs\n', toc(t));
 
 
 
@@ -72,10 +72,10 @@ param.verbose = 1;
 param.batchsize = 400;
 param.posAlpha = true;
 
-fprintf('ihog: lasso\n');
+fprintf('icnn: lasso\n');
 model = struct();
 for i=1:(iters/param.iter),
-  fprintf('ihog: lasso: master iteration #%i\n', i);
+  fprintf('icnn: lasso: master iteration #%i\n', i);
   [dict, model] = mexTrainDL(data, param, model);
   model.iter = i*param.iter;
   param.D = dict;
@@ -90,7 +90,7 @@ end
 % this mode. But, this method still produces surprisingly good reconstructions.
 function dict = pickrandom(data, k),
 
-fprintf('ihog: sampling %i random elements for dictionary instead of learning\n', k)
+fprintf('icnn: sampling %i random elements for dictionary instead of learning\n', k)
 order = randperm(size(data, 2));
 order = order(1:k);
 dict = data(:, order);
