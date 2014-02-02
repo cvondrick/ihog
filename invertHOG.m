@@ -47,12 +47,12 @@ feat = padarray(feat, [par par 0 0], 0);
 [ny, nx, ~, nn] = size(feat);
 
 % pad feat if dim lacks occlusion feature
-if size(feat,3) == featuresdim()-1,
+if size(feat,3) == computeHOG()-1,
   feat(:, :, end+1, :) = 0;
 end
 
 % extract every window 
-windows = zeros(pd.ny*pd.nx*featuresdim(), (ny-pd.ny+1)*(nx-pd.nx+1)*nn);
+windows = zeros(pd.ny*pd.nx*computeHOG(), (ny-pd.ny+1)*(nx-pd.nx+1)*nn);
 c = 1;
 for k=1:nn,
   for i=1:size(feat,1) - pd.ny + 1,

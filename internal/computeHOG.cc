@@ -3,7 +3,7 @@
 
 // implementation for 'round' (may not be defined on Windows)
 #if !defined(round) // && ( defined(_WIN32) || defined(_WIN64) )
-inline int round(double d)
+inline double round(double d)
 {
     return static_cast<int>(d + 0.5);
 }
@@ -243,6 +243,10 @@ mxArray *process(const mxArray *mximage, const mxArray *mxsbin, int normalize, d
 // F = features(image, bin)
 // image should be color with double values
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) { 
+  if (nrhs == 0) {
+    plhs[0] = mxCreateDoubleScalar(32);
+    return;
+  }
   if (nrhs < 2 || nrhs > 4)
     mexErrMsgTxt("Wrong number of inputs"); 
   if (nlhs != 1)
