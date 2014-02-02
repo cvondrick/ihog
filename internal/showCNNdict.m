@@ -11,8 +11,8 @@ if ~exist('sx', 'var'),
   sx = 20;
 end
 
-gny = pd.ny; 
-gnx = pd.nx;
+gny = pd.imdim(1);
+gnx = pd.imdim(2);
 
 bord = 10;
 cy = (gny+bord);

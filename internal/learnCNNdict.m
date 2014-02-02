@@ -14,13 +14,13 @@ if ~exist('fast', 'var'),
   fast = false;
 end
 
+t = tic;
+
 fprintf('icnn: loading data...\n');
 load(datafile); % loads: data, imdim, featdim
 
 n = size(data,2);
 rgbsize = prod(imdim);
-
-t = tic;
 
 fprintf('icnn: graydim=%i, featdim=%i, n=%i, k=%i\n', rgbsize, size(data,1)-rgbsize, n, k);
 
@@ -42,6 +42,7 @@ pd.drgb = dict(1:rgbsize, :);
 pd.dcnn = dict(rgbsize+1:end, :);
 pd.n = n;
 pd.k = k;
+pd.imdim = imdim;
 pd.iters = iters;
 pd.lambda = lambda;
 pd.feat = 'CNN';
