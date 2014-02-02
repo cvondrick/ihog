@@ -8,7 +8,7 @@ if ~exist('sy', 'var'),
   sy = 10;
 end
 if ~exist('sx', 'var'),
-  sx = 5;
+  sx = 20;
 end
 
 gny = pd.ny; 
@@ -16,7 +16,7 @@ gnx = pd.nx;
 
 bord = 10;
 cy = (gny+bord);
-cx = (gnx+256+bord);
+cx = (gnx+bord);
 
 im = ones(cy*sy, cx*sx, 3);
 
@@ -33,17 +33,7 @@ for i=1:min(sy*sx, pd.k),
   graypic(:) = graypic(:) - min(graypic(:));
   graypic(:) = graypic(:) / max(graypic(:));
 
-  hogpic = reshape(pd.dhog(:, iii(i)), [6*6 256]);
-  hogpic = abs(hogpic);
-  hogpic(:) = hogpic(:) - min(hogpic(:));
-  hogpic(:) = hogpic(:) / max(hogpic(:));
-  hogpic = repmat(hogpic, [1 1 3]);
-  hogpic = imresize(hogpic, [pd.ny 256], 'nearest');
-  hogpic(hogpic > 1) = 1;
-  hogpic(hogpic < 0) = 0;
-
-  pic = cat(2, graypic, hogpic);
-  pic = padarray(pic, [bord bord], 1, 'post');
+  pic = padarray(graypic, [bord bord], 1, 'post');
 
   im((col-1)*cy+1:col*cy, (row-1)*cx+1:row*cx, :) = pic;
 end

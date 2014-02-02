@@ -1,5 +1,5 @@
 % learnpairdict(stream, n, k, size)
-function pd = learnpairdict(data, k, ny, nx, lambda, iters, fast),
+function pd = learnpairdict(datafile, k, ny, nx, lambda, iters, fast),
 
 if ~exist('k', 'var'),
   k = 1024;
@@ -20,8 +20,11 @@ if ~exist('fast', 'var'),
   fast = false;
 end
 
+fprintf('ihog: loading data...\n');
+load(datafile);
+
 n = size(data,2);
-graysize = ny*nx*3;
+graysize = prod(imdim);
 
 t = tic;
 
