@@ -70,12 +70,6 @@ In addition, we have included a select few files from the discriminatively
 trained deformable parts model (http://people.cs.uchicago.edu/~rbg/latent/).
 We use their HOG computation code and glyph visualization code.
 
-Known Issues
-------------
-
-iHOG has not been tested on Windows yet. It may work, but some users have reported
-issues installing iHOG on Windows.
-
 Questions and Comments
 ----------------------
 
