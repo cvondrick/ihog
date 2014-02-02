@@ -46,30 +46,6 @@ Computing the inverse should take no longer than a second for a typical sized
 image on a modern computer. (It may slower the first time you invoke it as it
 caches the paired dictionary from disk.)
 
-Visualizing HOG
----------------
-
-iHOG has several functions to visualize HOG. The most basic is 'visualizeHOG()':
-
-    >> feat = features(im, 8);
-    >> visualizeHOG(feat);
-
-The above displays a figure with the HOG glyph and the HOG inverse. This
-visualization is a drop-in replacement for more standard visualizations, and
-should work with existing code bases.
-
-The de-facto HOG has signed components, unsigned components, as well as texture
-components. 'dissectHOG()' visualizes each of these components invidually: 
-
-    >> dissectHOG(feat);
-
-A similar visualization 'spreadHOG()' shows each dimension individually:
-
-    >> spreadHOG(feat);
-
-More visualizations are available. Check out the 'visualizations/' folder and
-read the comments for more.
-
 Learning
 --------
 
