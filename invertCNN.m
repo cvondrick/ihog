@@ -9,8 +9,8 @@ end
 param.lambda = pd.lambda;
 param.mode = 2;
 param.pos = true;
-a = full(mexLasso(single(feat), pd.dhog, param));
-recon = pd.dgray * a;
+a = full(mexLasso(single(feat), pd.dcnn, param));
+recon = pd.drgb * a;
 
 im = reshape(recon, [pd.ny pd.nx 3 size(feat,2)]);
 for i=1:size(feat,2),

@@ -20,7 +20,7 @@ cx = (gnx+bord);
 
 im = ones(cy*sy, cx*sx, 3);
 
-iii = randperm(size(pd.dgray,2));
+iii = randperm(size(pd.drgb,2));
 
 fprintf('icnn: show pair dict: ');
 for i=1:min(sy*sx, pd.k),
@@ -29,7 +29,7 @@ for i=1:min(sy*sx, pd.k),
   row = mod(i-1, sx)+1;
   col = floor((i-1) / sx)+1;
 
-  graypic = reshape(pd.dgray(:, iii(i)), [gny gnx 3]);
+  graypic = reshape(pd.drgb(:, iii(i)), [gny gnx 3]);
   graypic(:) = graypic(:) - min(graypic(:));
   graypic(:) = graypic(:) / max(graypic(:));
 

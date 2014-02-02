@@ -1,14 +1,8 @@
 % learnCNNdict(stream, n, k, size)
-function pd = learnCNNdict(datafile, k, ny, nx, lambda, iters, fast),
+function pd = learnCNNdict(datafile, k, lambda, iters, fast),
 
 if ~exist('k', 'var'),
   k = 1024;
-end
-if ~exist('ny', 'var'),
-  ny = 5;
-end
-if ~exist('nx', 'var'),
-  nx = 5;
 end
 if ~exist('lambda', 'var'),
   lambda = 0.02; % 0.02 is best so far
@@ -21,21 +15,21 @@ if ~exist('fast', 'var'),
 end
 
 fprintf('icnn: loading data...\n');
-load(datafile);
+load(datafile); % loads: data, imdim, featdim
 
 n = size(data,2);
-graysize = prod(imdim);
+rgbsize = prod(imdim);
 
 t = tic;
 
-fprintf('icnn: graydim=%i, featdim=%i, n=%i, k=%i\n', graysize, size(data,1)-graysize, n, k);
+fprintf('icnn: graydim=%i, featdim=%i, n=%i, k=%i\n', rgbsize, size(data,1)-rgbsize, n, k);
 
 fprintf('icnn: normalize\n');
 for i=1:size(data,2),
-  data(1:graysize, i) = data(1:graysize, i) - mean(data(1:graysize, i));
-  data(1:graysize, i) = data(1:graysize, i) / (sqrt(sum(data(1:graysize, i).^2) + eps));
-  data(graysize+1:end, i) = data(graysize+1:end, i) - mean(data(graysize+1:end, i));
-  data(graysize+1:end, i) = data(graysize+1:end, i) / (sqrt(sum(data(graysize+1:end, i).^2) + eps));
+  data(1:rgbsize, i) = data(1:rgbsize, i) - mean(data(1:rgbsize, i));
+  data(1:rgbsize, i) = data(1:rgbsize, i) / (sqrt(sum(data(1:rgbsize, i).^2) + eps));
+  data(rgbsize+1:end, i) = data(rgbsize+1:end, i) - mean(data(rgbsize+1:end, i));
+  data(rgbsize+1:end, i) = data(rgbsize+1:end, i) / (sqrt(sum(data(rgbsize+1:end, i).^2) + eps));
 end
 
 if fast,
@@ -44,14 +38,13 @@ else,
   dict = lasso(data, k, iters, lambda);
 end
 
-pd.dgray = dict(1:graysize, :);
-pd.dhog = dict(graysize+1:end, :);
+pd.drgb = dict(1:rgbsize, :);
+pd.dcnn = dict(rgbsize+1:end, :);
 pd.n = n;
 pd.k = k;
-pd.ny = ny;
-pd.nx = nx;
 pd.iters = iters;
 pd.lambda = lambda;
+pd.feat = 'CNN';
 
 fprintf('icnn: paired dictionaries learned in %0.3fs\n', toc(t));
 
