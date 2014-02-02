@@ -17,16 +17,16 @@
 #include <math.h>
 #include <assert.h>
 
-#ifdef HAVE_MKL   // obsolete
+//#ifdef HAVE_MKL   // obsolete
 //#include <mkl_cblas.h>
 //#else
 //#include "cblas.h"
-#endif
-#ifdef USE_BLAS_LIB
+//#endif
+//#ifdef USE_BLAS_LIB
 //#include "blas.h"
-#else
-#include "cblas.h"  // dependency upon cblas libraries has been removed in a recent version
-#endif
+//#else
+//#include "cblas.h"  // dependency upon cblas libraries has been removed in a recent version
+//#endif
 
 #include <limits>
 
@@ -35,7 +35,7 @@
 #endif
 
 #ifndef MATLAB_MEX_FILE
-typedef long mwSize;
+typedef int mwSize;
 #endif
 
 #ifndef MAX_THREADS
@@ -48,10 +48,10 @@ typedef long mwSize;
 #define SIGN(a) (((a) < 0) ? -1.0 : 1.0)
 #define ABS(a) (((a) < 0) ? -(a) : (a))
 // DEBUG macros
-#define PRINT_I(name) printf(#name " : %ld\n",name);
+#define PRINT_I(name) printf(#name " : %d\n",name);
 #define PRINT_F(name) printf(#name " : %g\n",name);
 #define PRINT_S(name) printf("%s\n",name);
-#define FLAG(a) printf("flag : %ld \n",a);
+#define FLAG(a) printf("flag : %d \n",a);
 
 // ALGORITHM constants
 #define EPSILON 10e-10
@@ -79,15 +79,15 @@ typedef long mwSize;
 
 struct timezone
 {
-   long  tz_minuteswest; /* minutes W of Greenwich */
-   long  tz_dsttime;     /* type of dst correction */
+   int  tz_minuteswest; /* minutes W of Greenwich */
+   int  tz_dsttime;     /* type of dst correction */
 };
 
-long gettimeofday(struct timeval *tv, struct timezone *tz)
+int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
    FILETIME ft;
    unsigned __int64 tmpres = 0;
-   static long tzflag = 0;
+   static int tzflag = 0;
 
    if (NULL != tv)
    {
@@ -147,9 +147,9 @@ class Timer {
          /// reset the timer
          void inline reset() { _cumul=0;  
             gettimeofday(_time1,NULL); };
-            /// prlong the elapsed time
+            /// print the elapsed time
             void inline printElapsed();
-            /// prlong the elapsed time
+            /// print the elapsed time
             double inline getElapsed() const;
 
    private:
@@ -171,7 +171,7 @@ Timer::~Timer() {
    free(_time2);
 }
 
-/// prlong the elapsed time
+/// print the elapsed time
 inline void Timer::printElapsed() {
    if (_running) {
       gettimeofday(_time2,NULL);
@@ -182,7 +182,7 @@ inline void Timer::printElapsed() {
    }
 };
 
-/// prlong the elapsed time
+/// print the elapsed time
 double inline Timer::getElapsed() const {
    if (_running) {
       gettimeofday(_time2,NULL);

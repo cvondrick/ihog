@@ -32,12 +32,12 @@ template <typename T>
          mexErrMsgTxt("argument 1 should be sparse");
 
       const mwSize* dimsD=mxGetDimensions(prhs[0]);
-      long mD=static_cast<long>(dimsD[0]);
-      long p=static_cast<long>(dimsD[1]);
-      const long n = p;
+      INTM mD=static_cast<INTM>(dimsD[0]);
+      INTM p=static_cast<INTM>(dimsD[1]);
+      const INTM n = p;
       double* D_v;
       mwSize* D_r, *D_pB, *D_pE;
-      long* D_r2, *D_pB2, *D_pE2;
+      INTM* D_r2, *D_pB2, *D_pE2;
       T* D_v2;
       D_v=static_cast<double*>(mxGetPr(prhs[0]));
       D_r=mxGetIr(prhs[0]);
@@ -49,12 +49,12 @@ template <typename T>
 
       T* pr_alpha0 = reinterpret_cast<T*>(mxGetPr(prhs[1]));
       const mwSize* dimsAlpha=mxGetDimensions(prhs[1]);
-      long nalpha=static_cast<long>(dimsAlpha[0])*static_cast<long>(dimsAlpha[1]);
+      INTM nalpha=static_cast<INTM>(dimsAlpha[0])*static_cast<INTM>(dimsAlpha[1]);
       if (nalpha != G.m())
          mexErrMsgTxt("inconsistent vector size");
       Vector<T> active(pr_alpha0,nalpha);
 
-      long num=count_cc_graph(G,active);
+      int num=count_cc_graph(G,active);
 
       deleteCopySparse<T>(D_v2,D_r2,D_pB2,D_pE2,
             D_v,D_r);

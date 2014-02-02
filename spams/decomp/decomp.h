@@ -48,29 +48,29 @@
 
 template <typename T>
 void omp(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, 
-      const long *L, const T* eps, const T* lambda, const bool vecL = false,
-      const bool vecEps = false, const bool Lambda=false, const long numThreads=-1,
+      const int *L, const T* eps, const T* lambda, const bool vecL = false,
+      const bool vecEps = false, const bool Lambda=false, const int numThreads=-1,
       Matrix<T>* path = NULL);
 
 template <typename T>
 void omp_mask(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, const Matrix<bool>& mask,
-      const long *L, const T* eps, const T* lambda, const bool vecL = false,
-      const bool vecEps = false, const bool Lambda=false, const long numThreads=-1,
+      const int *L, const T* eps, const T* lambda, const bool vecL = false,
+      const bool vecEps = false, const bool Lambda=false, const int numThreads=-1,
       Matrix<T>* path = NULL);
 
 /// Auxiliary function of omp
 template <typename T>
 void coreORMP(Vector<T>& scores, Vector<T>& norm, Vector<T>& tmp, 
       Matrix<T>& Un, Matrix<T>& Undn, Matrix<T>& Unds, Matrix<T>& Gs, 
-      Vector<T>& Rdn, const AbstractMatrix<T>& G, Vector<long>& ind, 
-      Vector<T>& RUn, T& normX, const T* eps, const long* L, const T* lambda,
+      Vector<T>& Rdn, const AbstractMatrix<T>& G, Vector<INTM>& ind, 
+      Vector<T>& RUn, T& normX, const T* eps, const int* L, const T* lambda,
       T* path = NULL);
 
 
 /// Auxiliary function of omp
 template <typename T>
-void coreORMPB(Vector<T>& RtD, const AbstractMatrix<T>& G, Vector<long>& ind, 
-      Vector<T>& coeffs, T& normX, const long L, const T eps, const T lambda = 0);
+void coreORMPB(Vector<T>& RtD, const AbstractMatrix<T>& G, Vector<INTM>& ind, 
+      Vector<T>& coeffs, T& normX, const int L, const T eps, const T lambda = 0);
 
 /* **************
  * LARS - Lasso 
@@ -80,7 +80,7 @@ void coreORMPB(Vector<T>& RtD, const AbstractMatrix<T>& G, Vector<long>& ind,
 ///       - constraint on the l1 norm of the coefficients
 ///       - constraint on the reconstruction error
 ///       - l1-sparsity penalty 
-enum constraint_type { L1COEFFS, L2ERROR, PENALTY, SPARSITY, L2ERROR2, PENALTY2};
+enum constraint_type { L1COEFFS, L2ERROR, PENALTY, SPARSITY, L2ERROR2, PENALTY2,FISTAMODE};
 
 /// Implementation of LARS-Lasso for solving
 /// \forall i, \min_{\alpha_i} ||X_i-D\alpha_i||_2^2 
@@ -99,41 +99,41 @@ enum constraint_type { L1COEFFS, L2ERROR, PENALTY, SPARSITY, L2ERROR2, PENALTY2}
 template <typename T>
 void lasso(const Matrix<T>& X, const Matrix<T>& D, 
       SpMatrix<T>& spalpha, 
-      long L, const T constraint, const T lambda2 = 0, constraint_type mode = PENALTY,
-      const bool pos = false, const bool ols = false, const long numThreads=-1,
-      Matrix<T>* path = NULL, const long length_path=-1);
+      int L, const T constraint, const T lambda2 = 0, constraint_type mode = PENALTY,
+      const bool pos = false, const bool ols = false, const int numThreads=-1,
+      Matrix<T>* path = NULL, const int length_path=-1);
 
 template <typename T>
 void lasso(const Data<T>& X, const AbstractMatrix<T>& G, const AbstractMatrix<T>& DtX,
       SpMatrix<T>& spalpha, 
-      long L, const T constraint, constraint_type mode = PENALTY,
-      const bool pos = false, const bool ols = false, const long numThreads=-1,
-      Matrix<T>* path = NULL, const long length_path=-1);
+      int L, const T constraint, constraint_type mode = PENALTY,
+      const bool pos = false, const bool ols = false, const int numThreads=-1,
+      Matrix<T>* path = NULL, const int length_path=-1);
 
 /// second implementation using matrix inversion lemma
 template <typename T>
 void lasso2(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha,
-      long L, const T constraint,const T lambda2=0, constraint_type mode = PENALTY, const bool pos = false,
-      const long numThreads = -1, Matrix<T>* path = NULL, const long length_path=-1);
+      int L, const T constraint,const T lambda2=0, constraint_type mode = PENALTY, const bool pos = false,
+      const int numThreads = -1, Matrix<T>* path = NULL, const int length_path=-1);
 
 template <typename T>
 void lasso2(const Data<T>& X, const AbstractMatrix<T>& G, const AbstractMatrix<T>& DtX,
       SpMatrix<T>& spalpha,
-      long L, const T constraint, constraint_type mode = PENALTY, const bool pos = false,
-      const long numThreads = -1, Matrix<T>* path = NULL, const long length_path=-1);
+      int L, const T constraint, constraint_type mode = PENALTY, const bool pos = false,
+      const int numThreads = -1, Matrix<T>* path = NULL, const int length_path=-1);
 
 /// second implementation using matrix inversion lemma
 template <typename T>
 void lasso_mask(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, const Matrix<bool>& mask,
-      long L, const T constraint,const T lambda2=0, constraint_type mode = PENALTY, const bool pos = false,
-      const long numThreads = -1);
+      int L, const T constraint,const T lambda2=0, constraint_type mode = PENALTY, const bool pos = false,
+      const int numThreads = -1);
 
 /// second implementation using matrix inversion lemma
 template <typename T>
 void lassoReweighted(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha,
-      long L, const T constraint, constraint_type mode, const bool pos,
+      int L, const T constraint, constraint_type mode, const bool pos,
       const T sigma,
-      const long numThreads = -1);
+      const int numThreads = -1);
 
 /// Auxiliary function for lasso
 template <typename T>
@@ -143,11 +143,11 @@ void coreLARS(Vector<T>& Rdn, Vector<T>& Xdn, Vector<T>& A,
       Matrix<T>& Unds, Matrix<T>& Gs,
       Matrix<T>& Gsa, Matrix<T>& workT, Matrix<T>& R,
       const AbstractMatrix<T>& G,T& normX, 
-      Vector<long>& ind,Vector<T>& coeffs,const T constraint,
+      Vector<int>& ind,Vector<T>& coeffs,const T constraint,
       const bool ols = false,
       const bool pos =false, 
       constraint_type mode = L1COEFFS,
-      T* path = NULL, long length_path=-1);
+      T* path = NULL, int length_path=-1);
 
 template <typename T>
 void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
@@ -156,31 +156,43 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
       Matrix<T>& invGs,
       Vector<T>& u,
       Vector<T>& coeffs,
-      Vector<long>& ind,
+      Vector<INTM>& ind,
       Matrix<T>& work,
       T& normX,
       const constraint_type mode,
       const T constraint, const bool pos = false,
-      T* pr_path = NULL, long length_path = -1);
+      T* pr_path = NULL, int length_path = -1);
 
 template <typename T>
-void coreLARS2W(Vector<T>& DtR, AbstractMatrix<T>& G,
+void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
+      Vector<T>& coeffs, T normX,
+      const constraint_type mode,
+      const T constraint, const bool pos = false);
+
+template <typename T>
+void coreLARS2W(Vector<T>& DtR, const AbstractMatrix<T>& G,
       Matrix<T>& Gs,
       Matrix<T>& Ga,
       Matrix<T>& invGs,
       Vector<T>& u,
       Vector<T>& coeffs,
       const Vector<T>& weights,
-      Vector<long>& ind,
+      Vector<INTM>& ind,
       Matrix<T>& work,
       T& normX,
       const constraint_type mode,
       const T constraint, const bool pos = false);
 
+template <typename T>
+void coreLARS2W(Vector<T>& DtR, const AbstractMatrix<T>& G,
+      Vector<T>& coeffs, const Vector<T>& weights, T normX,
+      const constraint_type mode,
+      const T constraint, const bool pos = false);
+
 /// Auxiliary functoni for coreLARS (Cholesky downdate)
 template <typename T>
-void downDateLasso(long& j,long& minBasis,T& normX,const bool ols,
-      const bool pos, Vector<T>& Rdn, long* ind,
+void downDateLasso(int& j,int& minBasis,T& normX,const bool ols,
+      const bool pos, Vector<T>& Rdn, INTM* ind,
       T* coeffs, Vector<T>& sig, Vector<T>& av,
       Vector<T>& Xdn, Vector<T>& RUn,Matrix<T>& Unm, Matrix<T>& Gsm,
       Matrix<T>& Gsam, Matrix<T>& Undsm, Matrix<T>& Rm);
@@ -198,42 +210,48 @@ void downDateLasso(long& j,long& minBasis,T& normX,const bool ols,
 template <typename T>
 void ist(const Matrix<T>& X, const Matrix<T>& D, 
       SpMatrix<T>& spalpha, T lambda, constraint_type mode,
-      const long itermax=500, 
-      const T tol = 0.5, const long numThreads = -1);
+      const int itermax=500, 
+      const T tol = 0.5, const int numThreads = -1);
 template <typename T>
 void ist(const Matrix<T>& X, const Matrix<T>& D, 
       Matrix<T>& spalpha, T lambda, constraint_type mode,
-      const long itermax=500, 
-      const T tol = 0.5, const long numThreads=-1);
+      const int itermax=500, 
+      const T tol = 0.5, const int numThreads=-1);
 
 
 /// coreIST
 template <typename T>
 void coreIST(const AbstractMatrix<T>& G, Vector<T>& DtR, Vector<T>& coeffs,
-      const T thrs, const long itermax = 500, 
+      const T thrs, const int itermax = 500, 
       const T tol = 0.5);
+
+template <typename T>
+void coreISTW(const AbstractMatrix<T>& G, Vector<T>& DtR, Vector<T>& coeffs, const Vector<T>& weights,
+      const T thrs, const int itermax = 500, 
+      const T tol = 0.5);
+
 
 /// coreIST constrained
 template <typename T>
 void coreISTconstrained(const AbstractMatrix<T>& G, Vector<T>& DtR, Vector<T>& coeffs,
       const T normX2,
-      const T thrs, const long itermax = 500, 
+      const T thrs, const int itermax = 500, 
       const T tol = 0.5);
 
 /// ist for group Lasso
 template <typename T>
 void ist_groupLasso(const Matrix<T>* XT, const Matrix<T>& D,
-      Matrix<T>* alphaT, const long Ngroups, 
+      Matrix<T>* alphaT, const int Ngroups, 
       const T lambda, const constraint_type mode,
-      const long itermax = 500,
-      const T tol = 0.5, const long numThreads = -1);
+      const int itermax = 500,
+      const T tol = 0.5, const int numThreads = -1);
 
 /// Auxiliary function for ist_groupLasso
 template <typename T>
 void coreGroupIST(const Matrix<T>& G, Matrix<T>& RtD,
       Matrix<T>& alphat,
       const T thrs,
-      const long itermax=500,
+      const int itermax=500,
       const T tol = 0.5);
 
 
@@ -242,7 +260,7 @@ template <typename T>
 void coreGroupISTConstrained(const Matrix<T>& G, Matrix<T>& RtD,
       Matrix<T>& alphat, const T normR,
       const T eps,
-      const long itermax=500,
+      const int itermax=500,
       const T tol = 0.5);
 
 /// auxiliary function for ist_groupLasso
@@ -261,18 +279,18 @@ T computeError(const T normX2,
  * *****************/
 template <typename T>
 void somp(const Matrix<T>* X, const Matrix<T>& D, SpMatrix<T>* spalpha, 
-      const long Ngroups, const long L, const T* pr_eps, const bool adapt=false,
-      const long numThreads=-1);
+      const int Ngroups, const int L, const T* pr_eps, const bool adapt=false,
+      const int numThreads=-1);
 
 template <typename T>
 void somp(const Matrix<T>* X, const Matrix<T>& D, SpMatrix<T>* spalpha, 
-      const long Ngroups, const long L, const T eps, const long numThreads=-1);
+      const int Ngroups, const int L, const T eps, const int numThreads=-1);
 
 
 template <typename T>
 void coreSOMP(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& G,
       Matrix<T>& vM,
-      Vector<long>& rv, const long L, const T eps);
+      Vector<INTM>& rv, const int L, const T eps);
 
 /* *********************
  * Implementation of OMP
@@ -291,27 +309,27 @@ void coreSOMP(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& G,
 
 template <typename T>
 void omp(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, 
-      const long* pL, const T* peps, const T* pLambda, 
+      const int* pL, const T* peps, const T* pLambda, 
       const bool vecL, const bool vecEps,
-      const bool vecLambda, const long numThreads, Matrix<T>* path) {
-   long L;
+      const bool vecLambda, const int numThreads, Matrix<T>* path) {
+   int L;
    if (!vecL) {
       L=*pL;
    } else {
-      Vector<long> vL(const_cast<long*>(pL),X.n());
+      Vector<int> vL(const_cast<int*>(pL),X.n());
       L=vL.maxval();
    }
    spalpha.clear();
    if (L <= 0) return;
-   const long M = X.n();
-   const long K = D.n();
+   const INTM M = X.n();
+   const INTM K = D.n();
    L = MIN(X.m(),MIN(L,K));
    Matrix<T> vM(L,M);
-   Matrix<long> rM(L,M);
+   Matrix<INTM> rM(L,M);
 
    ProdMatrix<T> G(D, K < 25000 && M > 10);
 
-   long NUM_THREADS=init_omp(numThreads);
+   int NUM_THREADS=init_omp(numThreads);
 
    Vector<T>* scoresT=new Vector<T>[NUM_THREADS];
    Vector<T>* normT=new Vector<T>[NUM_THREADS];
@@ -321,7 +339,7 @@ void omp(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha,
    Matrix<T>* UndnT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* UndsT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* GsT=new Matrix<T>[NUM_THREADS];
-   for (long i = 0; i<NUM_THREADS; ++i) {
+   for (int i = 0; i<NUM_THREADS; ++i) {
       scoresT[i].resize(K);
       normT[i].resize(K);
       tmpT[i].resize(K);
@@ -333,19 +351,19 @@ void omp(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha,
       GsT[i].resize(K,L);
    }
 
-   long i;
+   int i;
 #pragma omp parallel for private(i) 
    for (i = 0; i< M; ++i) {
 #ifdef _OPENMP
-      long numT=omp_get_thread_num();
+      int numT=omp_get_thread_num();
 #else
-      long numT=0;
+      int numT=0;
 #endif
       Vector<T> Xi;
       X.refCol(i,Xi);
       T normX = Xi.nrm2sq();
 
-      Vector<long> ind;
+      Vector<INTM> ind;
       rM.refCol(i,ind);
       ind.set(-1);
 
@@ -375,27 +393,27 @@ void omp(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha,
 
 template <typename T>
 void omp_mask(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, const Matrix<bool>& mask,
-      const long *pL, const T* peps, const T* pLambda, const bool vecL,
-      const bool vecEps, const bool vecLambda, const long numThreads,
+      const int *pL, const T* peps, const T* pLambda, const bool vecL,
+      const bool vecEps, const bool vecLambda, const int numThreads,
       Matrix<T>* path) {
-   long L;
+   int L;
    if (!vecL) {
       L=*pL;
    } else {
-      Vector<long> vL(const_cast<long*>(pL),X.n());
+      Vector<int> vL(const_cast<int*>(pL),X.n());
       L=vL.maxval();
    }
    spalpha.clear();
    if (L <= 0) return;
-   const long M = X.n();
-   const long K = D.n();
+   const int M = X.n();
+   const int K = D.n();
    L = MIN(X.m(),MIN(L,K));
    Matrix<T> vM(L,M);
-   Matrix<long> rM(L,M);
+   Matrix<INTM> rM(L,M);
 
    ProdMatrix<T> G(D, K < 25000 && M > 10);
 
-   long NUM_THREADS=init_omp(numThreads);
+   int NUM_THREADS=init_omp(numThreads);
 
    Vector<T>* scoresT=new Vector<T>[NUM_THREADS];
    Vector<T>* normT=new Vector<T>[NUM_THREADS];
@@ -408,7 +426,7 @@ void omp_mask(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, cons
    ProdMatrix<T>* GT=new ProdMatrix<T>[NUM_THREADS];
    Matrix<T>* DmaskT=new Matrix<T>[NUM_THREADS];
    Vector<T>* XmaskT=new Vector<T>[NUM_THREADS];
-   for (long i = 0; i<NUM_THREADS; ++i) {
+   for (int i = 0; i<NUM_THREADS; ++i) {
       DmaskT[i].resize(D.m(),D.n());
       XmaskT[i].resize(X.m());
       scoresT[i].resize(K);
@@ -422,18 +440,18 @@ void omp_mask(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, cons
       GsT[i].resize(K,L);
    }
 
-   long i;
+   int i;
 #pragma omp parallel for private(i) 
    for (i = 0; i< M; ++i) {
 #ifdef _OPENMP
-      long numT=omp_get_thread_num();
+      int numT=omp_get_thread_num();
 #else
-      long numT=0;
+      int numT=0;
 #endif
       Vector<T> Xi;
       X.refCol(i,Xi);
 
-      Vector<long> ind;
+      Vector<INTM> ind;
       rM.refCol(i,ind);
       ind.set(-1);
 
@@ -490,9 +508,9 @@ void omp_mask(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, cons
 
 /// Auxiliary function of omp
 template <typename T>
-void coreORMPB(Vector<T>& RtD, const AbstractMatrix<T>& G, Vector<long>& ind, 
-      Vector<T>& coeffs, T& normX, const long L, const T eps, const T lambda) {
-   const long K = G.n();
+void coreORMPB(Vector<T>& RtD, const AbstractMatrix<T>& G, Vector<INTM>& ind, 
+      Vector<T>& coeffs, T& normX, const int L, const T eps, const T lambda) {
+   const int K = G.n();
    Vector<T> scores(K);
    Vector<T> norm(K);
    Vector<T> tmp(K);
@@ -509,14 +527,14 @@ template <typename T>
 void coreORMP(Vector<T>& scores, Vector<T>& norm, Vector<T>& tmp, Matrix<T>& Un,
       Matrix<T>& Undn, Matrix<T>& Unds, Matrix<T>& Gs, Vector<T>& Rdn,
       const AbstractMatrix<T>& G,
-      Vector<long>& ind, Vector<T>& RUn, 
-       T& normX, const T* peps, const long* pL, const T* plambda,
+      Vector<INTM>& ind, Vector<T>& RUn, 
+       T& normX, const T* peps, const int* pL, const T* plambda,
       T* path) {
    const T eps = abs<T>(*peps);
-   const long L = MIN(*pL,Gs.n());
+   const int L = MIN(*pL,Gs.n());
    const T lambda=*plambda;
    if ((normX <= eps) || L == 0) return;
-   const long K = scores.n();
+   const int K = scores.n();
    scores.copy(Rdn);
    norm.set(T(1.0));
    Un.setZeros();
@@ -530,9 +548,9 @@ void coreORMP(Vector<T>& scores, Vector<T>& norm, Vector<T>& tmp, Matrix<T>& Un,
    if (path)
       memset(path,0,K*L*sizeof(T));
 
-   long j;
+   int j;
    for (j = 0; j<L; ++j) {
-      const long currentInd=scores.fmax();
+      const int currentInd=scores.fmax();
       if (norm[currentInd] < 1e-8) {
          ind[j]=-1;
          break;
@@ -547,15 +565,15 @@ void coreORMP(Vector<T>& scores, Vector<T>& norm, Vector<T>& tmp, Matrix<T>& Un,
       RUn[j]=RU;
       normX -= delta;
       ind[j]=currentInd;
-      //for (long k = 0; k<j; ++k) prUn[j*L+k]=0.0;
+      //for (int k = 0; k<j; ++k) prUn[j*L+k]=0.0;
       //prUn[j*L+j]=T(1.0);
       
-      //    for (long k = 0; k<j; ++k) prUnds[k*L+j]=prUndn[k*K+currentInd];
+      //    for (int k = 0; k<j; ++k) prUnds[k*L+j]=prUndn[k*K+currentInd];
       // MGS algorithm, Update Un 
-      //      long iter = norm[currentInd] < 0.5 ? 2 : 1;
-      //long iter=1;
-      //     for (long k = 0; k<iter; ++k) {
-      ///       for (long l = 0; l<j; ++l) {
+      //      int iter = norm[currentInd] < 0.5 ? 2 : 1;
+      //int iter=1;
+      //     for (int k = 0; k<iter; ++k) {
+      ///       for (int l = 0; l<j; ++l) {
       //         T scal=-cblas_dot<T>(j+1-l,prUn+j*L+l,1,prUnds+l*L+l,1);
       //        T scal = -prUnds[l*L+j];
       //         cblas_axpy<T>(l+1,scal,prUn+l*L,1,prUn+j*L,1);
@@ -577,7 +595,7 @@ void coreORMP(Vector<T>& scores, Vector<T>& norm, Vector<T>& tmp, Matrix<T>& Un,
          cblas_copy<T>(j+1,prRUn,1,last_path,1);
          cblas_trmv<T>(CblasColMajor,CblasUpper,CblasNoTrans,CblasNonUnit,
                j+1,prUn,L,last_path,1); 
-         for (long k = 0; k<=j; ++k) {
+         for (int k = 0; k<=j; ++k) {
             path[j*K+ind[k]]=last_path[k];
          }
       }
@@ -596,14 +614,14 @@ void coreORMP(Vector<T>& scores, Vector<T>& norm, Vector<T>& tmp, Matrix<T>& Un,
       norm.sub(tmp);
       scores.sqr(Rdn);
       scores.div(norm);
-      for (long k = 0; k<=j; ++k) scores[ind[k]]=T();
+      for (int k = 0; k<=j; ++k) scores[ind[k]]=T();
    }
    // compute the final coefficients 
    cblas_trmv<T>(CblasColMajor,CblasUpper,CblasNoTrans,CblasNonUnit,
          j,prUn,L,prRUn,1); 
    if (path) {
       memset(path+(L-1)*K,0,L*sizeof(T));
-      for (long k = 0; k<j; ++k) {
+      for (int k = 0; k<j; ++k) {
          path[(j-1)*K+ind[k]]=prRUn[k];
       }
    }
@@ -632,9 +650,9 @@ void coreORMP(Vector<T>& scores, Vector<T>& norm, Vector<T>& tmp, Matrix<T>& Un,
 
 template <typename T>
 void lasso(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, 
-      long L, const T lambda, const T lambda2, constraint_type mode, 
-      const bool pos, const bool ols, const long numThreads,
-      Matrix<T>* path, const long length_path) {
+      int L, const T lambda, const T lambda2, constraint_type mode, 
+      const bool pos, const bool ols, const int numThreads,
+      Matrix<T>* path, const int length_path) {
    ProdMatrix<T> G(D, X.n() > 10 && D.n() < 50000);
    G.addDiag(MAX(lambda2,1e-10));
    ProdMatrix<T> DtX(D,X,false);
@@ -644,22 +662,22 @@ void lasso(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha,
 template <typename T>
 void lasso(const Data<T>& X, const AbstractMatrix<T>& G, 
       const AbstractMatrix<T>& DtX, SpMatrix<T>& spalpha, 
-      long L, const T lambda, constraint_type mode, 
-      const bool pos, const bool ols, const long numThreads,
-      Matrix<T>* path, const long length_path) {
+      int L, const T lambda, constraint_type mode, 
+      const bool pos, const bool ols, const int numThreads,
+      Matrix<T>* path, const int length_path) {
 
    spalpha.clear();
-   const long M = X.n();
-   const long K = G.n();
+   const INTM M = X.n();
+   const INTM K = G.n();
    Matrix<T> vM;
-   Matrix<long> rM;
+   Matrix<INTM> rM;
    vM.resize(L,M);
    rM.resize(L,M);
 
    if (L <= 0) return;
    if (path) path->setZeros();
    
-   long NUM_THREADS=init_omp(numThreads);
+   int NUM_THREADS=init_omp(numThreads);
 
    //ProdMatrix<T> G(D, K < 25000 && M > 10);
 
@@ -676,7 +694,7 @@ void lasso(const Data<T>& X, const AbstractMatrix<T>& G,
    Matrix<T>* GsT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* GsaT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* workT=new Matrix<T>[NUM_THREADS];
-   for (long i = 0; i<NUM_THREADS; ++i) {
+   for (int i = 0; i<NUM_THREADS; ++i) {
       RdnT[i].resize(K);
       if (ols) XdnT[i].resize(K);
       AT[i].resize(K);
@@ -696,17 +714,17 @@ void lasso(const Data<T>& X, const AbstractMatrix<T>& G,
 
    Vector<T> norms;
    X.norm_2sq_cols(norms);
-   long i;
+   int i;
 #pragma omp parallel for private(i) 
    for (i = 0; i< M; ++i) {
 #ifdef _OPENMP
-      long numT=omp_get_thread_num();
+      int numT=omp_get_thread_num();
 #else
-      long numT=0;
+      int numT=0;
 #endif
       T normX = norms[i]; 
 
-      Vector<long> ind;
+      Vector<INTM> ind;
       rM.refCol(i,ind);
       Vector<T> coeffs;
       vM.refCol(i,coeffs);
@@ -745,14 +763,14 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
       Matrix<T>& Unm, Matrix<T>& Undsm, Matrix<T>& Gsm,
       Matrix<T>& Gsam, Matrix<T>& workm, Matrix<T>& Rm, 
       const AbstractMatrix<T>& Gm,T& normX, 
-      Vector<long>& indv,Vector<T>& coeffsv,const T constraint,
+      Vector<INTM>& indv,Vector<T>& coeffsv,const T constraint,
       const bool ols,const bool pos, constraint_type mode,
-      T* path, long length_path) {
+      T* path, int length_path) {
    if (mode == L2ERROR && normX < constraint) return;
 
-   const long LL = Gsm.n();
-   const long K = Gsm.m();
-   const long L = MIN(LL,K);
+   const int LL = Gsm.n();
+   const int K = Gsm.m();
+   const int L = MIN(LL,K);
    if (length_path <= 1) length_path=4*L;
    // permit unsafe fast low level access
    T* const Rdn = Rdnv.rawX();
@@ -769,23 +787,23 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
    T* const work = workm.rawX();
    //T* const G = Gm.rawX();
    T* const R = Rm.rawX();
-   long* ind = indv.rawX();
+   INTM* ind = indv.rawX();
    T* coeffs = coeffsv.rawX();
 
    coeffsv.setZeros();
    indv.set(-1);
 
    if (ols) Xdnv.copy(Rdnv);
-   long currentInd= pos ? Rdnv.max() : Rdnv.fmax();
+   int currentInd= pos ? Rdnv.max() : Rdnv.fmax();
    bool newAtom=true;
    T Cmax;
-   long iter=1;
+   int iter=1;
    T thrs = 0.0;
 
-   long* const ind_orig = ind;
+   INTM* const ind_orig = ind;
    T* const coeffs_orig = coeffs;
 
-   long j;
+   int j;
    for (j = 0; j<L; ++j) {
       if (newAtom) {
          ind[j]=currentInd;
@@ -797,10 +815,10 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
             Cmax = abs<T>(Rdn[currentInd]);
             sig[j] = SIGN(Rdn[currentInd]);
          }
-         for (long k = 0; k<=j; ++k) Un[j*L+k]=0.0;
+         for (int k = 0; k<=j; ++k) Un[j*L+k]=0.0;
          Un[j*L+j]=1.0;
          Gm.extract_rawCol(currentInd,Gs+K*j);
-         for (long k = 0; k<j; ++k) Gs[K*j+ind[k]] *= sig[k];
+         for (int k = 0; k<j; ++k) Gs[K*j+ind[k]] *= sig[k];
          if (sig[j] < 0) {
             Rdn[currentInd]=-Rdn[currentInd];
             if (ols) Xdn[currentInd]=-Xdn[currentInd];
@@ -808,7 +826,7 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
             cblas_scal<T>(j+1,sig[j],Gs+currentInd,K);
          }
          cblas_copy<T>(j+1,Gs+currentInd,K,Gsa+j*L,1);
-         for (long k = 0; k<j; ++k) Gsa[k*L+j]=Gsa[j*L+k];
+         for (int k = 0; k<j; ++k) Gsa[k*L+j]=Gsa[j*L+k];
 
          // <d_j,d_i>
          cblas_copy<T>(j,Gsa+j*L,1,Unds+j,L);
@@ -817,16 +835,16 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
                j+1,Un,L,Unds+j,L);
          // norm2
          T norm2=Gsa[j*L+j];
-         for (long k = 0; k<j; ++k) norm2 -= Unds[k*L+j]*Unds[k*L+j];
+         for (int k = 0; k<j; ++k) norm2 -= Unds[k*L+j]*Unds[k*L+j];
          if (norm2 < 1e-15) {
             ind[j]=-1;
       //      cerr << "bad exit" << endl;
             break;
          }
       
-      //   long iter2 = norm2 < 0.5 ? 2 : 1;
-      //   for(long k = 0; k<iter2; ++k) {
-      //      for (long l = 0; l<j; ++l) {
+      //   int iter2 = norm2 < 0.5 ? 2 : 1;
+      //   for(int k = 0; k<iter2; ++k) {
+      //      for (int l = 0; l<j; ++l) {
       //         T scal=-cblas_dot<T>(j+1-l,Un+j*L+l,1,Unds+l*L+l,1);
       //         cblas_axpy<T>(l+1,scal,Un+l*L,1,Un+j*L,1);
       //      }
@@ -841,7 +859,7 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
          Unds[j*L+j]=cblas_dot<T>(j+1,Un+j*L,1,Gsa+j*L,1);
       }
 
-      for (long k = 0; k<=j; ++k) u[k]=T(1.0);
+      for (int k = 0; k<=j; ++k) u[k]=T(1.0);
       cblas_trmv<T>(CblasColMajor,CblasUpper,CblasTrans,CblasNonUnit,
             j+1,Un,L,u,1);
 
@@ -855,29 +873,29 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
 
       T potentNorm=0.0;
       if (!ols) {
-         for (long k = 0; k<=j; ++k)  potentNorm += Rdn[ind[k]]*u[k];
+         for (int k = 0; k<=j; ++k)  potentNorm += Rdn[ind[k]]*u[k];
       }
 
       if (pos) {
-         for (long k = 0; k<K; ++k) {
+         for (int k = 0; k<K; ++k) {
             T diff = a-A[k];
             work[k]= diff <= 0 ? INFINITY : (Cmax-Rdn[k])/diff;
          }
-         for (long k = 0; k<=j; ++k) {
+         for (int k = 0; k<=j; ++k) {
             work[ind[k]]=INFINITY; 
          }
-         for (long k = 0; k<K; ++k) 
+         for (int k = 0; k<K; ++k) 
             if (work[k] <=0) work[k]=INFINITY;
          currentInd =cblas_iamin<T>(K,work,1);
       } else {
          memset(work,0,2*K*sizeof(T));
-         for (long k = 0; k<=j; ++k) {
-            const long index=2*ind[k];
+         for (int k = 0; k<=j; ++k) {
+            const int index=2*ind[k];
             work[index]=INFINITY; 
             work[index+1]=INFINITY; 
          }
-         for (long k = 0; k<K; ++k) {
-            const long index=2*k;
+         for (int k = 0; k<K; ++k) {
+            const int index=2*k;
             if (!work[index]) {
                const T diff1=a-A[k];
                work[index]= diff1 <= 0 ? INFINITY : (Cmax-Rdn[k])/diff1;
@@ -889,7 +907,7 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
       }
       T gamma=work[currentInd];
       T gammaMin=0;
-      long minBasis=0;
+      int minBasis=0;
 
       //if (j == L-1) gamma=potentNorm;
 
@@ -901,7 +919,7 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
          vDiv<T>(j+1,coeffs,u,work);
          cblas_scal<T>(j+1,-T(1.0),work,1);
          /// voir pour petites valeurs
-         for (long k=0; k<=j; ++k) 
+         for (int k=0; k<=j; ++k) 
             if (coeffs[k]==0 || work[k] <=0) work[k]=INFINITY;
          minBasis=cblas_iamin<T>(j+1,work,1);
          gammaMin=work[minBasis];
@@ -910,7 +928,7 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
 
       if (mode == L1COEFFS) {
          T Tu = 0.0;
-         for (long k = 0; k<=j; ++k) Tu += u[k];
+         for (int k = 0; k<=j; ++k) Tu += u[k];
 
          if (Tu > EPSILON) 
             gamma= MIN(gamma,(constraint-thrs)/Tu);
@@ -932,7 +950,7 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
          // plan the last orthogonal projection
          if (newAtom) {
             RUn[j]=0.0;
-            for (long k = 0; k<=j; ++k) RUn[j] += Xdn[ind[k]]*
+            for (int k = 0; k<=j; ++k) RUn[j] += Xdn[ind[k]]*
                Un[j*L+k];
             normX -= RUn[j]*RUn[j];
          }
@@ -942,14 +960,14 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
       cblas_axpy<T>(j+1,gamma,u,1,coeffs,1);
 
       if (pos) {
-         for (long k = 0; k<j+1; ++k)
+         for (int k = 0; k<j+1; ++k)
             if (coeffs[k] < 0) coeffs[k]=0;
       }
 
       cblas_axpy<T>(K,-gamma,A,1,Rdn,1);
       if (!pos) currentInd/= 2;
       if (path) {
-         for (long k = 0; k<=j; ++k) 
+         for (int k = 0; k<=j; ++k) 
             path[iter*K+ind[k]]=coeffs[k]*sig[k];
       }
 
@@ -992,15 +1010,15 @@ void coreLARS(Vector<T>& Rdnv, Vector<T>& Xdnv, Vector<T>& Av,
 
 /// Auxiliary functoni for coreLARS (Cholesky downdate)
 template <typename T>
-inline void downDateLasso(long& j,long& minBasis,T& normX,const bool ols,
+inline void downDateLasso(int& j,int& minBasis,T& normX,const bool ols,
       const bool pos,
-      Vector<T>& Rdnv, long* ind,
+      Vector<T>& Rdnv, INTM* ind,
       T* coeffs, Vector<T>& sigv, Vector<T>& avv,
       Vector<T>& Xdnv, Vector<T>& RUnv,Matrix<T>& Unm, Matrix<T>& Gsm,
       Matrix<T>& Gsam, Matrix<T>& Undsm, Matrix<T>& Rm) {
-   long k,l;
-   const long L = Gsm.n();
-   const long K = Gsm.m();
+   int k,l;
+   const int L = Gsm.n();
+   const int K = Gsm.m();
    T* const Rdn = Rdnv.rawX();
    T* const Xdn = Xdnv.rawX();
    T* const sig = sigv.rawX();
@@ -1012,7 +1030,7 @@ inline void downDateLasso(long& j,long& minBasis,T& normX,const bool ols,
    T* const Gsa = Gsam.rawX();
    T* const R = Rm.rawX();
 
-   long indB=ind[minBasis];
+   int indB=ind[minBasis];
 
    if (!pos && sig[minBasis] < 0) {
       // Update Rdn
@@ -1020,22 +1038,22 @@ inline void downDateLasso(long& j,long& minBasis,T& normX,const bool ols,
       if (ols) Xdn[indB]=-Xdn[indB];
    }
 
-   long num=j-minBasis;
-   for (long k = 0; k<num*num;++k) R[k]=0.0;
-   for (long k = 0; k<num; ++k) R[k*num+k]=1.0;
+   int num=j-minBasis;
+   for (int k = 0; k<num*num;++k) R[k]=0.0;
+   for (int k = 0; k<num; ++k) R[k*num+k]=1.0;
    // Update Un
-   for (long k = minBasis+1; k<=j; ++k) {
+   for (int k = minBasis+1; k<=j; ++k) {
       T a = -Un[k*L+minBasis]/Un[minBasis*L+minBasis];
       av[k-minBasis-1] = a;
       cblas_axpy<T>(minBasis,a,Un+minBasis*L,1,Un+k*L,1);
    }
-   for (long k = minBasis+1; k<=j; ++k) {
+   for (int k = minBasis+1; k<=j; ++k) {
       cblas_copy<T>(minBasis,Un+k*L,1,Un+(k-1)*L,1);
       cblas_copy<T>(num,Un+k*L+minBasis+1,1,Un+(k-1)*L+minBasis,1);
    }
    T alpha=1.0;
    T alphab,gamma,lambda;
-   for (long k = 0; k<num; ++k) {
+   for (int k = 0; k<num; ++k) {
       alphab=alpha+av[k]*av[k];
       R[k*num+k]=sqrt(alphab/alpha);
       gamma=av[k]*R[k*num+k]/alphab;
@@ -1050,50 +1068,50 @@ inline void downDateLasso(long& j,long& minBasis,T& normX,const bool ols,
    }
 
    // Update Unds
-   for (long k = minBasis+1; k<=j; ++k) 
+   for (int k = minBasis+1; k<=j; ++k) 
       cblas_axpy<T>(j-minBasis,av[k-minBasis-1],Unds+minBasis*L+minBasis+1,1,
             Unds+k*L+minBasis+1,1);
-   for (long k = 0; k<minBasis; ++k) 
-      for (long l = minBasis+1; l<=j; ++l) 
+   for (int k = 0; k<minBasis; ++k) 
+      for (int l = minBasis+1; l<=j; ++l) 
          Unds[k*L+l-1]=Unds[k*L+l];
-   for (long k = minBasis+1; k<=j; ++k) 
+   for (int k = minBasis+1; k<=j; ++k) 
       cblas_copy<T>(j-minBasis,Unds+k*L+minBasis+1,1,Unds+(k-1)*L+minBasis,1);
    if (num > 0)
       cblas_trmm<T>(CblasColMajor,CblasRight,CblasLower,CblasTrans,CblasNonUnit,
             j-minBasis,num,T(1.0),R,num,Unds+minBasis*L+minBasis,L);
-   for (long k = minBasis+1; k<=j; ++k)
-      for (long l = 0; l<k; ++l) Unds[k*L+l]=0.0;
+   for (int k = minBasis+1; k<=j; ++k)
+      for (int l = 0; l<k; ++l) Unds[k*L+l]=0.0;
 
    // Update Gs
-   for (long k = minBasis+1; k<=j; ++k) {
+   for (int k = minBasis+1; k<=j; ++k) {
       cblas_copy<T>(K,Gs+k*K,1,Gs+(k-1)*K,1);
    }
    if (!pos && sig[minBasis] < T(0.0)) cblas_scal<T>(j,T(-1.0),Gs+indB,K);
    // Update Gsa
-   for (long k = minBasis+1; k<=j; ++k) {
+   for (int k = minBasis+1; k<=j; ++k) {
       cblas_copy<T>(minBasis,Gsa+k*L,1,Gsa+(k-1)*L,1);
       cblas_copy<T>(j-minBasis,Gsa+k*L+minBasis+1,1,Gsa+(k-1)*L+minBasis,1);
    }
-   for (long k = 0; k<minBasis; ++k) {
-      for (long l = minBasis+1; l<=j; ++l) Gsa[k*L+l-1]=Gsa[k*L+l];
+   for (int k = 0; k<minBasis; ++k) {
+      for (int l = minBasis+1; l<=j; ++l) Gsa[k*L+l-1]=Gsa[k*L+l];
    }
 
    // Update sig
-   for (long k = minBasis+1; k<=j && !pos; ++k) sig[k-1]=sig[k];
+   for (int k = minBasis+1; k<=j && !pos; ++k) sig[k-1]=sig[k];
    // Update ind
-   for (long k = minBasis+1; k<=j; ++k) ind[k-1]=ind[k];
+   for (int k = minBasis+1; k<=j; ++k) ind[k-1]=ind[k];
    ind[j]=-1;
 
-   for (long k = minBasis+1; k<=j; ++k) coeffs[k-1]=coeffs[k];
+   for (int k = minBasis+1; k<=j; ++k) coeffs[k-1]=coeffs[k];
    coeffs[j]=0.0;
 
    if (ols) {
       // Update RUn and normX
-      for (long k = minBasis; k<=j; ++k)
+      for (int k = minBasis; k<=j; ++k)
          normX += RUn[k]*RUn[k];
-      for (long k = minBasis; k<j; ++k) {
+      for (int k = minBasis; k<j; ++k) {
          RUn[k]=0.0;
-         for (long l = 0; l<=k; ++l) RUn[k] += Xdn[ind[l]]*
+         for (int l = 0; l<=k; ++l) RUn[k] += Xdn[ind[l]]*
             Un[k*L+l];
          normX -= RUn[k]*RUn[k];
       }
@@ -1106,21 +1124,21 @@ inline void downDateLasso(long& j,long& minBasis,T& normX,const bool ols,
 /// second implementation using matrix inversion lemma
 template <typename T>
 void lassoReweighted(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha,
-      long L, const T constraint, constraint_type mode, const bool pos,
+      int L, const T constraint, constraint_type mode, const bool pos,
       const T sigma,
-      const long numThreads) {
+      const int numThreads) {
    spalpha.clear();
-   const long M = X.n();
-   const long K = D.n();
+   const int M = X.n();
+   const int K = D.n();
    Matrix<T> vM;
-   Matrix<long> rM;
+   Matrix<int> rM;
    vM.resize(L,M);
    rM.resize(L,M);
-   const long iterR = 30;
+   const int iterR = 30;
    
    if (L <= 0) return;
 
-   long NUM_THREADS=init_omp(numThreads);
+   int NUM_THREADS=init_omp(numThreads);
 
    //ProdMatrix<T> G(D, K < 25000 && M > 10);
    ProdMatrix<T> G(D, K < 50000);
@@ -1132,13 +1150,13 @@ void lassoReweighted(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalph
    Vector<T>* DtRRT=new Vector<T>[NUM_THREADS];
    Vector<T>* uT=new Vector<T>[NUM_THREADS];
    Vector<T>* weightsT=new Vector<T>[NUM_THREADS];
-   Vector<long>* inddT=new Vector<long>[NUM_THREADS];
+   Vector<int>* inddT=new Vector<int>[NUM_THREADS];
    Matrix<T>* GsT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* GaT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* invGsT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* workT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* GT=new Matrix<T>[NUM_THREADS];
-   for (long i = 0; i<NUM_THREADS; ++i) {
+   for (int i = 0; i<NUM_THREADS; ++i) {
       DtRT[i].resize(K);
       DtRRT[i].resize(K);
       uT[i].resize(K);
@@ -1152,20 +1170,20 @@ void lassoReweighted(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalph
       workT[i].setZeros();
    }
 
-   long i;
+   int i;
 #pragma omp parallel for private(i) 
    for (i = 0; i< M; ++i) {
 #ifdef _OPENMP
-      long numT=omp_get_thread_num();
+      int numT=omp_get_thread_num();
 #else
-      long numT=0;
+      int numT=0;
 #endif
       Vector<T> Xi;
       X.refCol(i,Xi);
       T normXo = Xi.nrm2sq();
       T normX = normXo;
 
-      Vector<long> ind;
+      Vector<int> ind;
       rM.refCol(i,ind);
       Vector<T> coeffs;
       vM.refCol(i,coeffs);
@@ -1177,11 +1195,11 @@ void lassoReweighted(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalph
             ind,workT[numT],normX,mode,constraint,pos);
       //Matrix<T>& GG = GT[numT];
       Vector<T>& weights = weightsT[numT];
-      //Vector<long>& indd = inddT[numT];
-      for (long j = 0; j<iterR; ++j) {
+      //Vector<int>& indd = inddT[numT];
+      for (int j = 0; j<iterR; ++j) {
          const T sig = sigma*pow(0.7,iterR-1-j);
          weights.set(sig);
-         for (long k = 0; k<K; ++k) {
+         for (int k = 0; k<K; ++k) {
             if (ind[k] != -1) {
                weights[ind[k]] = MAX(1e-4,sig*exp(-sig*abs<T>(coeffs[k])));
             } else {
@@ -1214,20 +1232,20 @@ void lassoReweighted(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalph
 template <typename T>
 void lassoWeight(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& weights,
       SpMatrix<T>& spalpha, 
-      long L, const T constraint, constraint_type mode, const bool pos,
-      const long numThreads) {
+      int L, const T constraint, constraint_type mode, const bool pos,
+      const int numThreads) {
 
    spalpha.clear();
-   const long M = X.n();
-   const long K = D.n();
+   const int M = X.n();
+   const int K = D.n();
    Matrix<T> vM;
-   Matrix<long> rM;
+   Matrix<INTM> rM;
    vM.resize(L,M);
    rM.resize(L,M);
    
    if (L <= 0) return;
 
-   long NUM_THREADS=init_omp(numThreads);
+   int NUM_THREADS=init_omp(numThreads);
 
    //ProdMatrix<T> G(D, K < 25000 && M > 10);
    ProdMatrix<T> G(D, K < 50000);
@@ -1241,7 +1259,7 @@ void lassoWeight(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& weight
    Matrix<T>* GaT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* invGsT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* workT=new Matrix<T>[NUM_THREADS];
-   for (long i = 0; i<NUM_THREADS; ++i) {
+   for (int i = 0; i<NUM_THREADS; ++i) {
       DtRT[i].resize(K);
       uT[i].resize(K);
       uT[i].setZeros();
@@ -1252,19 +1270,19 @@ void lassoWeight(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& weight
       workT[i].setZeros();
    }
 
-   long i;
+   int i;
 #pragma omp parallel for private(i) 
    for (i = 0; i< M; ++i) {
 #ifdef _OPENMP
-      long numT=omp_get_thread_num();
+      int numT=omp_get_thread_num();
 #else
-      long numT=0;
+      int numT=0;
 #endif
       Vector<T> Xi;
       X.refCol(i,Xi);
       T normX = Xi.nrm2sq();
 
-      Vector<long> ind;
+      Vector<INTM> ind;
       rM.refCol(i,ind);
       Vector<T> coeffs;
       vM.refCol(i,coeffs);
@@ -1292,20 +1310,20 @@ void lassoWeight(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& weight
 template <typename T>
 void lassoWeightPreComputed(const Matrix<T>& X, const Matrix<T>& G, const Matrix<T>& DtR, const Matrix<T>& weights,
       SpMatrix<T>& spalpha, 
-      long L, const T constraint, constraint_type mode, const bool pos,
-      const long numThreads) {
+      int L, const T constraint, constraint_type mode, const bool pos,
+      const int numThreads) {
 
    spalpha.clear();
-   const long M = X.n();
-   const long K = G.n();
+   const int M = X.n();
+   const int K = G.n();
    Matrix<T> vM;
-   Matrix<long> rM;
+   Matrix<int> rM;
    vM.resize(L,M);
    rM.resize(L,M);
    
    if (L <= 0) return;
 
-   long NUM_THREADS=init_omp(numThreads);
+   int NUM_THREADS=init_omp(numThreads);
 
    Vector<T>* DtRT=new Vector<T>[NUM_THREADS];
    Vector<T>* uT=new Vector<T>[NUM_THREADS];
@@ -1313,7 +1331,7 @@ void lassoWeightPreComputed(const Matrix<T>& X, const Matrix<T>& G, const Matrix
    Matrix<T>* GaT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* invGsT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* workT=new Matrix<T>[NUM_THREADS];
-   for (long i = 0; i<NUM_THREADS; ++i) {
+   for (int i = 0; i<NUM_THREADS; ++i) {
       DtRT[i].resize(K);
       uT[i].resize(K);
       uT[i].setZeros();
@@ -1324,19 +1342,19 @@ void lassoWeightPreComputed(const Matrix<T>& X, const Matrix<T>& G, const Matrix
       workT[i].setZeros();
    }
 
-   long i;
+   int i;
 #pragma omp parallel for private(i) 
    for (i = 0; i< M; ++i) {
 #ifdef _OPENMP
-      long numT=omp_get_thread_num();
+      int numT=omp_get_thread_num();
 #else
-      long numT=0;
+      int numT=0;
 #endif
       Vector<T> Xi;
       X.refCol(i,Xi);
       T normX = Xi.nrm2sq();
 
-      Vector<long> ind;
+      Vector<int> ind;
       rM.refCol(i,ind);
       Vector<T> coeffs;
       vM.refCol(i,coeffs);
@@ -1364,19 +1382,19 @@ void lassoWeightPreComputed(const Matrix<T>& X, const Matrix<T>& G, const Matrix
 /// second implementation using matrix inversion lemma
 template <typename T>
 void lasso_mask(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, const Matrix<bool>& mask,
-      long L, const T constraint,const T lambda2, constraint_type mode, const bool pos,
-      const long numThreads) {
+      int L, const T constraint,const T lambda2, constraint_type mode, const bool pos,
+      const int numThreads) {
    spalpha.clear();
-   const long M = X.n();
-   const long K = D.n();
+   const int M = X.n();
+   const int K = D.n();
    Matrix<T> vM;
-   Matrix<long> rM;
+   Matrix<INTM> rM;
    vM.resize(L,M);
    rM.resize(L,M);
 
    if (L <= 0) return;
 
-   long NUM_THREADS=init_omp(numThreads);
+   int NUM_THREADS=init_omp(numThreads);
 
    ProdMatrix<T> G(D,K < 25000 && M > 10);
    G.addDiag(MAX(lambda2,1e-10));
@@ -1390,7 +1408,7 @@ void lasso_mask(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, co
    Matrix<T>* GaT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* invGsT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* workT=new Matrix<T>[NUM_THREADS];
-   for (long i = 0; i<NUM_THREADS; ++i) {
+   for (int i = 0; i<NUM_THREADS; ++i) {
       DmaskT[i].resize(D.m(),D.n());
       DtRT[i].resize(K);
       uT[i].resize(K);
@@ -1403,19 +1421,19 @@ void lasso_mask(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, co
       workT[i].setZeros();
    }
 
-   long i;
+   int i;
 #pragma omp parallel for private(i) 
    for (i = 0; i< M; ++i) {
 #ifdef _OPENMP
-      long numT=omp_get_thread_num();
+      int numT=omp_get_thread_num();
 #else
-      long numT=0;
+      int numT=0;
 #endif
       Vector<T> Xi;
       X.refCol(i,Xi);
       Vector<bool> maski;
       mask.refCol(i,maski);
-      Vector<long> ind;
+      Vector<INTM> ind;
       rM.refCol(i,ind);
       Vector<T> coeffs;
       vM.refCol(i,coeffs);
@@ -1461,8 +1479,8 @@ void lasso_mask(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, co
 
 template <typename T>
 void lasso2(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha, 
-      long L, const T constraint, const T lambda2, constraint_type mode, const bool pos,
-      const long numThreads, Matrix<T>* path, long length_path) {
+      int L, const T constraint, const T lambda2, constraint_type mode, const bool pos,
+      const int numThreads, Matrix<T>* path, int length_path) {
    ProdMatrix<T> G(D,X.n() > 10 && D.n() < 50000);
    ProdMatrix<T> DtX(D,X,false);
    G.addDiag(MAX(lambda2,1e-10));
@@ -1473,20 +1491,20 @@ void lasso2(const Matrix<T>& X, const Matrix<T>& D, SpMatrix<T>& spalpha,
 template <typename T>
 void lasso2(const Data<T>& X, const AbstractMatrix<T>& G, const AbstractMatrix<T>& DtX,
       SpMatrix<T>& spalpha, 
-      long L, const T constraint, constraint_type mode, const bool pos,
-      const long numThreads, Matrix<T>* path, long length_path) {
+      int L, const T constraint, constraint_type mode, const bool pos,
+      const int numThreads, Matrix<T>* path, int length_path) {
    spalpha.clear();
-   const long M = X.n();
-   const long K = G.n();
+   const INTM M = X.n();
+   const INTM K = G.n();
    Matrix<T> vM;
-   Matrix<long> rM;
+   Matrix<INTM> rM;
    vM.resize(L,M);
    rM.resize(L,M);
 
    if (L <= 0) return;
    if (path) path->setZeros();
 
-   long NUM_THREADS=init_omp(numThreads);
+   int NUM_THREADS=init_omp(numThreads);
 
    Vector<T>* DtRT=new Vector<T>[NUM_THREADS];
    Vector<T>* uT=new Vector<T>[NUM_THREADS];
@@ -1494,7 +1512,7 @@ void lasso2(const Data<T>& X, const AbstractMatrix<T>& G, const AbstractMatrix<T
    Matrix<T>* GaT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* invGsT=new Matrix<T>[NUM_THREADS];
    Matrix<T>* workT=new Matrix<T>[NUM_THREADS];
-   for (long i = 0; i<NUM_THREADS; ++i) {
+   for (int i = 0; i<NUM_THREADS; ++i) {
       DtRT[i].resize(K);
       uT[i].resize(K);
       uT[i].setZeros();
@@ -1504,22 +1522,22 @@ void lasso2(const Data<T>& X, const AbstractMatrix<T>& G, const AbstractMatrix<T
       workT[i].resize(K,3);
       workT[i].setZeros();
    }
-   long i;
+   INTM i;
    Vector<T> norms;
    X.norm_2sq_cols(norms);
 #pragma omp parallel for private(i) 
    for (i = 0; i< M; ++i) {
 #ifdef _OPENMP
-      long numT=omp_get_thread_num();
+      int numT=omp_get_thread_num();
 #else
-      long numT=0;
+      int numT=0;
 #endif
     //  Vector<T> Xi;
     //  X.refCol(i,Xi);
     //  T normX = Xi.nrm2sq();
       T normX = norms[i];
 
-      Vector<long> ind;
+      Vector<INTM> ind;
       rM.refCol(i,ind);
       Vector<T> coeffs;
       vM.refCol(i,coeffs);
@@ -1544,7 +1562,63 @@ void lasso2(const Data<T>& X, const AbstractMatrix<T>& G, const AbstractMatrix<T
    spalpha.convert(vM,rM,K);
 };
 
+template <typename T>
+void coreLARS2W(Vector<T>& DtR, const AbstractMatrix<T>& G,
+      Vector<T>& coeffs, const Vector<T>& weights, T normX,
+      const constraint_type mode,
+      const T constraint, const bool pos) {
+   const INTM p = G.m(); 
+   const INTM L = p;
+   Vector<T> v;
+   v.resize(L);
+   Vector<INTM> r;
+   r.resize(L);
+   Vector<T> u;
+   u.resize(p);
+   Matrix<T> Gs;
+   Gs.resize(L,L);
+   Matrix<T> invGs;
+   invGs.resize(L,L);
+   Matrix<T> Ga;
+   Ga.resize(p,L);
+   Matrix<T> work;
+   work.resize(p,3);
+   coreLARS2W(DtR,G,Gs,Ga,invGs,u,v,weights,r,work,normX,mode,constraint,pos);
+   coeffs.setZeros();
+   for (int i = 0; i< L; ++i) {
+      if (r[i] < 0) break;
+      coeffs[r[i]]=v[i];
+   };
+};
 
+template <typename T>
+void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
+      Vector<T>& coeffs, T normX,
+      const constraint_type mode,
+      const T constraint, const bool pos) {
+   const INTM p = G.m(); 
+   const INTM L = p;
+   Vector<T> v;
+   v.resize(L);
+   Vector<INTM> r;
+   r.resize(L);
+   Vector<T> u;
+   u.resize(p);
+   Matrix<T> Gs;
+   Gs.resize(L,L);
+   Matrix<T> invGs;
+   invGs.resize(L,L);
+   Matrix<T> Ga;
+   Ga.resize(p,L);
+   Matrix<T> work;
+   work.resize(p,3);
+   coreLARS2(DtR,G,Gs,Ga,invGs,u,v,r,work,normX,mode,constraint,pos);
+   coeffs.setZeros();
+   for (int i = 0; i< L; ++i) {
+      if (r[i] < 0) break;
+      coeffs[r[i]]=v[i];
+   };
+};
 
 /// Auxiliary function for lasso 
 template <typename T>
@@ -1554,16 +1628,16 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
       Matrix<T>& invGs,
       Vector<T>& u,
       Vector<T>& coeffs,
-      Vector<long>& ind,
+      Vector<INTM>& ind,
       Matrix<T>& work,
       T& normX,
       const constraint_type mode,
       const T constraint,
       const bool pos,
-      T* path, long length_path) {
-   const long LL = Gs.n();
-   const long K = G.n();
-   const long L = MIN(LL,K);
+      T* path, int length_path) {
+   const int LL = Gs.n();
+   const int K = G.n();
+   const int L = MIN(LL,K);
    if (length_path <= 1) length_path=4*L;
 
    coeffs.setZeros();
@@ -1576,16 +1650,16 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
    T* const pr_u = u.rawX();
    T* const pr_DtR = DtR.rawX();
    T* const pr_coeffs = coeffs.rawX();
-   long* const pr_ind = ind.rawX();
+   INTM* const pr_ind = ind.rawX();
 
    // Find the most correlated element
-   long currentInd = pos ? DtR.max() : DtR.fmax();
+   int currentInd = pos ? DtR.max() : DtR.fmax();
    if (mode == PENALTY && abs(DtR[currentInd]) < constraint) return;
    if (mode == L2ERROR && normX < constraint) return;
    bool newAtom=true;
 
-   long i;
-   long iter=0;
+   int i;
+   int iter=0;
    T thrs = 0;
    for (i = 0; i<L; ++i) {
       ++iter;
@@ -1593,7 +1667,7 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
          pr_ind[i]=currentInd;
      //    cerr << "Add " << currentInd << endl;
          G.extract_rawCol(pr_ind[i],pr_Ga+i*K);
-         for (long j = 0; j<=i; ++j)
+         for (int j = 0; j<=i; ++j)
             pr_Gs[i*LL+j]=pr_Ga[i*K+pr_ind[j]];
 
          // Update inverse of Gs
@@ -1605,7 +1679,8 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
             const T schur =
                T(1.0)/(pr_Gs[i*LL+i]-cblas_dot<T>(i,pr_u,1,pr_Gs+i*LL,1));
             pr_invGs[i*LL+i]=schur;
-            cblas_copy<T>(i,pr_u,1,pr_invGs+i*LL,1);
+//            cblas_copy<T>(i,pr_u,1,pr_invGs+i*LL,1);
+            memcpy(pr_invGs+i*LL,pr_u,i*sizeof(T));
             cblas_scal<T>(i,-schur,pr_invGs+i*LL,1);
             cblas_syr<T>(CblasColMajor,CblasUpper,i,schur,pr_u,1,
                   pr_invGs,LL);
@@ -1613,15 +1688,15 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
       }
 
       // Compute the path direction 
-      for (long j = 0; j<=i; ++j)
+      for (int j = 0; j<=i; ++j)
          pr_work[j]= pr_DtR[pr_ind[j]] > 0 ? T(1.0) : T(-1.0);
       cblas_symv<T>(CblasColMajor,CblasUpper,i+1,T(1.0),pr_invGs,LL,
             pr_work,1,T(0.0),pr_u,1);
 
       // Compute the step on the path
       T step_max = INFINITY;
-      long first_zero = -1;
-      for (long j = 0; j<=i; ++j) {
+      int first_zero = -1;
+      for (int j = 0; j<=i; ++j) {
          T ratio = -pr_coeffs[j]/pr_u[j];
          if (ratio > 0 && ratio <= step_max) {
             step_max=ratio;
@@ -1633,30 +1708,32 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
       T current_correlation = abs<T>(pr_DtR[pr_ind[0]]);
       cblas_gemv<T>(CblasColMajor,CblasNoTrans,K,i+1,T(1.0),pr_Ga,
             K,pr_u,1,T(0.0),pr_work+2*K,1);
-      cblas_copy<T>(K,pr_work+2*K,1,pr_work+K,1);
-      cblas_copy<T>(K,pr_work+2*K,1,pr_work,1);
+      memcpy(pr_work+K,pr_work+2*K,K*sizeof(T));
+      memcpy(pr_work,pr_work+K,K*sizeof(T));
+//      cblas_copy<T>(K,pr_work+2*K,1,pr_work+K,1);
+ //     cblas_copy<T>(K,pr_work+2*K,1,pr_work,1);
 
-     for (long j = 0; j<=i; ++j) {
+     for (int j = 0; j<=i; ++j) {
          pr_work[pr_ind[j]]=INFINITY;
          pr_work[pr_ind[j]+K]=INFINITY;
       }
-      for (long j = 0; j<K; ++j) {
+      for (int j = 0; j<K; ++j) {
          pr_work[j] = ((pr_work[j] < INFINITY) && (pr_work[j] > T(-1.0))) ? (pr_DtR[j]+current_correlation)/(T(1.0)+pr_work[j]) : INFINITY;
       }
  //     work.print("work");
-      for (long j = 0; j<K; ++j) {
+      for (int j = 0; j<K; ++j) {
          pr_work[j+K] = ((pr_work[j+K] < INFINITY) && (pr_work[j+K] < T(1.0))) ? (current_correlation-pr_DtR[j])/(T(1.0)-pr_work[j+K]) : INFINITY;
       }
  //     work.print("work");
 
       if (pos) {
-         for (long j = 0; j<K; ++j) {
+         for (int j = 0; j<K; ++j) {
             pr_work[j]=INFINITY;
          }
       }
  //     work.print("work");
  //     coeffs.print("coeffs");
-      long index = cblas_iamin<T>(2*K,pr_work,1);
+      int index = cblas_iamin<T>(2*K,pr_work,1);
       T step = pr_work[index];
 
       // Choose next element
@@ -1664,10 +1741,10 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
 
       // compute the coefficients of the polynome representing normX^2
       T coeff1 = 0;
-      for (long j = 0; j<=i; ++j)
+      for (int j = 0; j<=i; ++j)
          coeff1 += pr_DtR[pr_ind[j]] > 0 ? pr_u[j] : -pr_u[j];
       T coeff2 = 0;
-      for (long j = 0; j<=i; ++j)
+      for (int j = 0; j<=i; ++j)
          coeff2 += pr_DtR[pr_ind[j]]*pr_u[j];
       T coeff3 = normX-constraint;
 
@@ -1692,7 +1769,7 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
       cblas_axpy<T>(i+1,step,pr_u,1,pr_coeffs,1);
 
       if (pos) {
-         for (long j = 0; j<i+1; ++j)
+         for (int j = 0; j<i+1; ++j)
             if (pr_coeffs[j] < 0) pr_coeffs[j]=0;
       }
 
@@ -1706,7 +1783,7 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
       thrs += step*coeff1;
 
       if (path) {
-         for (long k = 0; k<=i; ++k) 
+         for (int k = 0; k<=i; ++k) 
             path[iter*K+ind[k]]=pr_coeffs[k];
       }
 
@@ -1716,14 +1793,14 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
       //   cerr << "Remove " << pr_ind[first_zero] << endl;
          /// Downdate, remove first_zero
          /// Downdate Ga, Gs, invGs, ind, coeffs
-         for (long j = first_zero; j<i; ++j) {
+         for (int j = first_zero; j<i; ++j) {
             cblas_copy<T>(K,pr_Ga+(j+1)*K,1,pr_Ga+j*K,1);
             pr_ind[j]=pr_ind[j+1];
             pr_coeffs[j]=pr_coeffs[j+1];
          }
          pr_ind[i]=-1;
          pr_coeffs[i]=0;
-         for (long j = first_zero; j<i; ++j) {
+         for (int j = first_zero; j<i; ++j) {
             cblas_copy<T>(first_zero,pr_Gs+(j+1)*LL,1,pr_Gs+j*LL,1);
             cblas_copy<T>(i-first_zero,pr_Gs+(j+1)*LL+first_zero+1,1,
                   pr_Gs+j*LL+first_zero,1);
@@ -1732,7 +1809,7 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
          cblas_copy<T>(first_zero,pr_invGs+first_zero*LL,1,pr_u,1);
          cblas_copy<T>(i-first_zero,pr_invGs+(first_zero+1)*LL+first_zero,LL,
                pr_u+first_zero,1);
-         for (long j = first_zero; j<i; ++j) {
+         for (int j = first_zero; j<i; ++j) {
             cblas_copy<T>(first_zero,pr_invGs+(j+1)*LL,1,pr_invGs+j*LL,1);
             cblas_copy<T>(i-first_zero,pr_invGs+(j+1)*LL+first_zero+1,1,
                   pr_invGs+j*LL+first_zero,1);
@@ -1756,22 +1833,22 @@ void coreLARS2(Vector<T>& DtR, const AbstractMatrix<T>& G,
 
 /// Auxiliary function for lasso 
 template <typename T>
-void coreLARS2W(Vector<T>& DtR, AbstractMatrix<T>& G,
+void coreLARS2W(Vector<T>& DtR, const AbstractMatrix<T>& G,
       Matrix<T>& Gs,
       Matrix<T>& Ga,
       Matrix<T>& invGs,
       Vector<T>& u,
       Vector<T>& coeffs,
       const Vector<T>& weights,
-      Vector<long>& ind,
+      Vector<INTM>& ind,
       Matrix<T>& work,
       T& normX,
       const constraint_type mode,
       const T constraint,
       const bool pos) {
-   const long LL = Gs.n();
-   const long K = G.n();
-   const long L = MIN(LL,K);
+   const int LL = Gs.n();
+   const int K = G.n();
+   const int L = MIN(LL,K);
    coeffs.setZeros();
    ind.set(-1);
 
@@ -1784,18 +1861,18 @@ void coreLARS2W(Vector<T>& DtR, AbstractMatrix<T>& G,
    T* const pr_DtR = DtR.rawX();
    T* const pr_coeffs = coeffs.rawX();
    T* const pr_weights = weights.rawX();
-   long* const pr_ind = ind.rawX();
+   INTM* const pr_ind = ind.rawX();
 
    DtR.div(weights);
 
    // Find the most correlated element
-   long currentInd = pos ? DtR.max() : DtR.fmax();
+   int currentInd = pos ? DtR.max() : DtR.fmax();
    if (mode == PENALTY && abs(DtR[currentInd]) < constraint) return;
    if (mode == L2ERROR && normX < constraint) return;
    bool newAtom=true;
 
-   long i;
-   long iter=0;
+   int i;
+   int iter=0;
    T thrs = 0;
    for (i = 0; i<L; ++i) {
       ++iter;
@@ -1803,7 +1880,7 @@ void coreLARS2W(Vector<T>& DtR, AbstractMatrix<T>& G,
          pr_ind[i]=currentInd;
          // Update upper part of Gs and Ga
          G.extract_rawCol(pr_ind[i],pr_Ga+i*K);
-         for (long j = 0; j<=i; ++j)
+         for (int j = 0; j<=i; ++j)
             pr_Gs[i*LL+j]=pr_Ga[i*K+pr_ind[j]];
 
          // Update inverse of Gs
@@ -1823,15 +1900,15 @@ void coreLARS2W(Vector<T>& DtR, AbstractMatrix<T>& G,
       }
 
       // Compute the path direction 
-      for (long j = 0; j<=i; ++j)
+      for (int j = 0; j<=i; ++j)
          pr_work[j]= pr_DtR[pr_ind[j]] > 0 ? weights[pr_ind[j]] : -weights[pr_ind[j]];
       cblas_symv<T>(CblasColMajor,CblasUpper,i+1,T(1.0),pr_invGs,LL,
             pr_work,1,T(0.0),pr_u,1);
 
       // Compute the step on the path
       T step_max = INFINITY;
-      long first_zero = -1;
-      for (long j = 0; j<=i; ++j) {
+      int first_zero = -1;
+      for (int j = 0; j<=i; ++j) {
          T ratio = -pr_coeffs[j]/pr_u[j];
          if (ratio > 0 && ratio <= step_max) {
             step_max=ratio;
@@ -1846,34 +1923,34 @@ void coreLARS2W(Vector<T>& DtR, AbstractMatrix<T>& G,
       cblas_copy<T>(K,pr_work+2*K,1,pr_work+K,1);
       cblas_copy<T>(K,pr_work+2*K,1,pr_work,1);
 
-     for (long j = 0; j<=i; ++j) {
+     for (int j = 0; j<=i; ++j) {
          pr_work[pr_ind[j]]=INFINITY;
          pr_work[pr_ind[j]+K]=INFINITY;
       }
-      for (long j = 0; j<K; ++j) {
+      for (int j = 0; j<K; ++j) {
          pr_work[j] = ((pr_work[j] < INFINITY) && (pr_work[j] > T(-1.0))) ? (pr_DtR[j]+current_correlation)/(T(1.0)+pr_work[j]) : INFINITY;
       }
-      for (long j = 0; j<K; ++j) {
+      for (int j = 0; j<K; ++j) {
          pr_work[j+K] = ((pr_work[j+K] < INFINITY) && (pr_work[j+K] < T(1.0))) ? (current_correlation-pr_DtR[j])/(T(1.0)-pr_work[j+K]) : INFINITY;
       }
 
       if (pos) {
-         for (long j = 0; j<K; ++j) {
+         for (int j = 0; j<K; ++j) {
             pr_work[j]=INFINITY;
          }
       }
-      long index = cblas_iamin<T>(2*K,pr_work,1);
+      int index = cblas_iamin<T>(2*K,pr_work,1);
       T step = pr_work[index];
       // Choose next element
       currentInd = index % K;
 
       // compute the coefficients of the polynome representing normX^2
       T coeff1 = 0;
-      for (long j = 0; j<=i; ++j)
+      for (int j = 0; j<=i; ++j)
          coeff1 += pr_DtR[pr_ind[j]] > 0 ? pr_weights[pr_ind[j]]*pr_u[j] : 
             -pr_weights[pr_ind[j]]*pr_u[j];
       T coeff2 = 0;
-      for (long j = 0; j<=i; ++j)
+      for (int j = 0; j<=i; ++j)
          coeff2 += pr_DtR[pr_ind[j]]*pr_u[j]*pr_weights[pr_ind[j]];
       T coeff3 = normX-constraint;
 
@@ -1907,14 +1984,14 @@ void coreLARS2W(Vector<T>& DtR, AbstractMatrix<T>& G,
       if (step == step_max) {
          /// Downdate, remove first_zero
          /// Downdate Ga, Gs, invGs, ind, coeffs
-         for (long j = first_zero; j<i; ++j) {
+         for (int j = first_zero; j<i; ++j) {
             cblas_copy<T>(K,pr_Ga+(j+1)*K,1,pr_Ga+j*K,1);
             pr_ind[j]=pr_ind[j+1];
             pr_coeffs[j]=pr_coeffs[j+1];
          }
          pr_ind[i]=-1;
          pr_coeffs[i]=0;
-         for (long j = first_zero; j<i; ++j) {
+         for (int j = first_zero; j<i; ++j) {
             cblas_copy<T>(first_zero,pr_Gs+(j+1)*LL,1,pr_Gs+j*LL,1);
             cblas_copy<T>(i-first_zero,pr_Gs+(j+1)*LL+first_zero+1,1,
                   pr_Gs+j*LL+first_zero,1);
@@ -1923,7 +2000,7 @@ void coreLARS2W(Vector<T>& DtR, AbstractMatrix<T>& G,
          cblas_copy<T>(first_zero,pr_invGs+first_zero*LL,1,pr_u,1);
          cblas_copy<T>(i-first_zero,pr_invGs+(first_zero+1)*LL+first_zero,LL,
                pr_u+first_zero,1);
-         for (long j = first_zero; j<i; ++j) {
+         for (int j = first_zero; j<i; ++j) {
             cblas_copy<T>(first_zero,pr_invGs+(j+1)*LL,1,pr_invGs+j*LL,1);
             cblas_copy<T>(i-first_zero,pr_invGs+(j+1)*LL+first_zero+1,1,
                   pr_invGs+j*LL+first_zero,1);
@@ -1960,9 +2037,9 @@ void coreLARS2W(Vector<T>& DtR, AbstractMatrix<T>& G,
 template <typename T>
 void ist(const Matrix<T>& X, const Matrix<T>& D, 
       SpMatrix<T>& spalpha, T lambda, constraint_type mode,
-      const long itermax, 
+      const int itermax, 
       const T tol,
-      const long numThreads) {
+      const int numThreads) {
    Matrix<T> alpha;
    spalpha.toFull(alpha);
    spalpha.clear();
@@ -1973,16 +2050,16 @@ void ist(const Matrix<T>& X, const Matrix<T>& D,
 template <typename T>
 void ist(const Matrix<T>& X, const Matrix<T>& D, 
       Matrix<T>& alpha, T lambda, constraint_type mode,
-      const long itermax, 
-      const T tol, const long numThreads) {
+      const int itermax, 
+      const T tol, const int numThreads) {
 
    if (mode == L1COEFFS) {
       std::cerr << "Mode not implemented" << std::endl;
       return;
    }
 
-   long K=D.n();
-   long M=X.n();
+   int K=D.n();
+   int M=X.n();
    alpha.resize(K,M);
    if (!D.isNormalized()) {
       cerr << "Current implementation of IST does not support non-normalized dictionaries" << endl;
@@ -1994,26 +2071,26 @@ void ist(const Matrix<T>& X, const Matrix<T>& D,
    //ProdMatrix<T> G(D, K < 20000 && M*K/10 > K);
    Matrix<T> G;
    D.XtX(G);
-   // for (long i = 0; i<K; ++i) G[i*K+i] += 1e-6;
+   // for (int i = 0; i<K; ++i) G[i*K+i] += 1e-6;
    G.addDiag(1e-12);
    ProdMatrix<T> DtX(D,X,false);
 
-   long NUM_THREADS=init_omp(numThreads);
+   int NUM_THREADS=init_omp(numThreads);
 
    Vector<T>* DtRT= new Vector<T>[NUM_THREADS];
    SpVector<T>* spAlphaT= new SpVector<T>[NUM_THREADS];
-   for (long i = 0; i<NUM_THREADS; ++i) {
+   for (int i = 0; i<NUM_THREADS; ++i) {
       DtRT[i].resize(K);
       spAlphaT[i].resize(K);
    };
 
-   long i;
+   int i;
 #pragma omp parallel for private(i) 
    for (i = 0; i< M; ++i) {
 #ifdef _OPENMP
-      long numT=omp_get_thread_num();
+      int numT=omp_get_thread_num();
 #else
-      long numT=0;
+      int numT=0;
 #endif
       Vector<T> coeffs;
       alpha.refCol(i,coeffs);
@@ -2043,12 +2120,60 @@ void ist(const Matrix<T>& X, const Matrix<T>& D,
 
 }
 
+/*template <typename T>
+inline void generalCD(const AbstractMatrix<T>& G, Vector<T>& DtRv, Vector<T>& coeffsv,
+      const T lambda, const int itermax, const T tol) {
+
+   Vector<T> diag;
+   G.diag(diag);
+   const int K = G.n();
+   T* const coeffs = coeffsv.rawX();
+   T* const DtR = DtRv.rawX();
+   
+   for (int iter=0; iter < itermax; ++iter) {
+      if (iter % 5 == 0) {
+         T eps1=DtRv.fmaxval()/lambda-1;
+         if (eps1 <= tol) {
+            T eps2=1e10;
+            for (int jj=0; jj<K; ++jj) {
+               if (coeffs[jj] > 0) {
+                  eps2=MIN(DtR[jj],eps2);
+               } else if (coeffs[jj] < 0) {
+                  eps2=MIN(-DtR[jj],eps2);
+               }
+            }
+            eps2=-(eps2/lambda-1);
+            if (eps2 <= tol) 
+               break;
+         }
+      }
+      for (int j = 0; j <K; ++j) {
+         T crit=DtR[j]+coeffs[j]*diag[j];
+         if (crit > lambda) {
+            T diff=coeffs[j];
+            coeffs[j]=(crit-lambda)/diag[j];
+            diff-=coeffs[j];
+            G.add_rawCol(j,DtR,diff);
+         } else if (crit < -lambda) {
+            T diff=coeffs[j];
+            coeffs[j]=(crit+lambda)/diag[j];
+            diff-=coeffs[j];
+            G.add_rawCol(j,DtR,diff);
+         } else if (coeffs[j]) {
+            G.add_rawCol(j,DtR,coeffs[j]);
+            coeffs[j]=T();
+         }
+      }
+   }
+}*/
+
+
 template <typename T>
 inline void coreIST(const AbstractMatrix<T>& G, Vector<T>& DtRv, Vector<T>& coeffsv,
-      const T thrs, const long itermax, 
+      const T thrs, const int itermax, 
       const T tol) {
 
-   const long K = G.n();
+   const int K = G.n();
    T* const coeffs = coeffsv.rawX();
    T* const DtR = DtRv.rawX();
    //  T* const prG = G.rawX();
@@ -2059,8 +2184,8 @@ inline void coreIST(const AbstractMatrix<T>& G, Vector<T>& DtRv, Vector<T>& coef
    T lambda=lambda_init;
    vAdd(K,DtR,coeffs,DtR);
 
-   for (long iter=0; iter < itermax; ++iter) {
-      for (long j = 0; j <K; ++j) {
+   for (int iter=0; iter < itermax; ++iter) {
+      for (int j = 0; j <K; ++j) {
          if (DtR[j] > lambda) {
             T diff=coeffs[j];
             coeffs[j]=DtR[j]-lambda;
@@ -2088,7 +2213,7 @@ inline void coreIST(const AbstractMatrix<T>& G, Vector<T>& DtRv, Vector<T>& coef
          maxDtR = DtRv.fmaxval();
          norm1 =T();
          T DtRa = T();
-         for (long j = 0; j<K; ++j) {
+         for (int j = 0; j<K; ++j) {
             if (coeffs[j]) {
                norm1 += abs(coeffs[j]);
                DtRa += DtR[j]*coeffs[j];
@@ -2102,12 +2227,121 @@ inline void coreIST(const AbstractMatrix<T>& G, Vector<T>& DtRv, Vector<T>& coef
    }
 }
 
+template <typename T>
+inline void coreISTW(const Matrix<T>& G, Vector<T>& DtRv, Vector<T>& coeffsv,const Vector<T>& weightsv,
+      const T lambda, const int itermax, 
+      const T tol) {
+
+   T opt=0;
+   const int K = G.n();
+   T* const coeffs = coeffsv.rawX();
+   T* const weights = weightsv.rawX();
+   T* const DtR = DtRv.rawX();
+   //  T* const prG = G.rawX();
+
+   for (int iter=0; iter < itermax; ++iter) {
+      for (int j = 0; j <K; ++j) {
+         const T nrm = G(j,j);
+         const T u = DtR[j]/nrm+coeffs[j];
+         const T thrs = lambda*weights[j]/nrm;
+         if (u > thrs) {
+            T diff=coeffs[j];
+            coeffs[j]=u-thrs;
+            diff-=coeffs[j];
+            G.add_rawCol(j,DtR,diff);
+            //cblas_axpy(K,diff,prG+j*K,1,DtR,1);
+         } else if (u < -thrs) {
+            T diff=coeffs[j];
+            coeffs[j]=u+thrs;
+            diff-=coeffs[j];
+            G.add_rawCol(j,DtR,diff);
+            //cblas_axpy(K,diff,prG+j*K,1,DtR,1);
+         } else if (coeffs[j]) {
+            G.add_rawCol(j,DtR,coeffs[j]);
+            coeffs[j]=0;
+            //cblas_axpy(K,diff,prG+j*K,1,DtR,1);
+         }
+      }
+      if (iter % 10 == 0) {
+         opt=0;
+         for (int j = 0; j <K; ++j) {
+            if (coeffs[j] > 0) {
+               opt=MAX(opt,abs<T>(T(1.0)-DtR[j]/(weights[j]*lambda)));
+            } else if (coeffs[j] < 0) {
+               opt=MAX(opt,abs<T>(T(1.0)+DtR[j]/(lambda*weights[j])));
+            } else {
+               opt=MAX(opt,abs<T>(DtR[j]/(lambda*weights[j]))-T(1.0));
+            }
+         }
+         if (opt < tol) break;
+      }
+   }
+}
+
+/*template <typename T>
+inline void coreIST_unnormalized(const AbstractMatrix<T>& G, Vector<T>& DtRv, Vector<T>& coeffsv,
+      const T thrs, const int itermax, 
+      const T tol) {
+
+   const int K = G.n();
+   T* const coeffs = coeffsv.rawX();
+   T* const DtR = DtRv.rawX();
+   //  T* const prG = G.rawX();
+
+   const T lambda_init=thrs;
+   T maxDtR = DtRv.fmaxval();
+   T norm1=coeffsv.asum();
+   T lambda=lambda_init;
+   DtRv.add(coeffsv);
+//   vAdd(K,DtR,coeffs,DtR);
+
+   for (int iter=0; iter < itermax; ++iter) {
+      for (int j = 0; j <K; ++j) {
+         if (DtR[j] > lambda) {
+            T diff=coeffs[j];
+            coeffs[j]=DtR[j]-lambda;
+            diff-=coeffs[j];
+            
+            DtR[j]-=diff;
+            G.add_rawCol(j,DtR,diff);
+         } else if (DtR[j] < -lambda) {
+            T diff=coeffs[j];
+            coeffs[j]=DtR[j]+lambda;
+            diff-=coeffs[j];
+            DtR[j]-=diff;
+            G.add_rawCol(j,DtR,diff);
+         } else if (coeffs[j]) {
+            T diff=coeffs[j];
+            coeffs[j]=T();
+            DtR[j]-=diff;
+            G.add_rawCol(j,DtR,diff);
+         }
+      }
+      if (iter % 5 == 1) {
+         vSub(K,DtR,coeffs,DtR);         
+         maxDtR = DtRv.fmaxval();
+         norm1 =T();
+         T DtRa = T();
+         for (int j = 0; j<K; ++j) {
+            if (coeffs[j]) {
+               norm1 += abs(coeffs[j]);
+               DtRa += DtR[j]*coeffs[j];
+            }
+         }
+         DtRv.add(coeffs);
+         const T kappa = -DtRa+norm1*maxDtR;
+         if (abs(lambda - maxDtR) < tol && kappa <= tol)
+            break;
+      }
+   }
+}*/
+
 
 /// coreIST constrained
 template <typename T>
 void coreISTconstrained(const AbstractMatrix<T>& G, Vector<T>& DtRv, Vector<T>&
-      coeffsv, const T normX2, const T eps, const long itermax, const T tol) {
-   const long K = G.n();
+      coeffsv, const T normX2, const T eps, const int itermax, const T tol) {
+   const int K = G.n();
    T* const coeffs = coeffsv.rawX();
    T* const DtR = DtRv.rawX();
    // T* const prG = G.rawX();
@@ -2124,16 +2358,16 @@ void coreISTconstrained(const AbstractMatrix<T>& G, Vector<T>& DtRv, Vector<T>&
       lambda=sqrt(lambdasq);
    }
 
-   Vector<long> indices(K);
+   Vector<int> indices(K);
    indices.set(-1);
-   long* const pr_indices=indices.rawX();
-   long count;
+   int* const pr_indices=indices.rawX();
+   int count;
 
-   for (long iter=0; iter < itermax; ++iter) {
+   for (int iter=0; iter < itermax; ++iter) {
 
       count=0;
       T old_err = err;
-      for (long j = 0; j <K; ++j) {
+      for (int j = 0; j <K; ++j) {
 
          // Soft-thresholding
          T old_coeff = coeffs[j];
@@ -2163,8 +2397,8 @@ void coreISTconstrained(const AbstractMatrix<T>& G, Vector<T>& DtRv, Vector<T>&
       maxDtR = DtRv.fmaxval();
       norm1 =T();
       T DtRa = T();
-      for (long j = 0; j<count; ++j) {
-         const long ind = pr_indices[j];
+      for (int j = 0; j<count; ++j) {
+         const int ind = pr_indices[j];
          norm1 += abs(coeffs[ind]);
          DtRa += DtR[ind]*coeffs[ind];
       }
@@ -2189,12 +2423,12 @@ void coreISTconstrained(const AbstractMatrix<T>& G, Vector<T>& DtRv, Vector<T>&
 /// ist for group Lasso
 template <typename T>
 void ist_groupLasso(const Matrix<T>* XT, const Matrix<T>& D,
-      Matrix<T>* alphaT, const long Ngroups, 
+      Matrix<T>* alphaT, const int Ngroups, 
       const T lambda, const constraint_type mode,
-      const long itermax,
-      const T tol, const long numThreads) {
-   long K=D.n();
-   long n = D.m();
+      const int itermax,
+      const T tol, const int numThreads) {
+   int K=D.n();
+   int n = D.m();
 
    if (!D.isNormalized()) {
       cerr << "Current implementation of block coordinate descent does not support non-normalized dictionaries" << endl;
@@ -2211,21 +2445,21 @@ void ist_groupLasso(const Matrix<T>* XT, const Matrix<T>& D,
    Matrix<T> G;
    D.XtX(G);
 
-   long NUM_THREADS=init_omp(numThreads);
+   int NUM_THREADS=init_omp(numThreads);
 
    Matrix<T>* RtDT = new Matrix<T>[NUM_THREADS];
    Matrix<T>* alphatT = new Matrix<T>[NUM_THREADS];
 
-   long i;
+   int i;
 #pragma omp parallel for private(i) 
    for (i = 0; i< Ngroups; ++i) {
 #ifdef _OPENMP
-      long numT=omp_get_thread_num();
+      int numT=omp_get_thread_num();
 #else
-      long numT=0;
+      int numT=0;
 #endif
       const Matrix<T>& X = XT[i];
-      long M = X.n();
+      int M = X.n();
       Matrix<T>& alphat = alphatT[numT];
       alphaT[i].transpose(alphat);
       Matrix<T>& RtD = RtDT[numT];
@@ -2258,7 +2492,7 @@ void ist_groupLasso(const Matrix<T>* XT, const Matrix<T>& D,
       }
 
       if (M > 1) {
-         for (long j = 0; j<K; ++j) {
+         for (int j = 0; j<K; ++j) {
             alphat.refCol(j,col);
             const T nrm=col.nrm2sq();
             if (nrm) {
@@ -2285,10 +2519,10 @@ template <typename T>
 void coreGroupIST(const Matrix<T>& G, Matrix<T>& RtDm,
       Matrix<T>& coeffsm,
       const T thrs,
-      const long itermax,
+      const int itermax,
       const T tol) {
-   const long K = G.n();
-   const long M = RtDm.m();
+   const int K = G.n();
+   const int M = RtDm.m();
    T* const prG = G.rawX();
    T* const RtD = RtDm.rawX();
    T* const coeffs = coeffsm.rawX();
@@ -2303,12 +2537,12 @@ void coreGroupIST(const Matrix<T>& G, Matrix<T>& RtDm,
    coeffsm.norm_2_cols(normsv);
    Vector<T> normRtDv(K);
 
-   Vector<long> activatev(K);
+   Vector<int> activatev(K);
    activatev.set(3);
-   long* const activate=activatev.rawX();
+   int* const activate=activatev.rawX();
 
-   for (long iter=0; iter < itermax; ++iter) {
-      for (long j = 0; j <K; ++j) {
+   for (int iter=0; iter < itermax; ++iter) {
+      for (int j = 0; j <K; ++j) {
          if (activate[j] >= 0) {
             if (norms[j]) {
                cblas_copy(M,coeffs+j*M,1,old_coeff,1);
@@ -2349,7 +2583,7 @@ void coreGroupIST(const Matrix<T>& G, Matrix<T>& RtDm,
          RtDm.norm_2sq_cols(normRtDv);
          T maxDtR = sqr(normRtDv.maxval());
          T DtRa=T();
-         for (long j = 0; j<K; ++j) {
+         for (int j = 0; j<K; ++j) {
             if (norms[j]) {
                DtRa += cblas_dot(M,coeffs+j*M,1,RtD+j*M,1);
             }
@@ -2365,10 +2599,10 @@ template <typename T>
 void coreGroupISTConstrained(const Matrix<T>& G, Matrix<T>& RtDm,
       Matrix<T>& coeffsm, const T normR,
       const T eps,
-      const long itermax,
+      const int itermax,
       const T tol) {
-   const long K = G.n();
-   const long M = RtDm.m();
+   const int K = G.n();
+   const int M = RtDm.m();
    T* const prG = G.rawX();
    T* const RtD = RtDm.rawX();
    T* const coeffs = coeffsm.rawX();
@@ -2383,9 +2617,9 @@ void coreGroupISTConstrained(const Matrix<T>& G, Matrix<T>& RtDm,
    Vector<T> normRtDv(K);
    RtDm.norm_2sq_cols(normRtDv);
 
-   Vector<long> activatev(K);
+   Vector<int> activatev(K);
    activatev.set(3);
-   long* const activate=activatev.rawX();
+   int* const activate=activatev.rawX();
 
    T norm1 = normsv.sum();
    if (!norm1 && err <= eps) return;
@@ -2400,10 +2634,10 @@ void coreGroupISTConstrained(const Matrix<T>& G, Matrix<T>& RtDm,
       lambda=sqrt(lambdasq);
    }
 
-   for (long iter=0; iter < itermax; ++iter) {
+   for (int iter=0; iter < itermax; ++iter) {
 
       T old_err = err;
-      for (long j = 0; j <K; ++j) {
+      for (int j = 0; j <K; ++j) {
          if (activate[j] >= 0) {
             if (norms[j]) {
                cblas_copy(M,coeffs+j*M,1,old_coeff,1);
@@ -2449,7 +2683,7 @@ void coreGroupISTConstrained(const Matrix<T>& G, Matrix<T>& RtDm,
       RtDm.norm_2sq_cols(normRtDv);
       maxDtR = sqr(normRtDv.maxval());
       T DtRa=T();
-      for (long j = 0; j<K; ++j) {
+      for (int j = 0; j<K; ++j) {
          if (norms[j]) {
             DtRa += cblas_dot(M,coeffs+j*M,1,RtD+j*M,1);
          }
@@ -2477,13 +2711,13 @@ T computeError(const T normX2,const Vector<T>& norms,
       const Matrix<T>& G,const Matrix<T>& RtD,const Matrix<T>& alphat) {
    T err2 = normX2;
    Vector<T> col,col2;
-   for (long j = 0; j<G.n(); ++j) {
+   for (int j = 0; j<G.n(); ++j) {
       if (norms[j] > EPSILON) {
          alphat.refCol(j,col);
          RtD.refCol(j,col2);
          err2 -= 2*col.dot(col2);
          T add = 0.0;
-         for (long k = 0; k<j; ++k) {
+         for (int k = 0; k<j; ++k) {
             if (norms[k] > EPSILON) {
                alphat.refCol(k,col2);
                add -= G(j,k)*col.dot(col2);
@@ -2511,17 +2745,17 @@ T computeError(const T normX2,
 
 template <typename T>
 void somp(const Matrix<T>* X, const Matrix<T>& D, SpMatrix<T>* spalpha, 
-      const long Ngroups, const long L, const T eps,const long numThreads) {
+      const int Ngroups, const int L, const T eps,const int numThreads) {
    somp(X,D,spalpha,Ngroups,L,&eps,false,numThreads);
 }
 
 template <typename T>
 void somp(const Matrix<T>* XT, const Matrix<T>& D, SpMatrix<T>* spalphaT, 
-      const long Ngroups, const long LL, const T* eps, const bool adapt,
-      const long numThreads) {
+      const int Ngroups, const int LL, const T* eps, const bool adapt,
+      const int numThreads) {
    if (LL <= 0) return;
-   const long K = D.n();
-   const long L = MIN(D.m(),MIN(LL,K));
+   const INTM K = D.n();
+   const INTM L = MIN(D.m(),MIN(LL,K));
 
    if (!D.isNormalized()) {
       cerr << "Current implementation of OMP does not support non-normalized dictionaries" << endl;
@@ -2532,16 +2766,16 @@ void somp(const Matrix<T>* XT, const Matrix<T>& D, SpMatrix<T>* spalphaT,
    Matrix<T> G;
    D.XtX(G);
 
-   long NUM_THREADS=init_omp(numThreads);
+   int NUM_THREADS=init_omp(numThreads);
 
-   long i;
+   int i;
 #pragma omp parallel for private(i) 
    for (i = 0; i< Ngroups; ++i) {
       const Matrix<T>& X = XT[i];
-      const long M = X.n();
+      const INTM M = X.n();
       SpMatrix<T>& spalpha = spalphaT[i];
       spalpha.clear();
-      Vector<long> rv;
+      Vector<INTM> rv;
       Matrix<T> vM;
       T thrs = adapt ? eps[i] : M*(*eps);
       coreSOMP(X,D,G,vM,rv,L,thrs);
@@ -2552,10 +2786,10 @@ void somp(const Matrix<T>* XT, const Matrix<T>& D, SpMatrix<T>* spalphaT,
 template <typename T>
 void coreSOMP(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& G,
       Matrix<T>& v,
-      Vector<long>& r, const long L, const T eps) {
-   const long K = G.n();
-   const long n = D.m();
-   const long M = X.n();
+      Vector<INTM>& r, const int L, const T eps) {
+   const int K = G.n();
+   const int n = D.m();
+   const int M = X.n();
 
    const bool big_mode = M*K*(n+L) > 2*(M*n*n+K*n*(n+L));
    r.resize(L);
@@ -2578,8 +2812,8 @@ void coreSOMP(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& G,
       T normX = Xt.nrm2sq();
       T lambda=0;
       coreORMP(scores,norm,tmp,Un,Undn,Unds,Gs,Rdn,G,r,RUn,normX,&eps,&L,&lambda);
-      long count=0;
-      for (long i = 0; i<L; ++i) {
+      int count=0;
+      for (int i = 0; i<L; ++i) {
          if (r[i] == -1) break;
          ++count;
       }
@@ -2623,7 +2857,7 @@ void coreSOMP(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& G,
    G.diag(e);
    Vector<T> f(K);
    if (big_mode) {
-      for (long i = 0; i<K; ++i) {
+      for (int i = 0; i<K; ++i) {
          Vector<T> di;
          D.refCol(i,di);
          Vector<T> di2;
@@ -2647,12 +2881,12 @@ void coreSOMP(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& G,
    T* const pr_c = c.rawX();
    T* const pr_tmp = tmp.rawX();
 
-   long j;
+   int j;
    for (j = 0; j<L; ++j) {
       scores.copy(f);
       scores.div(e);
-      for (long k = 0; k<j; ++k) scores[r[k]]=-1.0;
-      const long currentInd = scores.max();
+      for (int k = 0; k<j; ++k) scores[r[k]]=-1.0;
+      const int currentInd = scores.max();
       const T invNorm=T(1.0)/sqrt(e[currentInd]);
       if (invNorm > 1e3) {
          j=j-1;
@@ -2660,14 +2894,14 @@ void coreSOMP(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& G,
       }
       r[j]=currentInd;
       E -= scores[currentInd];
-      for (long k = 0; k<j; ++k) prS[j*L+k]=T();
+      for (int k = 0; k<j; ++k) prS[j*L+k]=T();
       prS[j*L+j]=T(1.0);
-      for (long k = 0; k<j; ++k) prAs[k*L+j]=prA[k*K+currentInd];
+      for (int k = 0; k<j; ++k) prAs[k*L+j]=prA[k*K+currentInd];
 
       /// Cholesky update with partial reorthogonalization
-      long iter = invNorm > 1.41 ? 2 : 1;
-      for (long k = 0; k<iter; ++k) {
-         for (long l = 0; l<j; ++l) {
+      int iter = invNorm > 1.41 ? 2 : 1;
+      for (int k = 0; k<iter; ++k) {
+         for (int l = 0; l<j; ++l) {
             T scal = -cblas_dot<T>(j-l+1,prAs+l*L+l,1,prS+j*L+l,1);
             cblas_axpy<T>(l+1,scal,prS+l*L,1,prS+j*L,1);
          }
@@ -2705,8 +2939,8 @@ void coreSOMP(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& G,
       }
       cblas_gemv<T>(CblasColMajor,CblasNoTrans,K,j+1,T(1.0),prFs,K,prS+j*L,1,
             T(0.0),prB+j,L);
-      for (long k = 0; k<j;++k) pr_c[k]=T();
-      for (long k = 0; k<=j;++k) 
+      for (int k = 0; k<j;++k) pr_c[k]=T();
+      for (int k = 0; k<=j;++k) 
          cblas_axpy<T>(j,prS[j*L+k],prB+r[k]*L,1,pr_c,1);
       f.add(tmp,f[currentInd]*invNorm*invNorm);
       if (j > 0) {
@@ -2730,7 +2964,7 @@ void coreSOMP(const Matrix<T>& X, const Matrix<T>& D, const Matrix<T>& G,
    Matrix<T> SSt;
    S.upperTriXXt(SSt,j);
    Matrix<T> Dg(n,j);
-   for (long i = 0; i<j;++i) {
+   for (int i = 0; i<j;++i) {
       Vector<T> Dgi;
       Dg.refCol(i,Dgi);
       D.copyCol(r[i],Dgi);

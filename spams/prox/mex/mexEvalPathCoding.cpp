@@ -26,7 +26,7 @@ using namespace FISTA;
 
 template <typename T>
 inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
-      const long nlhs) {
+      const int nlhs) {
    if (!mexCheckType<T>(prhs[0])) 
       mexErrMsgTxt("type of argument 1 is not consistent");
    if (mxIsSparse(prhs[0])) 
@@ -39,8 +39,8 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
 
    T* pr_alpha0 = reinterpret_cast<T*>(mxGetPr(prhs[0]));
    const mwSize* dimsAlpha=mxGetDimensions(prhs[0]);
-   long pAlpha=static_cast<long>(dimsAlpha[0]);
-   long nAlpha=static_cast<long>(dimsAlpha[1]);
+   int pAlpha=static_cast<int>(dimsAlpha[0]);
+   int nAlpha=static_cast<int>(dimsAlpha[1]);
    Matrix<T> alpha0(pr_alpha0,pAlpha,nAlpha);
 
    mxArray* ppr_GG = mxGetField(prhs[1],0,"weights");
@@ -50,8 +50,8 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
    mwSize* GG_r=mxGetIr(ppr_GG);
    mwSize* GG_pB=mxGetJc(ppr_GG);
    const mwSize* dims_GG=mxGetDimensions(ppr_GG);
-   long GGm=static_cast<long>(dims_GG[0]);
-   long GGn=static_cast<long>(dims_GG[1]);
+   int GGm=static_cast<int>(dims_GG[0]);
+   int GGn=static_cast<int>(dims_GG[1]);
    if (GGm != GGn || GGm != pAlpha)
       mexErrMsgTxt("size of field groups is not consistent");
 
@@ -60,7 +60,7 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
       mexErrMsgTxt("field start_weights should not be sparse");
    T* start_weights = reinterpret_cast<T*>(mxGetPr(ppr_weights));
    const mwSize* dims_weights=mxGetDimensions(ppr_weights);
-   long nweights=static_cast<long>(dims_weights[0])*static_cast<long>(dims_weights[1]);
+   int nweights=static_cast<int>(dims_weights[0])*static_cast<int>(dims_weights[1]);
    if (nweights != pAlpha)
       mexErrMsgTxt("size of field start_weights is not consistent");
 
@@ -69,13 +69,13 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
       mexErrMsgTxt("field stop_weights should not be sparse");
    T* stop_weights = reinterpret_cast<T*>(mxGetPr(ppr_weights2));
    const mwSize* dims_weights2=mxGetDimensions(ppr_weights2);
-   long nweights2=static_cast<long>(dims_weights2[0])*static_cast<long>(dims_weights2[1]);
+   int nweights2=static_cast<int>(dims_weights2[0])*static_cast<int>(dims_weights2[1]);
    if (nweights2 != pAlpha)
       mexErrMsgTxt("size of field stop_weights is not consistent");
 
 
    FISTA::ParamFISTA<T> param;
-   param.num_threads = getScalarStructDef<long>(prhs[2],"numThreads",-1);
+   param.num_threads = getScalarStructDef<int>(prhs[2],"numThreads",-1);
    getStringStruct(prhs[2],"regul",param.name_regul,param.length_names);
    param.regul = regul_from_string(param.name_regul);
    if (param.regul==INCORRECT_REG)
@@ -114,7 +114,7 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
 
    plhs[0]=createMatrix<T>(1,val.n());
    T* pr_val=reinterpret_cast<T*>(mxGetPr(plhs[0]));
-   for (long i = 0; i<val.n(); ++i) pr_val[i]=val[i];
+   for (int i = 0; i<val.n(); ++i) pr_val[i]=val[i];
 
    if (nlhs==2)
       convertSpMatrix(plhs[1],path.m(),path.n(),path.n(),

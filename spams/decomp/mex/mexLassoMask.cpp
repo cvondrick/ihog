@@ -52,36 +52,36 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[]) {
 
    T* prX = reinterpret_cast<T*>(mxGetPr(prhs[0]));
    const mwSize* dimsX=mxGetDimensions(prhs[0]);
-   long n=static_cast<long>(dimsX[0]);
-   long M=static_cast<long>(dimsX[1]);
+   INTM n=static_cast<INTM>(dimsX[0]);
+   INTM M=static_cast<INTM>(dimsX[1]);
 
    T* prD = reinterpret_cast<T*>(mxGetPr(prhs[1]));
    const mwSize* dimsD=mxGetDimensions(prhs[1]);
-   long nD=static_cast<long>(dimsD[0]);
-   long K=static_cast<long>(dimsD[1]);
+   INTM nD=static_cast<INTM>(dimsD[0]);
+   INTM K=static_cast<INTM>(dimsD[1]);
    if (n != nD) mexErrMsgTxt("argument sizes are not consistent");
 
    bool* prmask = reinterpret_cast<bool*>(mxGetPr(prhs[2]));
    const mwSize* dimsM=mxGetDimensions(prhs[2]);
-   long nM=static_cast<long>(dimsM[0]);
-   long mM=static_cast<long>(dimsM[1]);
+   INTM nM=static_cast<INTM>(dimsM[0]);
+   INTM mM=static_cast<INTM>(dimsM[1]);
    if (nM != n || mM != M) mexErrMsgTxt("argument sizes are not consistent");
 
    T lambda = getScalarStruct<T>(prhs[3],"lambda");
    T lambda2 = getScalarStructDef<T>(prhs[3],"lambda2",0);
-   long L = getScalarStructDef<long>(prhs[3],"L",K);
-   long numThreads = getScalarStructDef<long>(prhs[3],"numThreads",-1);
+   int L = getScalarStructDef<int>(prhs[3],"L",K);
+   int numThreads = getScalarStructDef<int>(prhs[3],"numThreads",-1);
    bool pos = getScalarStructDef<bool>(prhs[3],"pos",false);
    bool verbose = getScalarStructDef<bool>(prhs[3],"verbose",true);
-   constraint_type mode = (constraint_type)getScalarStructDef<long>(prhs[3],"mode",PENALTY);
+   constraint_type mode = (constraint_type)getScalarStructDef<int>(prhs[3],"mode",PENALTY);
    if (L > n && !(mode == PENALTY && isZero(lambda) && !pos && lambda2 > 0)) {
       if (verbose)
-         printf("L is changed to %ld\n",n);
+         printf("L is changed to %d\n",(int)n);
       L=n;
    }
    if (L > K) {
       if (verbose)
-         printf("L is changed to %ld\n",K);
+         printf("L is changed to %d\n",(int)K);
       L=K;
    }
    Matrix<T> X(prX,n,M);

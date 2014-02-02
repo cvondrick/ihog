@@ -1,4 +1,3 @@
-
 /* Software SPAMS v2.1 - Copyright 2009-2011 Julien Mairal 
  *
  * This file is part of SPAMS.
@@ -29,18 +28,18 @@
 //#define VERB2
 
 
-long num_relabels;
-long num_pushes;
-long num_global_relabels;
-long num_gap_relabels;
+int num_relabels;
+int num_pushes;
+int num_global_relabels;
+int num_gap_relabels;
 bool global_heuristic = true;
 bool gap_heuristic = true;
 bool cap_heuristic = true;
 bool price_heuristic = true;
 bool price_refine_heuristic = false;
 
-//typedef std::list<long> list_long;
-//typedef std::list<long>::const_iterator const_iterator_int;
+//typedef std::list<int> list_int;
+//typedef std::list<int>::const_iterator const_iterator_int;
 #include <list.h>
 
 Timer tglobal1, tglobal2, tglobal3;
@@ -50,15 +49,15 @@ bool compare_abs (T first, T second) {
    return abs<T>(first) >= abs<T>(second);
 }
 template <typename T>
-T inline project_tree_l1(T* variables, const long n, const T lambda);
+T inline project_tree_l1(T* variables, const int n, const T lambda);
 
 template <typename T>
-T inline project_tree_l1(T* X, const long n, const T lambda) {
+T inline project_tree_l1(T* X, const int n, const T lambda) {
    if (lambda==0) return INFINITY;
    T* prU = X;
    T sum = 0;
-   long sum_card = n;
-   for (long i = 0; i<sum_card; ++i) {
+   int sum_card = n;
+   for (int i = 0; i<sum_card; ++i) {
       if (X[i]) {
          sum += X[i];
       } else {
@@ -70,17 +69,17 @@ T inline project_tree_l1(T* X, const long n, const T lambda) {
       memset(X,0,sum_card*sizeof(T));
       return 0;
    }
-   long sizeU = sum_card;
+   int sizeU = sum_card;
    sum_card = 0;
    sum=0;
 
    while (sizeU > 0) {
       // put the pivot in prU[0]
       swap(prU[0],prU[sizeU/2]);
-      long sizeG=1;
+      int sizeG=1;
       T sumG=prU[0];
 
-      for (long i = 1; i<sizeU; ++i) {
+      for (int i = 1; i<sizeU; ++i) {
          if (prU[i] >= prU[0]) {
             sumG += prU[i];
             swap(prU[sizeG++],prU[i]);
@@ -88,7 +87,7 @@ T inline project_tree_l1(T* X, const long n, const T lambda) {
       }
 
       T new_sum=sum+sumG;
-      long new_card=sum_card+sizeG;
+      int new_card=sum_card+sizeG;
       if (new_sum - prU[0]*new_card <= lambda) {
          sum_card = new_card;
          sum = new_sum;
@@ -100,7 +99,7 @@ T inline project_tree_l1(T* X, const long n, const T lambda) {
       }
    }
    T thrs = MAX(0,(sum-lambda)/sum_card);
-   for (long i = 0; i<n; ++i) 
+   for (int i = 0; i<n; ++i) 
       X[i] = MIN(X[i],thrs);
    return thrs;
 };
@@ -111,12 +110,12 @@ template <typename T> class Tree_Seq {
       Tree_Seq();
       ~Tree_Seq();
 
-      void inline create_tree(const long N_variables, long* own_variables,
-            long* N_own_variables, T* lambda, mwSize* groups_ir, mwSize* groups_jc,
-            const long N_groups, const long root_node = 0);
+      void inline create_tree(const int N_variables, int* own_variables,
+            int* N_own_variables, T* lambda, mwSize* groups_ir, mwSize* groups_jc,
+            const int N_groups, const int root_node = 0);
 
-      long inline perform_order(const long current_node, const long pointer);
-      long inline perform_dfs(const long current_node, const long pointer);
+      int inline perform_order(const int current_node, const int pointer);
+      int inline perform_dfs(const int current_node, const int pointer);
 
       void inline proj(Vector<T>& input, const bool l1 = false,
             const T fact = 1.0);
@@ -124,26 +123,26 @@ template <typename T> class Tree_Seq {
 
       void inline proj_weighted_linf(Vector<T>& input, const Vector<T>& weights, const T fact = 1.0);
 
-      T inline val_norm(const T* pr_alpha, const long current_node, const bool l1 = false);
-      T inline val_norm2(const T* pr_alpha, const long current_node, T& tmp, const bool l1 = false);
-      T inline val_zero(const T* pr_alpha, const long current_node);
-      T inline val_zero2(const T* pr_alpha, const long current_node, bool& tmp);
+      T inline val_norm(const T* pr_alpha, const int current_node, const bool l1 = false);
+      T inline val_norm2(const T* pr_alpha, const int current_node, T& tmp, const bool l1 = false);
+      T inline val_zero(const T* pr_alpha, const int current_node);
+      T inline val_zero2(const T* pr_alpha, const int current_node, bool& tmp);
       T inline dual_norm_inf(const Vector<T>& input);
       void inline sub_grad(const Vector<T>& input,  Vector<T>& output, const bool linf);
 
    private:
-      long _N_groups;
-      long _N_variables;
+      int _N_groups;
+      int _N_variables;
       T* _lambda;
       T* _thrs;
       T* _variables;
       T* _work;
-      long* _size_variables;
-      long* _pr_variables;
-      long* _size_own_variables;
-      long* _pr_own_variables;
-      long* _order;
-      long* _order_dfs;
+      int* _size_variables;
+      int* _pr_variables;
+      int* _size_own_variables;
+      int* _pr_own_variables;
+      int* _order;
+      int* _order_dfs;
       mwSize* _groups_ir;
       mwSize* _groups_jc;
 
@@ -178,20 +177,20 @@ Tree_Seq<T>::~Tree_Seq() {
 };
 
 template <typename T>
-void inline Tree_Seq<T>::create_tree(const long N_variables, long* own_variables,
-      long* N_own_variables, T* lambda, mwSize* groups_ir,mwSize* groups_jc,
-      const long N_groups, const long root_node) {
+void inline Tree_Seq<T>::create_tree(const int N_variables, int* own_variables,
+      int* N_own_variables, T* lambda, mwSize* groups_ir,mwSize* groups_jc,
+      const int N_groups, const int root_node) {
    _N_groups=N_groups;
    _N_variables=N_variables;
    _lambda=lambda;
    _thrs=new T[N_groups];
    _variables=new T[N_variables];
-   _size_variables=new long[N_groups];
-   _pr_variables=new long[N_groups];
+   _size_variables=new int[N_groups];
+   _pr_variables=new int[N_groups];
    _size_own_variables=N_own_variables;
    _pr_own_variables=own_variables;
-   _order=new long[N_groups];
-   _order_dfs=new long[N_groups];
+   _order=new int[N_groups];
+   _order_dfs=new int[N_groups];
    _groups_ir=groups_ir;
    _groups_jc=groups_jc;
    this->perform_order(root_node,0);
@@ -200,11 +199,11 @@ void inline Tree_Seq<T>::create_tree(const long N_variables, long* own_variables
 };
 
 template <typename T>
-long inline Tree_Seq<T>::perform_order(const long current_node, const long pointer) {
-   long cur_pointer=pointer;
+int inline Tree_Seq<T>::perform_order(const int current_node, const int pointer) {
+   int cur_pointer=pointer;
    _size_variables[current_node]=_size_own_variables[current_node];
    _pr_variables[current_node]=_pr_own_variables[current_node];
-   for (long i = _groups_jc[current_node];  i<_groups_jc[current_node+1]; ++i) {
+   for (int i = _groups_jc[current_node];  i<_groups_jc[current_node+1]; ++i) {
       cur_pointer=this->perform_order(_groups_ir[i],cur_pointer);
       _size_variables[current_node]+=_size_variables[_groups_ir[i]];
       _pr_variables[current_node]= MIN(_pr_variables[current_node],_pr_variables[_groups_ir[i]]);
@@ -214,10 +213,10 @@ long inline Tree_Seq<T>::perform_order(const long current_node, const long point
 };
 
 template <typename T>
-long inline Tree_Seq<T>::perform_dfs(const long current_node, const long pointer) {
-   long cur_pointer=pointer;
+int inline Tree_Seq<T>::perform_dfs(const int current_node, const int pointer) {
+   int cur_pointer=pointer;
    _order_dfs[cur_pointer++]=current_node;
-   for (long i = _groups_jc[current_node];  i<_groups_jc[current_node+1]; ++i) {
+   for (int i = _groups_jc[current_node];  i<_groups_jc[current_node+1]; ++i) {
       cur_pointer=this->perform_dfs(_groups_ir[i],cur_pointer);
    }
    return cur_pointer;
@@ -225,22 +224,22 @@ long inline Tree_Seq<T>::perform_dfs(const long current_node, const long pointer
 
 // could be faster
 template <typename T>
-T inline Tree_Seq<T>::val_norm(const T* pr_alpha, const long current_node, const bool l1) {
+T inline Tree_Seq<T>::val_norm(const T* pr_alpha, const int current_node, const bool l1) {
    T tmp=0;
    return this->val_norm2(pr_alpha,current_node,tmp,l1);
 };
 
 // fast version
 template <typename T>
-T inline Tree_Seq<T>::val_norm2(const T* pr_alpha, const long current_node, T& tmp, const bool l1) {
+T inline Tree_Seq<T>::val_norm2(const T* pr_alpha, const int current_node, T& tmp, const bool l1) {
    T sum=0;
-   for (long i = _groups_jc[current_node];  i<_groups_jc[current_node+1]; ++i) {
+   for (int i = _groups_jc[current_node];  i<_groups_jc[current_node+1]; ++i) {
       T tmp2=0;
       sum+=this->val_norm2(pr_alpha,_groups_ir[i],tmp2,l1);
       tmp= l1 ? MAX(tmp,tmp2) : tmp+tmp2;
    }
    if (l1) {
-      for (long i = 0; i<_size_own_variables[current_node]; ++i)
+      for (int i = 0; i<_size_own_variables[current_node]; ++i)
          tmp=MAX(abs<T>(pr_alpha[i+_pr_variables[current_node]]),tmp);
       sum+=_lambda[current_node]*tmp;
    } else {
@@ -252,14 +251,14 @@ T inline Tree_Seq<T>::val_norm2(const T* pr_alpha, const long current_node, T& t
 };
 
 template <typename T>
-T inline Tree_Seq<T>::val_zero2(const T* pr_alpha, const long current_node, bool& tmp) {
+T inline Tree_Seq<T>::val_zero2(const T* pr_alpha, const int current_node, bool& tmp) {
    T sum=0;
-   for (long i = _groups_jc[current_node];  i<_groups_jc[current_node+1]; ++i) {
+   for (int i = _groups_jc[current_node];  i<_groups_jc[current_node+1]; ++i) {
       bool tmp2=false;
       sum+=this->val_zero2(pr_alpha,_groups_ir[i],tmp2);
       tmp = tmp || tmp2;
    }
-   for (long i = 0; i<_size_own_variables[current_node]; ++i)
+   for (int i = 0; i<_size_own_variables[current_node]; ++i)
       tmp= (tmp || pr_alpha[i+_pr_variables[current_node]] != 0);
    if (tmp)
       sum+=_lambda[current_node];
@@ -268,7 +267,7 @@ T inline Tree_Seq<T>::val_zero2(const T* pr_alpha, const long current_node, bool
 
 
 template <typename T>
-T inline Tree_Seq<T>::val_zero(const T* pr_alpha, const long current_node) {
+T inline Tree_Seq<T>::val_zero(const T* pr_alpha, const int current_node) {
    bool tmp = false;
    return this->val_zero2(pr_alpha,current_node,tmp);
 };
@@ -277,30 +276,30 @@ template <typename T>
 void inline Tree_Seq<T>::sub_grad(const Vector<T>& input, Vector<T>& output, const bool linf) {
    output.setZeros();
    if (linf) {
-      for (long i = 0; i<_N_groups; ++i) {
+      for (int i = 0; i<_N_groups; ++i) {
          const T* pr = input.rawX()+_pr_variables[i];
-         long imax=cblas_iamax<T>(_size_variables[i],const_cast<T*>(pr),1);
-      //   long imax=cblas_iamax<T>(_size_variables[i],pr,1);
+         int imax=cblas_iamax<T>(_size_variables[i],const_cast<T*>(pr),1);
+      //   int imax=cblas_iamax<T>(_size_variables[i],pr,1);
          T max=pr[imax];
-         long num_max=0;
-         for (long j = 0; j<_size_variables[i];++j) {
+         int num_max=0;
+         for (int j = 0; j<_size_variables[i];++j) {
             if (abs<T>(max-abs<T>(pr[j])) < 1e-10) ++num_max;
          }
          T add=T(1.0)/num_max;
-         for (long j = 0; j<_size_variables[i];++j) {
+         for (int j = 0; j<_size_variables[i];++j) {
             if (abs<T>(max-abs<T>(pr[j])) < 1e-10 && input[_pr_variables[i]+j]) {
                output[_pr_variables[i]+j]+= input[_pr_variables[i]+j] > 0 ? add : -add;
             }
          }
       }
    } else {
-      for (long i = 0; i<_N_groups; ++i) {
+      for (int i = 0; i<_N_groups; ++i) {
          T nrm=cblas_nrm2<T>(_size_variables[i],input.rawX()+_pr_variables[i],1);
          if (nrm > 0) {
             cblas_axpy<T>(_size_variables[i],T(1.0)/nrm,input.rawX()+_pr_variables[i],1,output.rawX()+_pr_variables[i],1);
 //         } else {
 //            T num=T(1.0)/sqrt(static_cast<T>(_size_variables[i]));
-//            for (long j = 0; j<_size_variables[i]; ++j) {
+//            for (int j = 0; j<_size_variables[i]; ++j) {
 //               output[_pr_variables[i]+j]+=num;
 //            }
          }
@@ -316,8 +315,8 @@ void inline Tree_Seq<T>::proj_weighted_linf(Vector<T>& input, const Vector<T>& w
    weig.inv();
    cblas_copy<T>(input.n(),input.rawX(),1,_variables,1);
    Vector<T> tmp, tmpw;
-   for (long i = 0; i<_N_groups; ++i) {
-      const long node=_order[i];
+   for (int i = 0; i<_N_groups; ++i) {
+      const int node=_order[i];
       Vector<T> out;
       tmp.setData(_variables+_pr_variables[node],_size_variables[node]);
       tmpw.setData(weig.rawX()+_pr_variables[node],_size_variables[node]);
@@ -333,53 +332,53 @@ void inline Tree_Seq<T>::proj(Vector<T>& input, const bool l1,
       const T fact) {
    if (l1) {
       vAbs<T>(input.n(),input.rawX(),_variables);
-      for (long i = 0; i<_N_groups; ++i) {
-         const long node=_order[i];
+      for (int i = 0; i<_N_groups; ++i) {
+         const int node=_order[i];
          _thrs[node] = project_tree_l1(_variables+_pr_variables[node],_size_variables[node],
                _lambda[node]*fact);
       }
       cblas_copy<T>(input.n(),input.rawX(),1,_variables,1);
-      for (long i = 0; i<_N_groups; ++i) {
-         const long node=_order_dfs[i];
+      for (int i = 0; i<_N_groups; ++i) {
+         const int node=_order_dfs[i];
          if (_thrs[node] == 0) {
             memset(_variables+_pr_own_variables[node],0,_size_own_variables[node]*sizeof(T));
-            for (long j = _groups_jc[node];  j<_groups_jc[node+1]; ++j) {
+            for (int j = _groups_jc[node];  j<_groups_jc[node+1]; ++j) {
                _thrs[_groups_ir[j]]=0;
             }
          } else {
-            for (long j = 0; j<_size_own_variables[node]; ++j) {
+            for (int j = 0; j<_size_own_variables[node]; ++j) {
                T tmp = _variables[_pr_own_variables[node]+j];
                _variables[_pr_own_variables[node]+j] = tmp > _thrs[node] ? _thrs[node] :
                   tmp < -_thrs[node] ? -_thrs[node] : tmp;
             }
-            for (long j = _groups_jc[node];  j<_groups_jc[node+1]; ++j) {
+            for (int j = _groups_jc[node];  j<_groups_jc[node+1]; ++j) {
                _thrs[_groups_ir[j]]= MIN(_thrs[_groups_ir[j]],_thrs[node]);
             }
          }
       }
    } else {
       cblas_copy<T>(input.n(),input.rawX(),1,_variables,1);
-      for (long i = 0; i<_N_groups; ++i) {
-         const long node=_order[i];
+      for (int i = 0; i<_N_groups; ++i) {
+         const int node=_order[i];
          _work[node]=0;
-         for (long j = 0; j<_size_own_variables[node]; ++j)
+         for (int j = 0; j<_size_own_variables[node]; ++j)
             _work[node]+=_variables[_pr_own_variables[node]+j]*_variables[_pr_own_variables[node]+j];
-         for (long j = _groups_jc[node]; j<_groups_jc[node+1];++j)
+         for (int j = _groups_jc[node]; j<_groups_jc[node+1];++j)
             _work[node] += _work[_groups_ir[j]];
          _thrs[node] = MAX(0,1-fact*_lambda[node]/sqrt(_work[node]));
          _work[node]*= _thrs[node]*_thrs[node];
       }
-      for (long i = 0; i<_N_groups; ++i) {
-         const long node=_order_dfs[i];
+      for (int i = 0; i<_N_groups; ++i) {
+         const int node=_order_dfs[i];
          if (_thrs[node] == 0) {
             memset(_variables+_pr_own_variables[node],0,_size_own_variables[node]*sizeof(T));
-            for (long j = _groups_jc[node];  j<_groups_jc[node+1]; ++j) {
+            for (int j = _groups_jc[node];  j<_groups_jc[node+1]; ++j) {
                _thrs[_groups_ir[j]]=0;
             }
          } else {
-            for (long j = 0; j<_size_own_variables[node]; ++j) 
+            for (int j = 0; j<_size_own_variables[node]; ++j) 
                _variables[_pr_own_variables[node]+j] *= _thrs[node];
-            for (long j = _groups_jc[node];  j<_groups_jc[node+1]; ++j) {
+            for (int j = _groups_jc[node];  j<_groups_jc[node+1]; ++j) {
                _thrs[_groups_ir[j]] *= _thrs[node];
             }
          }
@@ -391,22 +390,22 @@ void inline Tree_Seq<T>::proj(Vector<T>& input, const bool l1,
 template <typename T>
 void inline Tree_Seq<T>::proj_zero(Vector<T>& input, const T fact) {
    cblas_copy<T>(input.n(),input.rawX(),1,_variables,1);
-   for (long i = 0; i<_N_groups; ++i) {
-      const long node=_order[i];
+   for (int i = 0; i<_N_groups; ++i) {
+      const int node=_order[i];
       _work[node]=0;
-      for (long j = 0; j<_size_own_variables[node]; ++j)
+      for (int j = 0; j<_size_own_variables[node]; ++j)
          _work[node]+=_variables[_pr_own_variables[node]+j]*_variables[_pr_own_variables[node]+j];
       _work[node] *= -0.5;
       _work[node] += fact*_lambda[node];
-      for (long j = _groups_jc[node]; j<_groups_jc[node+1];++j)
+      for (int j = _groups_jc[node]; j<_groups_jc[node+1];++j)
          _work[node] += _work[_groups_ir[j]];
       if (_work[node] > 0) _work[node]=0;
    }
-   for (long i = 0; i<_N_groups; ++i) {
-      const long node=_order_dfs[i];
+   for (int i = 0; i<_N_groups; ++i) {
+      const int node=_order_dfs[i];
       if (_work[node] == 0) {
          memset(_variables+_pr_own_variables[node],0,_size_own_variables[node]*sizeof(T));
-         for (long j = _groups_jc[node];  j<_groups_jc[node+1]; ++j) {
+         for (int j = _groups_jc[node];  j<_groups_jc[node+1]; ++j) {
             _work[_groups_ir[j]]=0;
          }
       } 
@@ -419,7 +418,7 @@ T inline Tree_Seq<T>::dual_norm_inf(const Vector<T>& input) {
    tglobal1.reset();
    tglobal2.reset();
    tglobal3.reset();
-   for (long i = 0; i<_N_groups; ++i) {
+   for (int i = 0; i<_N_groups; ++i) {
       _thrs[_order[i]]=INFINITY;
    }
    T tau=0;
@@ -428,16 +427,16 @@ T inline Tree_Seq<T>::dual_norm_inf(const Vector<T>& input) {
    while (_thrs[0] > EPSILON) {
       T old_thrs=_thrs[0];
       vAbs<T>(_N_variables,input.rawX(),_variables);
-      list_long nodes;
+      list_int nodes;
       nodes.push_front(0);
-      list_long ordered_nodes;
+      list_int ordered_nodes;
       T sum_weights=0;
       sum_variables=total;
       while (!nodes.empty()) {
-         const long node=nodes.front();
+         const int node=nodes.front();
          nodes.pop_front();
          sum_weights+=_lambda[node];
-         for (long j = _groups_jc[node];  j<_groups_jc[node+1]; ++j) 
+         for (int j = _groups_jc[node];  j<_groups_jc[node+1]; ++j) 
             if (_thrs[_groups_ir[j]] > EPSILON) {
                nodes.push_front(_groups_ir[j]);
             } else {
@@ -447,8 +446,8 @@ T inline Tree_Seq<T>::dual_norm_inf(const Vector<T>& input) {
          ordered_nodes.push_front(node);
       }
       tau=sum_variables/sum_weights;
-      for (const_iterator_long it = ordered_nodes.begin(); it != ordered_nodes.end(); ++it) {
-         const long node=*it;
+      for (const_iterator_int it = ordered_nodes.begin(); it != ordered_nodes.end(); ++it) {
+         const int node=*it;
          _thrs[node] = project_tree_l1(_variables+_pr_variables[node],_size_variables[node],_lambda[node]*tau);
       }
       if (_thrs[0] >= old_thrs) break;
@@ -460,12 +459,12 @@ T inline Tree_Seq<T>::dual_norm_inf(const Vector<T>& input) {
 template <typename T> class MaxFlow {
 
    public:
-      MaxFlow(const long N, const long* num_edges, const long s, const long t);
+      MaxFlow(const int N, const int* num_edges, const int s, const int t);
       ~MaxFlow();
 
-      void inline add_edge(const long u, const long v, const T cu, const T cv);
+      void inline add_edge(const int u, const int v, const T cu, const T cv);
 
-      void inline discharge(const list_long& component, const long u,const long max_label);
+      void inline discharge(const list_int& component, const int u,const int max_label);
 
       void inline global_relabelling();
 
@@ -475,36 +474,36 @@ template <typename T> class MaxFlow {
       void inline print_labels();
 
       void inline deactivate();
-      void inline deactivate(const list_long& component);
+      void inline deactivate(const list_int& component);
 
       T inline getMaxFlow() const { return _excess[_t]; };
 
-      void inline extractConnexComponents(std::list< list_long* >& connex_components);
-      T inline project(const list_long& component, 
+      void inline extractConnexComponents(std::list< list_int* >& connex_components);
+      T inline project(const list_int& component, 
             const T* variables_in,T* variables_out,T* work,
-            const long Ng);
-      T inline project_weighted(const list_long& component, 
+            const int Ng);
+      T inline project_weighted(const list_int& component, 
             const T* variables_in,T* variables_out,T* work, const T* weights,
-            const long Ng);
-      T inline project_box(const list_long& component, const T* variables_in,T*
-            variables_out,T* work, bool& fusion, const long Ng);
+            const int Ng);
+      T inline project_box(const list_int& component, const T* variables_in,T*
+            variables_out,T* work, bool& fusion, const int Ng);
 
-      T inline flow_component(const list_long& component, const long Ng);
-      bool inline splitComponent(const list_long& component,
-            std::list< list_long* >& connex_components, const long Ng, bool* positive,const bool addpos = true);
-      void inline reset_component(const list_long& component);
-      void inline perform_maxflow_component(const list_long& component);
-      void inline component_relabelling(const list_long& component,
-            const long max_label, const bool force);
-      void inline gap_relabelling(const list_long& component, const long gap, const long max_label);
-      void inline component_gap(const list_long& component);
-      void inline update_capacities(const list_long& component,T* work);
-      void inline set_capacities_variables(const T* cap,const long Nv, const long Ng);
-      void inline set_capacities_groups(const list_long& component,
-            const Vector<T>& weights,const T lambda, const long Ng);
-      void inline update_capacities_aux(const long node,T* work);
-      void inline restore_capacities(const list_long& component);
-      T inline compute_thrs_project_l1(T* X, const long n, const T lambda);
+      T inline flow_component(const list_int& component, const int Ng);
+      bool inline splitComponent(const list_int& component,
+            std::list< list_int* >& connex_components, const int Ng, bool* positive,const bool addpos = true);
+      void inline reset_component(const list_int& component);
+      void inline perform_maxflow_component(const list_int& component);
+      void inline component_relabelling(const list_int& component,
+            const int max_label, const bool force);
+      void inline gap_relabelling(const list_int& component, const int gap, const int max_label);
+      void inline component_gap(const list_int& component);
+      void inline update_capacities(const list_int& component,T* work);
+      void inline set_capacities_variables(const T* cap,const int Nv, const int Ng);
+      void inline set_capacities_groups(const list_int& component,
+            const Vector<T>& weights,const T lambda, const int Ng);
+      void inline update_capacities_aux(const int node,T* work);
+      void inline restore_capacities(const list_int& component);
+      T inline compute_thrs_project_l1(T* X, const int n, const T lambda);
 
       bool inline check_flow();
       void inline restore_capacities();
@@ -516,81 +515,81 @@ template <typename T> class MaxFlow {
       void inline set_weights(const T lambda);
       void inline set_weights(const T* weights, const T lambda);
       void inline print_graph();
-      inline void init_split_variables(SpMatrix<T>& splitted_w, const long Ng, const long Nv);
-      inline void init_split_variables_aux(const long node, long& current_counter, Vector<long>& counter_node, list_long** splitted_w,
-            const long Ng, const long Nv);
-      void inline print_component(const list_long& component);
-      void inline print_component2(const list_long& component);
+      inline void init_split_variables(SpMatrix<T>& splitted_w, const int Ng, const int Nv);
+      inline void init_split_variables_aux(const int node, int& current_counter, Vector<int>& counter_node, list_int** splitted_w,
+            const int Ng, const int Nv);
+      void inline print_component(const list_int& component);
+      void inline print_component2(const list_int& component);
       void inline print_sink();
-      void inline print_graph_aux(const long node);
-      T inline norm(const T* variables, T* work, const T* weights, const long Ng, const bool linf = true);
-      inline long nzmax() const { return _nzmax; };
-      void inline sub_gradient(const Vector<T>& input, Vector<T>& output, const Vector<T>& weights, const long Ng); 
+      void inline print_graph_aux(const int node);
+      T inline norm(const T* variables, T* work, const T* weights, const int Ng, const bool linf = true);
+      inline int nzmax() const { return _nzmax; };
+      void inline sub_gradient(const Vector<T>& input, Vector<T>& output, const Vector<T>& weights, const int Ng); 
       void inline sub_gradient_aux(const Vector<T>& input, Vector<T>& output, const Vector<T>& weights,
-            const long node, list_long& list, const long Ng); 
+            const int node, list_int& list, const int Ng); 
 
    private:
-      long _N;
-      long _s;
-      long _t;
+      int _N;
+      int _s;
+      int _t;
 
-      long* _labels;
+      int* _labels;
       T* _excess;
       T* _copyexcess;
       bool* _seen;
       bool* _active;
 
-      long* _max_num_edges;
-      long* _current_edges;
-      long* _num_edges;
-      long* _pr_node;
-      long _nzmax;
+      int* _max_num_edges;
+      int* _current_edges;
+      int* _num_edges;
+      int* _pr_node;
+      int _nzmax;
 
-      long* _children;
-      long* _reverse_address;
+      int* _children;
+      int* _reverse_address;
       T* _capacity;
       T* _copycapacity;
       T* _flow;
       T* _copyflow;
 
-      long _current_max_label;
-      list_long** _active_nodes;
-      long* _all_nodes;
+      int _current_max_label;
+      list_int** _active_nodes;
+      int* _all_nodes;
 };
 
 template <typename T>
-MaxFlow<T>::MaxFlow(const long N, const long* num_edges, const long s, const long t) {
+MaxFlow<T>::MaxFlow(const int N, const int* num_edges, const int s, const int t) {
    _N=N;
    _s=s;
    _t=t;
 
-   _labels=new long[N];
-   memset(_labels,0,N*sizeof(long));
+   _labels=new int[N];
+   memset(_labels,0,N*sizeof(int));
    _excess=new T[N];
    memset(_excess,0,N*sizeof(T));
    _excess[_s]=INFINITY;
    _seen=new bool[N];
    _active=new bool[N];
-   _num_edges=new long[N];
-   _current_edges=new long[N];
-   memset(_num_edges,0,N*sizeof(long));
-   memset(_current_edges,0,N*sizeof(long));
-   _max_num_edges=new long[N];
-   for (long i = 0; i<N; ++i) _max_num_edges[i]=num_edges[i];
-   _pr_node=new long[N+1];
+   _num_edges=new int[N];
+   _current_edges=new int[N];
+   memset(_num_edges,0,N*sizeof(int));
+   memset(_current_edges,0,N*sizeof(int));
+   _max_num_edges=new int[N];
+   for (int i = 0; i<N; ++i) _max_num_edges[i]=num_edges[i];
+   _pr_node=new int[N+1];
    _pr_node[0]=0;
-   for (long i = 1; i<=N; ++i) _pr_node[i]=_pr_node[i-1]+_max_num_edges[i-1];
+   for (int i = 1; i<=N; ++i) _pr_node[i]=_pr_node[i-1]+_max_num_edges[i-1];
    _nzmax=_pr_node[N];
-   _children= new long[_nzmax];
-   _reverse_address= new long[_nzmax];
+   _children= new int[_nzmax];
+   _reverse_address= new int[_nzmax];
    _capacity= new T[_nzmax];
    _copycapacity= new T[_nzmax];
    _flow= new T[_nzmax];
    memset(_flow,0,_nzmax*sizeof(T));
    _current_max_label=0;
-   _active_nodes = new list_long*[N+1];
-   _all_nodes= new long[N+1];
-   for (long i = 0; i<=N; ++i) _active_nodes[i]=new list_long();
+   _active_nodes = new list_int*[N+1];
+   _all_nodes= new int[N+1];
+   for (int i = 0; i<=N; ++i) _active_nodes[i]=new list_int();
 };
 
 template <typename T>
@@ -607,19 +606,19 @@ MaxFlow<T>::~MaxFlow() {
    delete[](_capacity);
    delete[](_copycapacity);
    delete[](_flow);
-   for (long i = 0; i<=_N; ++i) delete(_active_nodes[i]);
+   for (int i = 0; i<=_N; ++i) delete(_active_nodes[i]);
    delete[](_active_nodes);
    delete[](_all_nodes);
    delete[](_pr_node);
 };
 
 template <typename T>
-void inline MaxFlow<T>::add_edge(const long u, const long v, const T Cu, const T Cv) {
+void inline MaxFlow<T>::add_edge(const int u, const int v, const T Cu, const T Cv) {
    if (u != v) {
-      const long pu=_pr_node[u];
-      const long pv=_pr_node[v];
-      const long nu=_num_edges[u]+pu;
-      const long nv=_num_edges[v]+pv;
+      const int pu=_pr_node[u];
+      const int pv=_pr_node[v];
+      const int nu=_num_edges[u]+pu;
+      const int nv=_num_edges[v]+pv;
       _children[nu]=v;
       _children[nv]=u;
       _capacity[nu]=Cu;
@@ -632,22 +631,22 @@ void inline MaxFlow<T>::add_edge(const long u, const long v, const T Cu, const T
 };
 
 template <typename T>
-void inline MaxFlow<T>::discharge(const list_long& component, const long u, const long max_label) {
+void inline MaxFlow<T>::discharge(const list_int& component, const int u, const int max_label) {
 #ifdef VERBB
    cerr << "Discharge " << u << endl;
 #endif
    const T* capacity=_capacity+_pr_node[u];
    T* flow=_flow+_pr_node[u];
-   const long* children=_children+_pr_node[u];
-   const long* reverse=_reverse_address+_pr_node[u];
-   long pr=0;
-   const long curr=_current_edges[u];
-   const long nn=_num_edges[u];
+   const int* children=_children+_pr_node[u];
+   const int* reverse=_reverse_address+_pr_node[u];
+   int pr=0;
+   const int curr=_current_edges[u];
+   const int nn=_num_edges[u];
 
-   long m = max_label;
+   int m = max_label;
    while (_excess[u] > EPSILON_MAXFLOW && pr < nn) {
-      const long num_c=(pr+curr) % nn;
-      const long v=children[num_c];
+      const int num_c=(pr+curr) % nn;
+      const int v=children[num_c];
       if (capacity[num_c] > flow[num_c]) {
          if (_labels[u] > _labels[v]) {
             // push
@@ -699,13 +698,13 @@ void inline MaxFlow<T>::discharge(const list_long& component, const long u, cons
 
 template <typename T>
 void inline MaxFlow<T>::perform_maxflow() {
-   long counter=1;
+   int counter=1;
    while (_current_max_label > 0 || !_active_nodes[0]->empty()) {
       if (counter % 2*_N == 0) this->global_relabelling();
       if (_active_nodes[_current_max_label]->empty()) {
          _current_max_label--;
       } else {
-         const long current_node=_active_nodes[_current_max_label]->front();
+         const int current_node=_active_nodes[_current_max_label]->front();
          _active_nodes[_current_max_label]->pop_front();
          _active[current_node]=false;
          if (_excess[current_node] > EPSILON_MAXFLOW) {
@@ -727,7 +726,7 @@ void inline MaxFlow<T>::perform_maxflow() {
 template <typename T>
 void inline MaxFlow<T>::print_excess() {
    cerr << "Excess: " << endl;
-   for (long i= 0; i<_N; ++i) {
+   for (int i= 0; i<_N; ++i) {
       cerr << _excess[i] << " ";
    }
    cerr << endl;
@@ -737,7 +736,7 @@ void inline MaxFlow<T>::print_excess() {
 
 template <typename T>
 void inline MaxFlow<T>::deactivate() {
-   for (long i= 0; i<_N; ++i) {
+   for (int i= 0; i<_N; ++i) {
       _seen[i]=true;
       _active[i]=false;
       _labels[i]=_N;
@@ -745,8 +744,8 @@ void inline MaxFlow<T>::deactivate() {
 };
 
 template <typename T>
-void inline MaxFlow<T>::deactivate(const list_long& component) {
-   for (const_iterator_long it=component.begin();
+void inline MaxFlow<T>::deactivate(const list_int& component) {
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       _seen[*it]=true;
       _active[*it]=false;
@@ -758,7 +757,7 @@ void inline MaxFlow<T>::deactivate(const list_long& component) {
 template <typename T>
 void inline MaxFlow<T>::print_labels() {
    cerr << "Labels: " << endl;
-   for (long i= 0; i<_N; ++i)
+   for (int i= 0; i<_N; ++i)
       cerr << _labels[i] << " ";
    cerr << endl;
 
@@ -769,69 +768,69 @@ void inline MaxFlow<T>::print_graph() {
    cerr << "Number of nodes: " << _N << endl;
    cerr << "Source: " << _s << endl;
    cerr << "Sink: " << _t << endl;
-   for (long i = 0; i<_N; ++i) _seen[i]=false;
+   for (int i = 0; i<_N; ++i) _seen[i]=false;
    this->print_graph_aux(_s);
 };
 
 template <typename T>
-void inline MaxFlow<T>::init_split_variables(SpMatrix<T>& splitted_w, const long Ng, const long Nv) {
-   for (long i = 0; i<_N; ++i) _seen[i]=false;
-   Vector<long> count(Ng);
-   long current = 0;
-   list_long** tab_list = new list_long*[Ng];
-   for (long i = 0; i<Ng; ++i) tab_list[i] = new list_long();
+void inline MaxFlow<T>::init_split_variables(SpMatrix<T>& splitted_w, const int Ng, const int Nv) {
+   for (int i = 0; i<_N; ++i) _seen[i]=false;
+   Vector<int> count(Ng);
+   int current = 0;
+   list_int** tab_list = new list_int*[Ng];
+   for (int i = 0; i<Ng; ++i) tab_list[i] = new list_int();
    this->init_split_variables_aux(_s,current,count,tab_list,Ng,Nv);
-   long nzmax = 0;
-   for (long i = 0; i<Ng; ++i) {
+   int nzmax = 0;
+   for (int i = 0; i<Ng; ++i) {
       nzmax += tab_list[i]->size();      
    }
    /// assumes memory is not an issue
    splitted_w.resize(Nv,Ng,nzmax);
-   long* pB = splitted_w.pB();
-   long* r = splitted_w.r();
+   INTM* pB = splitted_w.pB();
+   INTM* r = splitted_w.r();
    T* v = splitted_w.v();
    pB[0]=0;
-   long counter=0;
-   for (long i = 0; i<Ng; ++i) {
+   int counter=0;
+   for (int i = 0; i<Ng; ++i) {
       pB[i+1]=pB[i]+tab_list[i]->size();
-      for (const_iterator_long it = tab_list[i]->begin(); it != tab_list[i]->end(); ++it) {
+      for (const_iterator_int it = tab_list[i]->begin(); it != tab_list[i]->end(); ++it) {
          r[counter]= (*it);
          v[counter++]=0;
       }
    }
-   for (long i = 0; i<Ng; ++i) delete(tab_list[i]);
+   for (int i = 0; i<Ng; ++i) delete(tab_list[i]);
    delete[](tab_list);
 };
 
 template <typename T>
 void inline MaxFlow<T>::save_capacities() {
-   for (long i = 0; i<_nzmax; ++i) _copycapacity[i]=_capacity[i];
+   for (int i = 0; i<_nzmax; ++i) _copycapacity[i]=_capacity[i];
 }
 template <typename T>
 void inline MaxFlow<T>::save_flow() {
    _copyflow=new T[_nzmax];
-   for (long i = 0; i<_nzmax; ++i) _copyflow[i]=_flow[i];
+   for (int i = 0; i<_nzmax; ++i) _copyflow[i]=_flow[i];
    _copyexcess=new T[_N];
-   for (long i = 0; i<_N; ++i) _copyexcess[i]=_excess[i];
+   for (int i = 0; i<_N; ++i) _copyexcess[i]=_excess[i];
 }
 template <typename T>
 void inline MaxFlow<T>::restore_flow() {
-   for (long i = 0; i<_nzmax; ++i) _flow[i]=_copyflow[i];
+   for (int i = 0; i<_nzmax; ++i) _flow[i]=_copyflow[i];
    delete[](_copyflow);
-   for (long i = 0; i<_N; ++i) _excess[i]=_copyexcess[i];
+   for (int i = 0; i<_N; ++i) _excess[i]=_copyexcess[i];
    delete[](_copyexcess);
 }
 
 
 template <typename T>
 void inline MaxFlow<T>::restore_capacities() {
-   for (long i = 0; i<_nzmax; ++i) _capacity[i]=_copycapacity[i];
+   for (int i = 0; i<_nzmax; ++i) _capacity[i]=_copycapacity[i];
 }
 
 template <typename T>
 bool inline MaxFlow<T>::check_flow() {
-   list_long tmp;
-   for (long i = 0; i<_N; ++i) _seen[i]=false;
+   list_int tmp;
+   for (int i = 0; i<_N; ++i) _seen[i]=false;
    tmp.push_back(_s);
    _seen[_s]=true;
 
@@ -839,15 +838,15 @@ bool inline MaxFlow<T>::check_flow() {
    T total_excess=0;
    T total_excess2=0;
    while (!tmp.empty()) {
-      const long node = tmp.front();
-      const long ind = _pr_node[node];
+      const int node = tmp.front();
+      const int ind = _pr_node[node];
       tmp.pop_front();
       if (_excess[node] < 0) {
          cerr << "negative excess: " <<_excess[node]  << " on node " << node << endl;
          correct=false;
       }
       T totalflow=0;
-      for (long i = 0; i<_num_edges[node]; ++i) {
+      for (int i = 0; i<_num_edges[node]; ++i) {
          totalflow+=_flow[ind+i];
          if (_flow[ind+i] > _capacity[ind+i]) {
             correct=false;
@@ -877,14 +876,14 @@ void inline MaxFlow<T>::reset_flow() {
 
 template <typename T>
 void inline MaxFlow<T>::scale_flow(const T scal) {
-   for (long i = 0; i<_N; ++i) _excess[i]*=scal;
-   for (long i = 0; i<_nzmax; ++i) _flow[i]*=scal;
+   for (int i = 0; i<_N; ++i) _excess[i]*=scal;
+   for (int i = 0; i<_nzmax; ++i) _flow[i]*=scal;
    _excess[_s]=INFINITY;
 }
 
 template <typename T>      
 void inline MaxFlow<T>::set_weights(const T lambda) {
-   for (long j = 0; j<_num_edges[_s]; ++j) {
+   for (int j = 0; j<_num_edges[_s]; ++j) {
       _capacity[_pr_node[_s]+j]=lambda;
    }
 };
@@ -892,7 +891,7 @@ void inline MaxFlow<T>::set_weights(const T lambda) {
 template <typename T>      
 void inline MaxFlow<T>::set_weights(const T* weights, 
       const T lambda) {
-   for (long j = 0; j<_num_edges[_s]; ++j) {
+   for (int j = 0; j<_num_edges[_s]; ++j) {
       _capacity[_pr_node[_s]+j]=lambda*weights[j];
    }
 };
@@ -900,34 +899,34 @@ void inline MaxFlow<T>::set_weights(const T* weights,
 template <typename T>
 void inline MaxFlow<T>::print_sink() {
    cerr << "Flow: ";
-   for (long j = 0; j<_num_edges[_t]; ++j) {
+   for (int j = 0; j<_num_edges[_t]; ++j) {
       cerr << _flow[_reverse_address[_pr_node[_t]+j]] << " ";
    }
    cerr << endl;
    cerr << "Capacity: ";
-   for (long j = 0; j<_num_edges[_t]; ++j) {
+   for (int j = 0; j<_num_edges[_t]; ++j) {
       cerr << _capacity[_reverse_address[_pr_node[_t]+j]] << " ";
    }
    cerr << endl;
 };
 
 template <typename T>
-void inline MaxFlow<T>::print_component(const list_long& component) {
-   for (const_iterator_long it=component.begin();
+void inline MaxFlow<T>::print_component(const list_int& component) {
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       cerr << "Node: " << *it << endl;
       cerr << "Children: ";
-      for (long j = 0; j<_num_edges[*it]; ++j) {
+      for (int j = 0; j<_num_edges[*it]; ++j) {
          cerr << _children[_pr_node[*it]+j] << " ";
       }
       cerr << endl;
       cerr << "Flow: ";
-      for (long j = 0; j<_num_edges[*it]; ++j) {
+      for (int j = 0; j<_num_edges[*it]; ++j) {
          cerr << _flow[_pr_node[*it]+j] << " ";
       }
       cerr << endl;
       cerr << "Capacity: ";
-      for (long j = 0; j<_num_edges[*it]; ++j) {
+      for (int j = 0; j<_num_edges[*it]; ++j) {
          cerr << _capacity[_pr_node[*it]+j] << " ";
       }
       cerr << endl;
@@ -936,17 +935,17 @@ void inline MaxFlow<T>::print_component(const list_long& component) {
 
 template <typename T>
 void inline MaxFlow<T>::sub_gradient_aux(const Vector<T>& input, Vector<T>& output, const Vector<T>& weights,
-      const long node, list_long& variables, const long Ng) {
+      const int node, list_int& variables, const int Ng) {
    _seen[node]=true;
-   const long ind = _pr_node[node];
-   const long* children = _children+ind;
+   const int ind = _pr_node[node];
+   const int* children = _children+ind;
    const T* capacity = _capacity+ind;
-   for (long i = 0; i<_num_edges[node]; ++i) {
-      const long child=children[i];
+   for (int i = 0; i<_num_edges[node]; ++i) {
+      const int child=children[i];
       if (child != _s && child != _t) {
          if (child < Ng) {
             if (capacity[i] > 0 && !_seen[child]) {
-               list_long new_var;
+               list_int new_var;
                this->sub_gradient_aux(input,output,weights,child,new_var,Ng);
                variables.fusion(new_var);
             }
@@ -956,34 +955,34 @@ void inline MaxFlow<T>::sub_gradient_aux(const Vector<T>& input, Vector<T>& outp
       }  
    }
    T max_abs = 0;
-   for (const_iterator_long it = variables.begin(); it != variables.end(); ++it) {
+   for (const_iterator_int it = variables.begin(); it != variables.end(); ++it) {
       if (abs<T>(input[*it-Ng]) > max_abs) max_abs=abs<T>(input[*it-Ng]);
    }
    if (max_abs < 1e-15)
       return;
-   list_long var_max;
-   for (const_iterator_long it = variables.begin(); it != variables.end(); ++it) {
+   list_int var_max;
+   for (const_iterator_int it = variables.begin(); it != variables.end(); ++it) {
       if (abs<T>(abs<T>(input[*it-Ng])-max_abs) < 1e-15)
          var_max.push_back(*it-Ng);
    }
    T scal = weights[node]/var_max.size();
-   for (const_iterator_long it = var_max.begin(); it != var_max.end(); ++it) {
+   for (const_iterator_int it = var_max.begin(); it != var_max.end(); ++it) {
       output[*it] += input[*it] > 0 ? scal : -scal;
    }
 };
 
 template <typename T>
-void inline MaxFlow<T>::sub_gradient(const Vector<T>& input, Vector<T>& output, const Vector<T>& weights, const long Ng) {
+void inline MaxFlow<T>::sub_gradient(const Vector<T>& input, Vector<T>& output, const Vector<T>& weights, const int Ng) {
    output.setZeros();
-   list_long tmp;
-   for (long i = 0; i<_N; ++i) {
+   list_int tmp;
+   for (int i = 0; i<_N; ++i) {
       _seen[i]=false;
       if (i < Ng) tmp.push_back(i);
    }
    while (!tmp.empty()) {
-      const long node=tmp.front();
+      const int node=tmp.front();
       if (!_seen[node]) {
-         list_long variables;
+         list_int variables;
          this->sub_gradient_aux(input,output,weights,node,variables,Ng);
       }
       tmp.pop_front();
@@ -991,16 +990,16 @@ void inline MaxFlow<T>::sub_gradient(const Vector<T>& input, Vector<T>& output, 
 };
 
 template <typename T>
-T inline MaxFlow<T>::norm(const T* variables, T* work, const T* weights, const long Ng, const bool linf) {
-   list_long tmp;
-   for (long i = 0; i<_N; ++i) {
+T inline MaxFlow<T>::norm(const T* variables, T* work, const T* weights, const int Ng, const bool linf) {
+   list_int tmp;
+   for (int i = 0; i<_N; ++i) {
       _seen[i]=false;
       work[i]=0;
       if (i < Ng) tmp.push_back(i);
    }
 
    while (!tmp.empty()) {
-      const long node = tmp.front();
+      const int node = tmp.front();
       if (_seen[node]) {
          tmp.pop_front();
       } else {
@@ -1009,12 +1008,12 @@ T inline MaxFlow<T>::norm(const T* variables, T* work, const T* weights, const l
             _seen[node]=true;
             tmp.pop_front();
          } else {
-            const long ind = _pr_node[node];
-            const long* children = _children+ind;
+            const int ind = _pr_node[node];
+            const int* children = _children+ind;
             const T* capacity = _capacity+ind;
             bool all_child=true;
-            for (long i = 0; i<_num_edges[node]; ++i) {
-               const long child=children[i];
+            for (int i = 0; i<_num_edges[node]; ++i) {
+               const int child=children[i];
                if (child != _s && child != _t && capacity[i] > 0 && !_seen[child]) {
                   all_child=false;
                   tmp.push_front(children[i]);
@@ -1022,8 +1021,8 @@ T inline MaxFlow<T>::norm(const T* variables, T* work, const T* weights, const l
             }
             if (all_child) {
                T max_var=0;
-               for (long i = 0; i<_num_edges[node]; ++i) {
-                  const long child=children[i];
+               for (int i = 0; i<_num_edges[node]; ++i) {
+                  const int child=children[i];
                   if (child != _s && child != _t && capacity[i] > 0) {
                      max_var = linf ? MAX(max_var,work[child]) : max_var + work[child];
                   }
@@ -1036,11 +1035,11 @@ T inline MaxFlow<T>::norm(const T* variables, T* work, const T* weights, const l
    }
    T sum=0;
    if (linf) {
-      for (long i = 0; i<Ng; ++i) {
+      for (int i = 0; i<Ng; ++i) {
          sum+=weights[i]*work[i];
       }
    } else {
-      for (long i = 0; i<Ng; ++i) {
+      for (int i = 0; i<Ng; ++i) {
          sum+=weights[i]*sqrt(work[i]);
       }
    }
@@ -1048,22 +1047,22 @@ T inline MaxFlow<T>::norm(const T* variables, T* work, const T* weights, const l
 };
 
 template <typename T>
-void inline MaxFlow<T>::print_component2(const list_long& component) {
-   cerr << "*********Prlong component***********" << endl;
-   for (const_iterator_long it=component.begin();
+void inline MaxFlow<T>::print_component2(const list_int& component) {
+   cerr << "*********Print component***********" << endl;
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       cerr << *it <<  " ";
    }
    cerr << endl;
    cerr << "Excess" << endl;
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       cerr << _excess[*it] <<  " ";
    }
    cerr << "  " << _excess[_s] << " " << _excess[_t];
    cerr << endl;
    cerr << "Labels" << endl;
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       cerr << _labels[*it] <<  " ";
    }
@@ -1075,48 +1074,48 @@ void inline MaxFlow<T>::print_component2(const list_long& component) {
 
 
 template <typename T>
-void inline MaxFlow<T>::print_graph_aux(const long i) {
+void inline MaxFlow<T>::print_graph_aux(const int i) {
    if (_seen[i]) return;
    cerr << endl;
    cerr << "Node: " << i << endl;
    _seen[i]=true;
    if (i == _t) return;
    cerr << "Children: ";
-   for (long j = 0; j<_num_edges[i]; ++j) {
+   for (int j = 0; j<_num_edges[i]; ++j) {
       cerr << _children[_pr_node[i]+j] << " ";
    }
    cerr << endl;
    cerr << "Capacity: ";
-   for (long j = 0; j<_num_edges[i]; ++j) {
+   for (int j = 0; j<_num_edges[i]; ++j) {
       cerr << _capacity[_pr_node[i]+j] << " ";
    }
    cerr << endl;
    cerr << "Flow: ";
-   for (long j = 0; j<_num_edges[i]; ++j) {
+   for (int j = 0; j<_num_edges[i]; ++j) {
       cerr << _flow[_pr_node[i]+j] << " ";
    }
    cerr << endl;
    cerr << "Rverse Flow: ";
-   for (long j = 0; j<_num_edges[i]; ++j) {
+   for (int j = 0; j<_num_edges[i]; ++j) {
       cerr << _flow[_reverse_address[_pr_node[i]+j]] << " ";
    }
    cerr << endl;
 
-   for (long j = 0; j<_num_edges[i]; ++j) {
+   for (int j = 0; j<_num_edges[i]; ++j) {
       this->print_graph_aux(_children[_pr_node[i]+j]);
    }
 };
 
 template <typename T>
-inline void MaxFlow<T>::init_split_variables_aux(const long i,long& current,
-      Vector<long>& count, list_long** splitted_w, const long Ng, const long Nv) {
+inline void MaxFlow<T>::init_split_variables_aux(const int i,int& current,
+      Vector<int>& count, list_int** splitted_w, const int Ng, const int Nv) {
    if (_seen[i]  || (i >= Ng && i != _s)) return;
    _seen[i]=true;
-   const long ind = _pr_node[i];
-   const long* children = _children+ind;
+   const int ind = _pr_node[i];
+   const int* children = _children+ind;
    const T* capacity = _capacity+ind;
 
-   for (long j = 0; j<_num_edges[i]; ++j) {
+   for (int j = 0; j<_num_edges[i]; ++j) {
       if (capacity[j] > 0) {
          this->init_split_variables_aux(children[j],current,count,splitted_w,Ng,Nv);
       }
@@ -1125,19 +1124,19 @@ inline void MaxFlow<T>::init_split_variables_aux(const long i,long& current,
       Vector<T> tmp(Nv);
       tmp.setZeros();
       /// rempli colonne current de splitted_w avec les enfants + propres variables
-      for (long j = 0; j<_num_edges[i]; ++j) {
-         const long child=children[j];
+      for (int j = 0; j<_num_edges[i]; ++j) {
+         const int child=children[j];
          if (child != _s && child != _t && capacity[j] > 0) {
             if (child >= Ng) {
                tmp[child-Ng]=1.0;
             } else {
-               for (const_iterator_long it = splitted_w[count[child]]->begin();
+               for (const_iterator_int it = splitted_w[count[child]]->begin();
                      it != splitted_w[count[child]]->end(); ++it)
                   tmp[*it]++;
             }
          }
       }
-      for (long j = 0; j<tmp.n(); ++j) {
+      for (int j = 0; j<tmp.n(); ++j) {
          if (tmp[j]) splitted_w[current]->push_back(j);
       }
       count[i]=current;
@@ -1148,21 +1147,21 @@ inline void MaxFlow<T>::init_split_variables_aux(const long i,long& current,
 template <typename T>
 void inline MaxFlow<T>::global_relabelling() {
    // global relabelling by reverse breadth first search
-   list_long nodes;
-   for (long i = 0; i<_N; ++i) _labels[i]=_N;
-   for (long i = 0; i<_N; ++i) _seen[i]=false;
+   list_int nodes;
+   for (int i = 0; i<_N; ++i) _labels[i]=_N;
+   for (int i = 0; i<_N; ++i) _seen[i]=false;
    nodes.push_back(_t);
    _seen[_t]=true;
    _labels[_t]=0;
    while (!nodes.empty()) {
-      const long node=nodes.front();
-      const long* children=_children+_pr_node[node];
-      const long* reverse=_reverse_address+_pr_node[node];
-      for (long i = 0; i<_num_edges[node]; ++i) {
-         const long child=children[i];
+      const int node=nodes.front();
+      const int* children=_children+_pr_node[node];
+      const int* reverse=_reverse_address+_pr_node[node];
+      for (int i = 0; i<_num_edges[node]; ++i) {
+         const int child=children[i];
          if (!_seen[child] && _capacity[reverse[i]] > _flow[reverse[i]]) {
             _seen[child]=true;
-            const long new_label=_labels[node]+1;
+            const int new_label=_labels[node]+1;
             if (new_label != _labels[child] && _excess[child] > EPSILON_MAXFLOW) {
                _active_nodes[new_label]->push_back(child);
                _active[child]=true;
@@ -1180,25 +1179,25 @@ void inline MaxFlow<T>::global_relabelling() {
 
 template <typename T>      
 void inline MaxFlow<T>::extractConnexComponents(
-      std::list< list_long* >& connex_components) {
+      std::list< list_int* >& connex_components) {
    /// extract all the connex components for the initialization
-   for (long i = 0; i<_N; ++i) _seen[i]=false;
+   for (int i = 0; i<_N; ++i) _seen[i]=false;
    _seen[_s]=true;
    _seen[_t]=true;
-   list_long tmp;
-   for (long i = 0; i<_N; ++i) {
+   list_int tmp;
+   for (int i = 0; i<_N; ++i) {
       if (!_seen[i]) {
          // create a component
-         list_long* component = new list_long();
+         list_int* component = new list_int();
          tmp.push_back(i);
          while (!tmp.empty()) {
-            long node=tmp.front();
+            int node=tmp.front();
             _seen[node]=true;
             component->push_back(node);
             tmp.pop_front();
-            const long* children=_children+_pr_node[node];
-            for (long i = 0; i<_num_edges[node]; ++i) {
-               const long child=children[i];
+            const int* children=_children+_pr_node[node];
+            for (int i = 0; i<_num_edges[node]; ++i) {
+               const int child=children[i];
                if (!_seen[child]) {
                   _seen[child]=true;
                   tmp.push_back(child);
@@ -1211,13 +1210,13 @@ void inline MaxFlow<T>::extractConnexComponents(
 };
 
 template <typename T>
-T inline MaxFlow<T>::project_weighted(const list_long& component, 
+T inline MaxFlow<T>::project_weighted(const list_int& component, 
       const T* variables_in,T* variables_out,T* work, const T* weights,
-      const long Ng) {
+      const int Ng) {
    T lambda=0;
-   long num_var=0;
+   int num_var=0;
    Vector<T> ww(component.size());
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       if (*it < Ng) {
          lambda+=_capacity[_reverse_address[_pr_node[*it]]];
@@ -1231,12 +1230,12 @@ T inline MaxFlow<T>::project_weighted(const list_long& component,
    Vector<T> in(work,num_var);
    in.l1project_weighted(out,ww,lambda,true);
    T max_flow=0;
-   long count=0;
-   for (const_iterator_long it=component.begin();
+   int count=0;
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
-      const long ind = _pr_node[*it];
+      const int ind = _pr_node[*it];
       if (*it >= Ng) {
-         const long nv=*it-Ng;
+         const int nv=*it-Ng;
          variables_out[nv]=out[count];
          const T diff = (variables_in[nv]-variables_out[nv])*ww[count++];
          max_flow+=diff;
@@ -1254,16 +1253,16 @@ T inline MaxFlow<T>::project_weighted(const list_long& component,
 };
 
 template <typename T>
-T inline MaxFlow<T>::project(const list_long& component, 
+T inline MaxFlow<T>::project(const list_int& component, 
       const T* variables_in,T* variables_out, T* work,
-      const long Ng) {
+      const int Ng) {
    /// project on the component, project, update the capacity,
    /// update the preflow,  update variables_out,
    /// update labels 
    /// return the maximum value of the potential flow
    T lambda=0;
-   long num_var=0;
-   for (const_iterator_long it=component.begin();
+   int num_var=0;
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       if (*it < Ng) {
          lambda+=_capacity[_reverse_address[_pr_node[*it]]];
@@ -1274,11 +1273,11 @@ T inline MaxFlow<T>::project(const list_long& component,
    //  PRINT_F(lambda)
    T max_flow=0;
    const T thrs=this->compute_thrs_project_l1(work,num_var,lambda);
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
-      const long ind = _pr_node[*it];
+      const int ind = _pr_node[*it];
       if (*it >= Ng) {
-         const long nv=*it-Ng;
+         const int nv=*it-Ng;
          variables_out[nv]=MIN(variables_in[nv],thrs);
          const T diff = variables_in[nv]-variables_out[nv];
          max_flow+=diff;
@@ -1295,19 +1294,19 @@ T inline MaxFlow<T>::project(const list_long& component,
 };
 
 template <typename T>
-T inline MaxFlow<T>::project_box(const list_long& component, 
+T inline MaxFlow<T>::project_box(const list_int& component, 
       const T* variables_in,T* variables_out,T* work, bool& fusion, 
-      const long Ng) {
-   list_long nodes;
-   list_long variables;
+      const int Ng) {
+   list_int nodes;
+   list_int variables;
    _seen[_s]=true;
    _active[_s]=false;
    T lambda=0;
-   long num_nodes=0;
-   for (const_iterator_long it=component.begin();
+   int num_nodes=0;
+   for (const_iterator_int it=component.begin();
          it !=component.end(); ++it) {
-      const long node = *it;
-      const long ind = _pr_node[node];
+      const int node = *it;
+      const int ind = _pr_node[node];
       _active[node]=true;
       _seen[node]=false;
       if (node < Ng) {
@@ -1324,13 +1323,13 @@ T inline MaxFlow<T>::project_box(const list_long& component,
    //  PRINT_F(lambda)
    fusion = num_nodes > 1;
    while (!nodes.empty()) {
-      const long node = nodes.front();
+      const int node = nodes.front();
       if (!_seen[node]) {
-         const long ind = _pr_node[node];
-         const long* childrens=_children+ind;
-         const long* reverse=_reverse_address+ind;
-         for (long& i = _all_nodes[node]; i<_num_edges[node]; ++i) {
-            const long child = childrens[i];
+         const int ind = _pr_node[node];
+         const int* childrens=_children+ind;
+         const int* reverse=_reverse_address+ind;
+         for (int& i = _all_nodes[node]; i<_num_edges[node]; ++i) {
+            const int child = childrens[i];
             if (_active[child] && !_seen[child] 
                   && _capacity[reverse[i]] > 0) {
                nodes.push_front(child);
@@ -1339,8 +1338,8 @@ T inline MaxFlow<T>::project_box(const list_long& component,
          }
          if (_all_nodes[node]==_num_edges[node]) {
             _seen[node]=true;
-            for (long i = 1; i<_num_edges[node]; ++i) {
-               const long child = childrens[i];
+            for (int i = 1; i<_num_edges[node]; ++i) {
+               const int child = childrens[i];
                if (_active[child] && _capacity[ind+i] > 0) {
                   work[child]+=work[node];
                }
@@ -1355,7 +1354,7 @@ T inline MaxFlow<T>::project_box(const list_long& component,
    T thrs = INFINITY;
    if (lambda > 0) {
       std::list<T> var;
-      for (const_iterator_long it=variables.begin();
+      for (const_iterator_int it=variables.begin();
             it !=variables.end(); ++it) {
          if (variables_in[*it-Ng] > 0) {
             var.push_back(variables_in[*it-Ng]);
@@ -1365,7 +1364,7 @@ T inline MaxFlow<T>::project_box(const list_long& component,
          }
       }
       var.sort(compare_abs<T>);
-      long num=0;
+      int num=0;
       T sum=0;
       bool br=false;
       T pivot=0;
@@ -1384,17 +1383,17 @@ T inline MaxFlow<T>::project_box(const list_long& component,
       }
       if (!br) thrs=MAX(0,num==0 ? pivot : (sum-lambda)/num);
    }
-   for (const_iterator_long it=variables.begin();
+   for (const_iterator_int it=variables.begin();
          it !=variables.end(); ++it) {
       variables_out[*it-Ng] = MIN(MAX(thrs,variables_in[*it-Ng]-work[*it]),
             variables_in[*it-Ng]);
    }
    T maxflow=0;
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
-      const long ind = _pr_node[*it];
+      const int ind = _pr_node[*it];
       if (*it >= Ng) {
-         const long nv=*it-Ng;
+         const int nv=*it-Ng;
          const T diff = variables_in[nv]-variables_out[nv];
          maxflow+=diff;
          _capacity[ind]=diff;
@@ -1411,10 +1410,10 @@ T inline MaxFlow<T>::project_box(const list_long& component,
 
 
 template <typename T>
-T inline MaxFlow<T>::flow_component(const list_long& component, const long Ng) {
+T inline MaxFlow<T>::flow_component(const list_int& component, const int Ng) {
    /// do relabelling and update list of active nodes
    T max_flow=0;
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       if (*it >= Ng) {
          max_flow+=_flow[_pr_node[*it]];
@@ -1425,42 +1424,42 @@ T inline MaxFlow<T>::flow_component(const list_long& component, const long Ng) {
 };
 
 /*template <typename T>
-  bool inline MaxFlow<T>::splitComponent2(const list_long& component,
-  std::list< list_long* >& connex_components,const long Ng, bool* positive, const bool addpos) {
+  bool inline MaxFlow<T>::splitComponent2(const list_int& component,
+  std::list< list_int* >& connex_components,const int Ng, bool* positive, const bool addpos) {
 
   }*/
 
 template <typename T>
-bool inline MaxFlow<T>::splitComponent(const list_long& component,
-      std::list< list_long* >& connex_components,const long Ng, bool* positive, const bool addpos) {
+bool inline MaxFlow<T>::splitComponent(const list_int& component,
+      std::list< list_int* >& connex_components,const int Ng, bool* positive, const bool addpos) {
    /// cut the component into connex components, and add them to connex_components
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       _seen[*it]=false;
       positive[*it]=false;
    }
-   long num_comp=0;
+   int num_comp=0;
    _seen[_s]=true;
    _seen[_t]=true;
    positive[_s]=true;
    positive[_t]=true;
-   list_long tmp;
+   list_int tmp;
    /// make the "positive part of the graph"
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       if (!positive[*it] && _excess[*it] > EPSILON_MAXFLOW) {
          /// start new component, track from where the excess can come
          tmp.push_back(*it);
          positive[*it]=true;
          while (!tmp.empty()) {
-            long node=tmp.front();
+            int node=tmp.front();
             tmp.pop_front();
-            const long ind=_pr_node[node];
-            const long* children=_children+ind;
+            const int ind=_pr_node[node];
+            const int* children=_children+ind;
             const T* flow=_flow+ind;
             const T* capacity=_capacity+ind;
-            for (long i = 0; i<_num_edges[node]; ++i) {
-               const long child=children[i];
+            for (int i = 0; i<_num_edges[node]; ++i) {
+               const int child=children[i];
                if (!_seen[child] && !positive[child] && (flow[i] < capacity[i]-EPSILON_MAXFLOW)) {
                   positive[child]=true;
                   tmp.push_back(child);
@@ -1472,14 +1471,14 @@ bool inline MaxFlow<T>::splitComponent(const list_long& component,
    /// update from the source
    /*tmp.push_back(_s);
      while (!tmp.empty()) {
-     long node=tmp.front();
+     int node=tmp.front();
      tmp.pop_front();
-     const long ind=_pr_node[node];
-     const long* children=_children+ind;
+     const int ind=_pr_node[node];
+     const int* children=_children+ind;
      const T* flow=_flow+ind;
      const T* capacity=_capacity+ind;
-     for (long i = 0; i<_num_edges[node]; ++i) {
-     const long child=children[i];
+     for (int i = 0; i<_num_edges[node]; ++i) {
+     const int child=children[i];
      if (!_seen[child] && !positive[child] && (flow[i] < capacity[i]-EPSILON_MAXFLOW)) {
      positive[child]=true;
      tmp.push_back(child);
@@ -1488,21 +1487,21 @@ bool inline MaxFlow<T>::splitComponent(const list_long& component,
      }*/
 
    /// extract the connex components of the positive part
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       if (positive[*it] && !_seen[*it]) {
-         list_long* new_component = new list_long();
+         list_int* new_component = new list_int();
          /// start new component, track from where the excess can come
          tmp.push_back(*it);
          _seen[*it]=true;
          while (!tmp.empty()) {
-            long node=tmp.front();
+            int node=tmp.front();
             new_component->push_back(node);
             tmp.pop_front();
-            const long ind=_pr_node[node];
-            const long* children=_children+ind;
-            for (long i = 0; i<_num_edges[node]; ++i) {
-               const long child=children[i];
+            const int ind=_pr_node[node];
+            const int* children=_children+ind;
+            for (int i = 0; i<_num_edges[node]; ++i) {
+               const int child=children[i];
                if (!positive[child] && child != _t) {
                   _capacity[ind+i]=_capacity[ind+i] > 0 ? -0.5 : 0;
                }
@@ -1521,21 +1520,21 @@ bool inline MaxFlow<T>::splitComponent(const list_long& component,
       }
    }
    /// extract the connex components of the negative part
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       if (!positive[*it] && !_seen[*it]) {
-         list_long* new_component = new list_long();
+         list_int* new_component = new list_int();
          /// start new component, track from where the excess can come
          tmp.push_back(*it);
          _seen[*it]=true;
          while (!tmp.empty()) {
-            long node=tmp.front();
+            int node=tmp.front();
             new_component->push_back(node);
             tmp.pop_front();
-            const long ind=_pr_node[node];
-            const long* children=_children+ind;
-            for (long i = 0; i<_num_edges[node]; ++i) {
-               const long child=children[i];
+            const int ind=_pr_node[node];
+            const int* children=_children+ind;
+            for (int i = 0; i<_num_edges[node]; ++i) {
+               const int child=children[i];
                if (positive[child] && child != _t) {
                   //_capacity[ind+i]=-0.5;
                   _capacity[ind+i]=_capacity[ind+i] > 0 ? -0.5 : 0;
@@ -1551,7 +1550,7 @@ bool inline MaxFlow<T>::splitComponent(const list_long& component,
       }
    }
    if (num_comp == 1 && connex_components.size() != 0) {
-      list_long* comp = connex_components.back();
+      list_int* comp = connex_components.back();
       delete(comp);
       connex_components.pop_back();
    }
@@ -1560,12 +1559,12 @@ bool inline MaxFlow<T>::splitComponent(const list_long& component,
 };
 
 template <typename T>
-void inline MaxFlow<T>::reset_component(const list_long& component) {
-   for (const_iterator_long it=component.begin();
+void inline MaxFlow<T>::reset_component(const list_int& component) {
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
-      const long ind = _pr_node[*it];
+      const int ind = _pr_node[*it];
       _excess[*it]=0;
-      for (long i = 0; i<_num_edges[*it]; ++i) {
+      for (int i = 0; i<_num_edges[*it]; ++i) {
          _flow[i+ind]=0;
          _flow[_reverse_address[i+ind]]=0;
       }
@@ -1573,10 +1572,10 @@ void inline MaxFlow<T>::reset_component(const list_long& component) {
 };
 
 template <typename T>
-void inline MaxFlow<T>::perform_maxflow_component(const list_long& component) {
+void inline MaxFlow<T>::perform_maxflow_component(const list_int& component) {
    tglobal3.start();
-   long size_component=component.size();
-   const long max_label=size_component+2;
+   int size_component=component.size();
+   const int max_label=size_component+2;
    /// discharge the source and relabel
    this->component_relabelling(component,max_label,true);
 #ifdef VERBB
@@ -1586,7 +1585,7 @@ void inline MaxFlow<T>::perform_maxflow_component(const list_long& component) {
    stop();
 #endif
    /// perform max flow
-   long counter=1;
+   int counter=1;
 
 
    while (_current_max_label > 0 || !_active_nodes[0]->empty()) { 
@@ -1604,7 +1603,7 @@ void inline MaxFlow<T>::perform_maxflow_component(const list_long& component) {
             cerr << "current max label decreased to " << _current_max_label << endl;
 #endif
          } else {
-            const long current_node=_active_nodes[_current_max_label]->front();
+            const int current_node=_active_nodes[_current_max_label]->front();
             _active_nodes[_current_max_label]->pop_front();
             _active[current_node]=false;
             if (_excess[current_node] > EPSILON_MAXFLOW) {
@@ -1632,38 +1631,38 @@ void inline MaxFlow<T>::perform_maxflow_component(const list_long& component) {
 };
 
 template <typename T>
-void inline MaxFlow<T>::gap_relabelling(const list_long& component, const long gap, const long max_label) {
+void inline MaxFlow<T>::gap_relabelling(const list_int& component, const int gap, const int max_label) {
 #ifdef VERBB
    cerr << "Gap relabelling " << gap << endl;
 #endif
    if (tglobal2.getElapsed() > 0.1*tglobal3.getElapsed()) return;
    tglobal2.start();
    num_gap_relabels++;
-   for (const_iterator_long it = component.begin(); it != component.end(); ++it) {
+   for (const_iterator_int it = component.begin(); it != component.end(); ++it) {
       if (_labels[*it] > gap) {
          _labels[*it]=max_label;
       }
    }
-   for (long i = gap; i<max_label; ++i) {
+   for (int i = gap; i<max_label; ++i) {
       _all_nodes[i]=0;
    }
    tglobal2.stop();
 };
 
 template <typename T>
-void inline MaxFlow<T>::component_relabelling(const list_long& component,
-      const long max_label, const bool force) {
+void inline MaxFlow<T>::component_relabelling(const list_int& component,
+      const int max_label, const bool force) {
    tglobal1.start();
    if (!force && (tglobal1.getElapsed() > 0.1*tglobal3.getElapsed())) return;
-   for (long i = 0; i<=component.size(); ++i)
+   for (int i = 0; i<=component.size(); ++i)
       _active_nodes[i]->clear();
    if (gap_heuristic)
-      for (long i = 0; i<=component.size(); ++i)
+      for (int i = 0; i<=component.size(); ++i)
          _all_nodes[i]=0;
    _current_max_label=0;
    num_global_relabels++;
    /// relabel component, with warm restart
-   list_long nodes;
+   list_int nodes;
    _labels[_t]=0;
    _all_nodes[0]++;
    _labels[_s]=max_label;
@@ -1674,10 +1673,10 @@ void inline MaxFlow<T>::component_relabelling(const list_long& component,
    //  _seen[_s]=false;
    //  _active[_s]=true;
 
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
-      const long ind = _pr_node[*it];
-      const long first_child=_children[ind];
+      const int ind = _pr_node[*it];
+      const int first_child=_children[ind];
       if (first_child==_t && _flow[ind] < _capacity[ind]) {
          _labels[*it]=1;
          nodes.push_back(*it);
@@ -1706,14 +1705,14 @@ void inline MaxFlow<T>::component_relabelling(const list_long& component,
       }
    }
    while (!nodes.empty()) {
-      const long node=nodes.front();
-      const long* children=_children+_pr_node[node];
-      const long* reverse=_reverse_address+_pr_node[node];
-      for (long i = 0; i<_num_edges[node]; ++i) {
-         const long child=children[i];
+      const int node=nodes.front();
+      const int* children=_children+_pr_node[node];
+      const int* reverse=_reverse_address+_pr_node[node];
+      for (int i = 0; i<_num_edges[node]; ++i) {
+         const int child=children[i];
          if (!_seen[child] && _capacity[reverse[i]] > _flow[reverse[i]]) {
             _seen[child]=true;
-            const long new_label=_labels[node]+1;
+            const int new_label=_labels[node]+1;
             if (new_label != _labels[child] && _excess[child] > EPSILON_MAXFLOW) {
                _active_nodes[new_label]->push_back(child);
                _active[child]=true;
@@ -1736,12 +1735,12 @@ void inline MaxFlow<T>::component_relabelling(const list_long& component,
 };
 
 template <typename T>
-void inline MaxFlow<T>::update_capacities(const list_long& component, T* work) {
-   list_long comp_nodes;
-   for (const_iterator_long it=component.begin();
+void inline MaxFlow<T>::update_capacities(const list_int& component, T* work) {
+   list_int comp_nodes;
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
-      const long ind = _pr_node[*it];
-      const long first_child=_children[ind];
+      const int ind = _pr_node[*it];
+      const int first_child=_children[ind];
       _all_nodes[*it]=0;
       _active[*it]=true;
       if (first_child == _t) {
@@ -1752,19 +1751,19 @@ void inline MaxFlow<T>::update_capacities(const list_long& component, T* work) {
          comp_nodes.push_back(*it);
       }
    }
-   list_long nodes;
+   list_int nodes;
    while (!comp_nodes.empty()) {
-      const long new_node=comp_nodes.front();
+      const int new_node=comp_nodes.front();
       comp_nodes.pop_front();
       if (!_seen[new_node]) {
          nodes.push_back(new_node);
          while (!nodes.empty()) {
-            const long node = nodes.front();
+            const int node = nodes.front();
             _seen[node]=true;
-            const long ind = _pr_node[node];
-            const long* children=_children+ind;
+            const int ind = _pr_node[node];
+            const int* children=_children+ind;
             for ( ; _all_nodes[node] < _num_edges[node]; ++_all_nodes[node]) {
-               const long child=children[_all_nodes[node]];
+               const int child=children[_all_nodes[node]];
                if (_active[child] && !_seen[child] &&_capacity[ind+_all_nodes[node]] > 0) {
                   nodes.push_front(child);
                   break;
@@ -1772,8 +1771,8 @@ void inline MaxFlow<T>::update_capacities(const list_long& component, T* work) {
             }
             if (_all_nodes[node]==_num_edges[node]) {
                work[node]=0;
-               for (long i = 0; i < _num_edges[node]; ++i) {
-                  const long child=children[i];
+               for (int i = 0; i < _num_edges[node]; ++i) {
+                  const int child=children[i];
                   if (_active[child] && _capacity[ind+i] > 0) {
                      if (work[child] > 0) {
                         work[node]+=work[child];
@@ -1790,18 +1789,18 @@ void inline MaxFlow<T>::update_capacities(const list_long& component, T* work) {
    }
 }
 template <typename T>
-void inline MaxFlow<T>::set_capacities_variables(const T* cap, const long Nv,
-      const long Ng) {
-   for (long i = 0; i<Nv; ++i) {
-      const long ind = _pr_node[Ng+i];
+void inline MaxFlow<T>::set_capacities_variables(const T* cap, const int Nv,
+      const int Ng) {
+   for (int i = 0; i<Nv; ++i) {
+      const int ind = _pr_node[Ng+i];
       _capacity[ind]=abs(cap[i]);
    }
 };
 
 template <typename T>
-void inline MaxFlow<T>::set_capacities_groups(const list_long& component,
-      const Vector<T>& weights,const T lambda, const long Ng) {
-   for (const_iterator_long it = component.begin(); it != component.end();
+void inline MaxFlow<T>::set_capacities_groups(const list_int& component,
+      const Vector<T>& weights,const T lambda, const int Ng) {
+   for (const_iterator_int it = component.begin(); it != component.end();
          ++it) {
       if (*it < Ng) {
          _capacity[_reverse_address[_pr_node[*it]]]=lambda*weights[*it];
@@ -1811,21 +1810,21 @@ void inline MaxFlow<T>::set_capacities_groups(const list_long& component,
 
 
 template <typename T>
-void inline MaxFlow<T>::restore_capacities(const list_long& component) {
+void inline MaxFlow<T>::restore_capacities(const list_int& component) {
    /// relabel component, with warm restart
-   list_long nodes;
+   list_int nodes;
    _seen[_t]=true;
    _seen[_s]=true;
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
       _seen[*it]=false;
    }
-   for (const_iterator_long it=component.begin();
+   for (const_iterator_int it=component.begin();
          it != component.end(); ++it) {
-      const long* children=_children+_pr_node[*it];
+      const int* children=_children+_pr_node[*it];
       T* capacity=_capacity+_pr_node[*it];
-      for (long i = 0; i<_num_edges[*it]; ++i) {
-         const long child=children[i];
+      for (int i = 0; i<_num_edges[*it]; ++i) {
+         const int child=children[i];
          if (!_seen[child] && (capacity[i] > 0 || capacity[i] < -1))
             capacity[i]=INFINITY;
       }
@@ -1836,12 +1835,12 @@ void inline MaxFlow<T>::restore_capacities(const list_long& component) {
 
 
 template <typename T>
-T inline MaxFlow<T>::compute_thrs_project_l1(T* X, const long n, const T lambda) {
+T inline MaxFlow<T>::compute_thrs_project_l1(T* X, const int n, const T lambda) {
    if (lambda==0) return INFINITY;
    T* prU = X;
    T sum = 0;
-   long sum_card = n;
-   for (long i = 0; i<sum_card; ++i) {
+   int sum_card = n;
+   for (int i = 0; i<sum_card; ++i) {
       if (X[i]) {
          sum += X[i];
       } else {
@@ -1853,17 +1852,17 @@ T inline MaxFlow<T>::compute_thrs_project_l1(T* X, const long n, const T lambda)
       memset(X,0,sum_card*sizeof(T));
       return 0;
    }
-   long sizeU = sum_card;
+   int sizeU = sum_card;
    sum_card = 0;
    sum=0;
 
    while (sizeU > 0) {
       // put the pivot in prU[0]
       swap(prU[0],prU[sizeU/2]);
-      long sizeG=1;
+      int sizeG=1;
       T sumG=prU[0];
 
-      for (long i = 1; i<sizeU; ++i) {
+      for (int i = 1; i<sizeU; ++i) {
          if (prU[i] >= prU[0]) {
             sumG += prU[i];
             swap(prU[sizeG++],prU[i]);
@@ -1871,7 +1870,7 @@ T inline MaxFlow<T>::compute_thrs_project_l1(T* X, const long n, const T lambda)
       }
 
       T new_sum=sum+sumG;
-      long new_card=sum_card+sizeG;
+      int new_card=sum_card+sizeG;
       if (new_sum - prU[0]*new_card <= lambda) {
          sum_card = new_card;
          sum = new_sum;
@@ -1890,9 +1889,9 @@ template <typename T> class Graph {
       Graph();
       ~Graph();
 
-      void inline create_graph(const long Nv, const long Ng,
+      void inline create_graph(const int Nv, const int Ng,
             T* weights, mwSize* var_ir, mwSize* var_jc);
-      void inline create_graph(const long Nv, const long Ng,
+      void inline create_graph(const int Nv, const int Ng,
             T* weights, mwSize* gv_ir, mwSize* gv_jc, mwSize* gg_ir, mwSize* gg_jc);
 
       void inline proximal_operator(const T* variables_in, T* variables_out,const bool clever = false, const T* weights = NULL);
@@ -1919,8 +1918,8 @@ template <typename T> class Graph {
 
 
    private:
-      long _Nv;
-      long _Ng;
+      int _Nv;
+      int _Ng;
       T* _weights; // size Ng
       MaxFlow<T>* _maxflow;
 };
@@ -1940,34 +1939,34 @@ Graph<T>::~Graph() {
 };
 
 template <typename T>
-void inline Graph<T>::create_graph(const long Nv, const long Ng,
+void inline Graph<T>::create_graph(const int Nv, const int Ng,
       T* weights, mwSize* var_ir, mwSize* var_jc) {
    _Nv=Nv;
    _Ng=Ng;
    _weights=new T[_Ng];
-   for (long i = 0; i<_Ng; ++i) _weights[i]=weights[i];
-   const long N = _Ng+_Nv+2;
-   long* num_edges=new long[N];
-   for (long i = 0; i<N; ++i) num_edges[i]=1;
-   for (long i = 0; i<Ng; ++i) {
-      for (long j = var_jc[i]; j<var_jc[i+1]; ++j) {
+   for (int i = 0; i<_Ng; ++i) _weights[i]=weights[i];
+   const int N = _Ng+_Nv+2;
+   int* num_edges=new int[N];
+   for (int i = 0; i<N; ++i) num_edges[i]=1;
+   for (int i = 0; i<Ng; ++i) {
+      for (int j = var_jc[i]; j<var_jc[i+1]; ++j) {
          num_edges[i]++;
          num_edges[Ng+var_ir[j]]++;
       }
    }
-   const long s=_Ng+_Nv;
-   const long t=_Ng+_Nv+1;
+   const int s=_Ng+_Nv;
+   const int t=_Ng+_Nv+1;
    num_edges[s]=_Ng;
    num_edges[t]=_Nv;
    _maxflow=new MaxFlow<T>(N, num_edges, s, t);
 
-   for (long i = 0; i<_Ng; ++i)
+   for (int i = 0; i<_Ng; ++i)
       _maxflow->add_edge(s,i,_weights[i],0);
-   for (long i = 0; i<_Nv; ++i)
+   for (int i = 0; i<_Nv; ++i)
       _maxflow->add_edge(_Ng+i,t,INFINITY,0);
-   for (long i = 0; i<_Ng; ++i) {
-      for (long j = var_jc[i]; j<var_jc[i+1]; ++j) {
-         _maxflow->add_edge(i,_Ng+static_cast<long>(var_ir[j]),_weights[i],0);
+   for (int i = 0; i<_Ng; ++i) {
+      for (int j = var_jc[i]; j<var_jc[i+1]; ++j) {
+         _maxflow->add_edge(i,_Ng+static_cast<int>(var_ir[j]),_weights[i],0);
       }
    }
    _maxflow->save_capacities();
@@ -1975,50 +1974,50 @@ void inline Graph<T>::create_graph(const long Nv, const long Ng,
 };
 
 template <typename T>
-void inline Graph<T>::create_graph(const long Nv, const long Ng,
+void inline Graph<T>::create_graph(const int Nv, const int Ng,
       T* weights, mwSize* gv_ir, mwSize* gv_jc, mwSize* gg_ir, mwSize* gg_jc) {
    _Nv=Nv;
    _Ng=Ng;
    _weights=new T[_Ng];
-   for (long i = 0; i<_Ng; ++i) _weights[i]=weights[i];
-   const long N = _Ng+_Nv+2;
-   long* num_edges=new long[N];
-   for (long i = 0; i<N; ++i) num_edges[i]=1;
-   for (long i = 0; i<Ng; ++i) {
-      for (long j = gv_jc[i]; j<static_cast<long>(gv_jc[i+1]); ++j) {
+   for (int i = 0; i<_Ng; ++i) _weights[i]=weights[i];
+   const int N = _Ng+_Nv+2;
+   int* num_edges=new int[N];
+   for (int i = 0; i<N; ++i) num_edges[i]=1;
+   for (int i = 0; i<Ng; ++i) {
+      for (int j = gv_jc[i]; j<static_cast<int>(gv_jc[i+1]); ++j) {
          num_edges[i]++;
          num_edges[Ng+gv_ir[j]]++;
       }
    }
-   for (long i = 0; i<Ng; ++i) {
-      for (long j = gg_jc[i]; j<static_cast<long>(gg_jc[i+1]); ++j) {
-         if (i != static_cast<long>(gg_ir[j])) {
+   for (int i = 0; i<Ng; ++i) {
+      for (int j = gg_jc[i]; j<static_cast<int>(gg_jc[i+1]); ++j) {
+         if (i != static_cast<int>(gg_ir[j])) {
             num_edges[i]++;
             num_edges[gg_ir[j]]++;
          }
       }
    }
 
-   const long s=_Ng+_Nv;
-   const long t=_Ng+_Nv+1;
+   const int s=_Ng+_Nv;
+   const int t=_Ng+_Nv+1;
    num_edges[s]=_Ng;
    num_edges[t]=_Nv;
 
    _maxflow=new MaxFlow<T>(N, num_edges, s, t);
 
-   for (long i = 0; i<_Ng; ++i)
+   for (int i = 0; i<_Ng; ++i)
       _maxflow->add_edge(s,i,_weights[i],0);
-   for (long i = 0; i<_Nv; ++i)
+   for (int i = 0; i<_Nv; ++i)
       _maxflow->add_edge(_Ng+i,t,0,0);
-   for (long i = 0; i<_Ng; ++i) {
-      for (long j = gv_jc[i]; j<static_cast<long>(gv_jc[i+1]); ++j) {
-         _maxflow->add_edge(i,_Ng+static_cast<long>(gv_ir[j]),INFINITY,0);
+   for (int i = 0; i<_Ng; ++i) {
+      for (int j = gv_jc[i]; j<static_cast<int>(gv_jc[i+1]); ++j) {
+         _maxflow->add_edge(i,_Ng+static_cast<int>(gv_ir[j]),INFINITY,0);
       }
    }
-   for (long i = 0; i<_Ng; ++i) {
-      for (long j = gg_jc[i]; j<static_cast<long>(gg_jc[i+1]); ++j) {
-         if (i != static_cast<long>(gg_ir[j])) {
-            _maxflow->add_edge(i,static_cast<long>(gg_ir[j]),INFINITY,0);
+   for (int i = 0; i<_Ng; ++i) {
+      for (int j = gg_jc[i]; j<static_cast<int>(gg_jc[i+1]); ++j) {
+         if (i != static_cast<int>(gg_ir[j])) {
+            _maxflow->add_edge(i,static_cast<int>(gg_ir[j]),INFINITY,0);
          }
       }
    }
@@ -2035,11 +2034,11 @@ T inline Graph<T>::dual_norm_inf(const Vector<T>& input,
    T* work = new T[_Nv+_Ng+2];
    bool* positive = new bool[_Ng+_Nv+2];
    _maxflow->set_capacities_variables(input.rawX(),_Nv,_Ng);
-   std::list< list_long* > connex_components;
+   std::list< list_int* > connex_components;
    _maxflow->extractConnexComponents(connex_components);
    _maxflow->deactivate();
    T tau = 0;
-   long num=0;
+   int num=0;
    long num1=0;
    long num2=0;
    long num3=0;
@@ -2047,14 +2046,14 @@ T inline Graph<T>::dual_norm_inf(const Vector<T>& input,
 
    while (!connex_components.empty()) {
       ++num;
-      list_long* component=connex_components.front();
+      list_int* component=connex_components.front();
       connex_components.pop_front();
       if (component->size() != 1) {
          // Compute budget and set up input capacities
          T sum_variables=0;
          T sum_weights=0;
-         long size_list=0;
-         for (const_iterator_long it = component->begin();
+         int size_list=0;
+         for (const_iterator_int it = component->begin();
                it != component->end(); ++it) {
             if (*it < _Ng) {
                sum_weights+=weights[*it];
@@ -2114,21 +2113,21 @@ void inline Graph<T>::proximal_operator(const T* variables_in, T* variables_out,
       cap_heuristic = true;
    global_heuristic = true;
    gap_heuristic = true;
-   std::list< list_long* > connex_components;
+   std::list< list_int* > connex_components;
    _maxflow->extractConnexComponents(connex_components);
    T* work = new T[_Nv+_Ng+2];
    T* variables_bis = new T[_Nv];
-   for (long i = 0; i<_Nv; ++i) variables_bis[i]=abs<T>(variables_in[i]);
-   for (long i = 0; i<_Nv; ++i) variables_out[i]=variables_bis[i];
+   for (int i = 0; i<_Nv; ++i) variables_bis[i]=abs<T>(variables_in[i]);
+   for (int i = 0; i<_Nv; ++i) variables_out[i]=variables_bis[i];
 
    /*  cerr << "var out" << endl;
-       for (long i = 0; i<_Nv; ++i)
+       for (int i = 0; i<_Nv; ++i)
        cerr << variables_out[i] << " ";
        cerr << endl;*/
    bool* positive = new bool[_Ng+_Nv+2];
    _maxflow->deactivate();
    T flow_missed=0;
-   long num=1;
+   int num=1;
    long num1=0;
    long num2=0;
    long num3=0;
@@ -2137,7 +2136,7 @@ void inline Graph<T>::proximal_operator(const T* variables_in, T* variables_out,
    Timer tsplit, tproj, tcap;
 
    while (!connex_components.empty()) {
-      list_long* component=connex_components.front();
+      list_int* component=connex_components.front();
       connex_components.pop_front();
       if (component->size() != 1) {
          bool fusion=true;
@@ -2217,10 +2216,10 @@ void inline Graph<T>::proximal_operator(const T* variables_in, T* variables_out,
 #endif
 
    /*  cerr << "var out" << endl;
-       for (long i = 0; i<_Nv; ++i)
+       for (int i = 0; i<_Nv; ++i)
        cerr << variables_out[i] << " ";
        cerr << endl;*/
-   for (long i = 0; i<_Nv; ++i) variables_out[i] = variables_in[i] >= 0 ? MAX(variables_out[i],0) : -MAX(variables_out[i],0);
+   for (int i = 0; i<_Nv; ++i) variables_out[i] = variables_in[i] >= 0 ? MAX(variables_out[i],0) : -MAX(variables_out[i],0);
 
    delete[](positive);
    delete[](variables_bis);
@@ -2232,19 +2231,19 @@ template <typename T> struct GraphStruct {
    mwSize* gv_jc;
    mwSize* gg_ir;
    mwSize* gg_jc;
-   long Nv;
-   long Ng;
+   int Nv;
+   int Ng;
    T* weights;
 };
 
 template <typename T> struct TreeStruct { 
-   long* own_variables;
-   long* N_own_variables;
+   int* own_variables;
+   int* N_own_variables;
    T* weights;
    mwSize* groups_ir;
    mwSize* groups_jc; 
-   long Nv;
-   long Ng;
+   int Nv;
+   int Ng;
 };
 
 template <typename T> struct GraphPathStruct { 
@@ -2255,19 +2254,19 @@ template <typename T> struct GraphPathStruct {
       };
       mwSize* ir;
       mwSize* jc;
-      long n;
-      long m;
+      int n;
+      int m;
       long long precision;
       T* weights;
       T* start_weights;
       T* stop_weights;
-//      long num_fixed;
-//      long* indices;
+//      int num_fixed;
+//      int* indices;
 };
 
 template <typename Int=long long>
 struct Path {
-   list_long nodes;
+   list_int nodes;
    Int flow_int;
    double flow;
 };
@@ -2275,27 +2274,27 @@ struct Path {
 template <typename Int = long long> class MinCostFlow {
 
    public:
-      MinCostFlow(const long n, const long* max_num_arcs);
+      MinCostFlow(const int n, const int* max_num_arcs);
       ~MinCostFlow();
 
-      void inline add_edge(const long u, const long v, const Int cost, const double double_cost, const Int cap);
-      void inline set_demand(const long node, const Int dem) { _demand[node]=dem; };
-      void inline set_edge(const long node, const long num_arc, const Int cost, const Int cap); 
-      void inline set_capacity(const long node, const long num_arc, const Int cap); 
-      void inline add_flow(const long node, const long num_arc, const Int flow); 
-      void inline set_quad_cost(const long node, const long num_arc, const bool quad_cost) { 
+      void inline add_edge(const int u, const int v, const Int cost, const double double_cost, const Int cap);
+      void inline set_demand(const int node, const Int dem) { _demand[node]=dem; };
+      void inline set_edge(const int node, const int num_arc, const Int cost, const Int cap); 
+      void inline set_capacity(const int node, const int num_arc, const Int cap); 
+      void inline add_flow(const int node, const int num_arc, const Int flow); 
+      void inline set_quad_cost(const int node, const int num_arc, const bool quad_cost) { 
          _quad_cost[_pr_node[node]+num_arc]=quad_cost;
          _quad_cost[_reverse[_pr_node[node]+num_arc]]=quad_cost;
       };
       void inline set_is_quad_cost(const bool is_quad_cost) { _is_quadratic_cost=is_quad_cost; };
-      void inline discharge(const long node, const Int eps);
+      void inline discharge(const int node, const Int eps);
       void save_costs();
       void restore_costs();
       void scale_costs(const double scal);
       Int compute_cost() const;
       double compute_cost_double() const;
       Int compute_uncap_cost() const;
-      Int inline get_flow(const long node, const long num_arc) const { return _flow[_pr_node[node]+num_arc]; };
+      Int inline get_flow(const int node, const int num_arc) const { return _flow[_pr_node[node]+num_arc]; };
 
       void compute_min_cost(const bool scale_data = true, const bool verbose=false);
       Int refine(Int eps, const bool price_refine = false);
@@ -2308,15 +2307,15 @@ template <typename Int = long long> class MinCostFlow {
       void inline print_prices() const;
       void inline print_graph() const;
       bool inline topological_sort(const bool admissible = false, bool* admiss = NULL, Int* rcosts = NULL);
-      Int inline reduced_cost(const long node, const long child, const long arc) const;
+      Int inline reduced_cost(const int node, const int child, const int arc) const;
 
-      Int cost_shortest_path_in_dag(list_long& path);
-      void st_flow_decomposition_dag(List<Path<Int>*>& list, const long s, const long t) const;
+      Int cost_shortest_path_in_dag(list_int& path);
+      void st_flow_decomposition_dag(List<Path<Int>*>& list, const int s, const int t) const;
       void print_dimacs(const char* name) const;
 
    private:
-      long _n;
-      long _m;
+      int _n;
+      int _m;
 
       Int _max_cost;
       double _alpha;
@@ -2326,22 +2325,22 @@ template <typename Int = long long> class MinCostFlow {
       Int* _demand;
       bool* _active;
 
-      long* _num_arcs;
-      long* _max_num_arcs;
-      long* _pr_node;
-      long* _children;
-      long* _reverse;
+      int* _num_arcs;
+      int* _max_num_arcs;
+      int* _pr_node;
+      int* _children;
+      int* _reverse;
       Int* _flow;
       Int* _capacity;
       Int* _cost;
       Int* _save_cost;
       double* _init_double_cost;
-      long _maxm;
+      int _maxm;
 
-      long* _topological_order;
+      int* _topological_order;
       bool _topologically_sorted;
 
-      list_long _list_active;
+      list_int _list_active;
       bool _is_quadratic_cost;
       bool* _quad_cost;
       Timer _time1;
@@ -2349,7 +2348,7 @@ template <typename Int = long long> class MinCostFlow {
 };
 
 template <typename Int>
-MinCostFlow<Int>::MinCostFlow(const long n, const long* max_num_arcs) {
+MinCostFlow<Int>::MinCostFlow(const int n, const int* max_num_arcs) {
    _n=n;
    _m=0;
    _max_cost=0;
@@ -2365,23 +2364,23 @@ MinCostFlow<Int>::MinCostFlow(const long n, const long* max_num_arcs) {
    _active=new bool[n];
    memset(_active,false,n*sizeof(bool));
    
-   _topological_order=new long[n];
-   memset(_topological_order,0,n*sizeof(long));
+   _topological_order=new int[n];
+   memset(_topological_order,0,n*sizeof(int));
    _topologically_sorted=false;
-   _num_arcs=new long[n];
-   memset(_num_arcs,0,n*sizeof(long));
-   _max_num_arcs=new long[n];
-   memcpy(_max_num_arcs,max_num_arcs,n*sizeof(long));
-   _pr_node=new long[n];
+   _num_arcs=new int[n];
+   memset(_num_arcs,0,n*sizeof(int));
+   _max_num_arcs=new int[n];
+   memcpy(_max_num_arcs,max_num_arcs,n*sizeof(int));
+   _pr_node=new int[n];
    _maxm=0;
-   for (long i = 0; i<n; ++i) {
+   for (int i = 0; i<n; ++i) {
       _pr_node[i]=_maxm;
       _maxm+=_max_num_arcs[i];
    }
-   _children=new long[_maxm];
-   memset(_children,-1,_maxm*sizeof(long));
-   _reverse=new long[_maxm];
-   memset(_reverse,-1,_maxm*sizeof(long));
+   _children=new int[_maxm];
+   memset(_children,-1,_maxm*sizeof(int));
+   _reverse=new int[_maxm];
+   memset(_reverse,-1,_maxm*sizeof(int));
    _flow=new Int[_maxm];
    memset(_flow,0,_maxm*sizeof(Int));
    _capacity=new Int[_maxm];
@@ -2417,11 +2416,11 @@ MinCostFlow<Int>::~MinCostFlow() {
 }
 
 template <typename Int>
-void inline MinCostFlow<Int>::add_edge(const long u, const long v, const Int cost, const double double_cost, const Int cap) {
-   const long pu=_pr_node[u];
-   const long pv=_pr_node[v];
-   const long nu=_num_arcs[u]+pu;
-   const long nv=_num_arcs[v]+pv;
+void inline MinCostFlow<Int>::add_edge(const int u, const int v, const Int cost, const double double_cost, const Int cap) {
+   const int pu=_pr_node[u];
+   const int pv=_pr_node[v];
+   const int nu=_num_arcs[u]+pu;
+   const int nv=_num_arcs[v]+pv;
    _children[nu]=v;
    _children[nv]=u;
    _capacity[nu]=cap;
@@ -2437,10 +2436,10 @@ void inline MinCostFlow<Int>::add_edge(const long u, const long v, const Int cos
 };
 
 template <typename Int>
-void inline MinCostFlow<Int>::set_edge(const long node, const long num_arc, 
+void inline MinCostFlow<Int>::set_edge(const int node, const int num_arc, 
       const Int cost, const Int cap) {
-   const long pu=_pr_node[node];
-   const long nu=pu+num_arc; 
+   const int pu=_pr_node[node];
+   const int nu=pu+num_arc; 
    _cost[nu]=cost;
    _capacity[nu]=cap;
    _cost[_reverse[nu]]=-cost;
@@ -2448,17 +2447,17 @@ void inline MinCostFlow<Int>::set_edge(const long node, const long num_arc,
 };
 
 template <typename Int>
-void inline MinCostFlow<Int>::set_capacity(const long node, const long num_arc, 
+void inline MinCostFlow<Int>::set_capacity(const int node, const int num_arc, 
       const Int cap) {
-   const long pu=_pr_node[node];
-   const long nu=pu+num_arc; 
+   const int pu=_pr_node[node];
+   const int nu=pu+num_arc; 
    _capacity[nu]=cap;
    _capacity[_reverse[nu]]=0;
 };
 
 template <typename Int>
-void inline MinCostFlow<Int>::add_flow(const long node, const long num_arc, const Int flow) {
-   const long nu=_pr_node[node]+num_arc; 
+void inline MinCostFlow<Int>::add_flow(const int node, const int num_arc, const Int flow) {
+   const int nu=_pr_node[node]+num_arc; 
    _flow[nu]+=flow;
    _flow[_reverse[nu]]-=flow;
 };
@@ -2476,7 +2475,7 @@ void MinCostFlow<Int>::restore_costs() {
 template <typename Int>
 void MinCostFlow<Int>::scale_costs(const double scal) {
    // TODO: should maybe change sf?
-   for (long i = 0;i<_maxm; ++i) {
+   for (int i = 0;i<_maxm; ++i) {
       _cost[i]=static_cast<Int>(ceil(scal*_init_double_cost[i]));
    }
 };
@@ -2497,16 +2496,16 @@ void MinCostFlow<Int>::compute_min_cost(const bool scale_data, const bool verbos
    tglobal3.stop();
 
    if (scale_data) {
-      for (long i = 0; i<_maxm; ++i) _cost[i] *= _n;
-      for (long i = 0; i<_maxm; ++i) _capacity[i] *= _n;
-      for (long i = 0; i<_n; ++i) _demand[i] *= _n;
+      for (int i = 0; i<_maxm; ++i) _cost[i] *= _n;
+      for (int i = 0; i<_maxm; ++i) _capacity[i] *= _n;
+      for (int i = 0; i<_n; ++i) _demand[i] *= _n;
    }
 
-   for (long i=0; i< _maxm; ++i) if (_cost[i] > eps) eps=_cost[i];
+   for (int i=0; i< _maxm; ++i) if (_cost[i] > eps) eps=_cost[i];
    memset(_prices,0,_n*sizeof(Int));
    memset(_flow,0,_maxm*sizeof(Int));
    memset(_active,false,_n*sizeof(bool));
-   for (long i=0; i<_n; ++i) _excess[i]=-_demand[i];
+   for (int i=0; i<_n; ++i) _excess[i]=-_demand[i];
    num_relabels=0;
    num_pushes=0;
 
@@ -2517,11 +2516,11 @@ void MinCostFlow<Int>::compute_min_cost(const bool scale_data, const bool verbos
       price_refine=true;
    } 
    if (scale_data) {
-      for (long i = 0; i<_maxm; ++i) _cost[i] /= _n;
-      for (long i = 0; i<_maxm; ++i) _capacity[i] /= _n;
-      for (long i = 0; i<_n; ++i) _demand[i] /= _n;
-      for (long i = 0; i<_maxm; ++i) _flow[i] /= _n;
-      for (long i = 0; i<_n; ++i) _prices[i] /= _n;
+      for (int i = 0; i<_maxm; ++i) _cost[i] /= _n;
+      for (int i = 0; i<_maxm; ++i) _capacity[i] /= _n;
+      for (int i = 0; i<_n; ++i) _demand[i] /= _n;
+      for (int i = 0; i<_maxm; ++i) _flow[i] /= _n;
+      for (int i = 0; i<_n; ++i) _prices[i] /= _n;
    }
    tglobal1.stop();
    _time1.stop();
@@ -2542,11 +2541,11 @@ Int MinCostFlow<Int>::refine(Int eps, const bool price_refine) {
    eps=static_cast<Int>(ceil(static_cast<double>(eps)/_alpha));
    if (price_refine_heuristic && price_refine && this->price_refine(eps)) return eps;
 
-   for (long i = 0; i<_n; ++i) {
-      const long pr_begin=_pr_node[i];
-      const long pr_end=_pr_node[i]+_num_arcs[i];
-      for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
-         const long child=_children[pointer];
+   for (int i = 0; i<_n; ++i) {
+      const int pr_begin=_pr_node[i];
+      const int pr_end=_pr_node[i]+_num_arcs[i];
+      for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
+         const int child=_children[pointer];
          if (_is_quadratic_cost && _quad_cost[pointer]) {
             const Int reduced_cost=_flow[pointer]+_cost[pointer]+_prices[i]-_prices[child];
             if (reduced_cost < 0) {
@@ -2574,7 +2573,7 @@ Int MinCostFlow<Int>::refine(Int eps, const bool price_refine) {
       }
    }
 
-   for (long i = 0; i<_n; ++i) 
+   for (int i = 0; i<_n; ++i) 
       if (_excess[i] > 0 && !_active[i]) {
          _list_active.push_back(i);
          _active[i]=true;
@@ -2582,7 +2581,7 @@ Int MinCostFlow<Int>::refine(Int eps, const bool price_refine) {
 
    while (!_list_active.empty()) {
       if (price_heuristic && (_time2.getElapsed()/_time1.getElapsed() < 0.5)) this->price_update(eps);
-      const long node = _list_active.front();
+      const int node = _list_active.front();
       _list_active.pop_front();
       _active[node]=false;
       this->discharge(node,eps);
@@ -2602,7 +2601,7 @@ void inline MinCostFlow<Int>::price_update(const Int eps) {
    memset(scanned,false,_n*sizeof(Int));
    memset(temp_scanned,false,_n*sizeof(Int));
    Int total_excess=0;
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       if (_excess[i] < 0) {
          rank[i]=0;
          temp_scanned[i]=true;
@@ -2614,17 +2613,17 @@ void inline MinCostFlow<Int>::price_update(const Int eps) {
    }
 
    while (!heap.is_empty()) {
-      long node;
+      int node;
       Int rank_node;
       heap.find_min(node,rank_node);
       heap.delete_min();
       scanned[node]=true;
       if (_excess[node] > 0) total_excess-=_excess[node];
       if (total_excess==0) break;
-      const long pr_begin=_pr_node[node];
-      const long pr_end=_pr_node[node]+_num_arcs[node];
-      for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
-         const long child = _children[pointer];
+      const int pr_begin=_pr_node[node];
+      const int pr_end=_pr_node[node]+_num_arcs[node];
+      for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
+         const int child = _children[pointer];
          if (!scanned[child] && _flow[_reverse[pointer]] < _capacity[_reverse[pointer]]) {
             const Int reduced_cost=this->reduced_cost(node,child,pointer);
             if (reduced_cost >= 0) {
@@ -2654,13 +2653,13 @@ void inline MinCostFlow<Int>::price_update(const Int eps) {
    }
    
    Int max_rank=0;
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       if (scanned[i] && rank[i] > max_rank) max_rank=rank[i];
    }
 
    //this->print_graph();
    const Int max_increase=max_rank;
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       assert(rank[i] >= 0);
       _prices[i] -= rank[i] > max_rank ? max_increase : rank[i];
    }
@@ -2674,15 +2673,15 @@ void inline MinCostFlow<Int>::price_update(const Int eps) {
 };
 
 template <typename Int>
-void inline MinCostFlow<Int>::discharge(const long node, const Int eps) {
+void inline MinCostFlow<Int>::discharge(const int node, const Int eps) {
    if (_excess[node] <= 0) return;
    // sequence of pushes
    Int max_cmp_cost=-std::numeric_limits<Int>::max();
-   const long pr_begin=_pr_node[node];
-   const long pr_end=_pr_node[node]+_num_arcs[node];
-   for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
+   const int pr_begin=_pr_node[node];
+   const int pr_end=_pr_node[node]+_num_arcs[node];
+   for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
       const Int cap_residual=_capacity[pointer]-_flow[pointer];
-      const long child=_children[pointer];
+      const int child=_children[pointer];
       if (cap_residual > 0) {
          if (_is_quadratic_cost && _quad_cost[pointer]) {
             const Int reduced_cost=_flow[pointer]+_cost[pointer]+_prices[node]-_prices[child];
@@ -2742,13 +2741,13 @@ void inline MinCostFlow<Int>::discharge(const long node, const Int eps) {
 template <typename Int>
 bool MinCostFlow<Int>::test_optimality_conditions() const {
    Int min_prb=0;
-   for (long i = 0; i<_n; ++i) {
-      const long pr_begin=_pr_node[i];
-      const long pr_end=_pr_node[i]+_num_arcs[i];
-      for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
+   for (int i = 0; i<_n; ++i) {
+      const int pr_begin=_pr_node[i];
+      const int pr_end=_pr_node[i]+_num_arcs[i];
+      for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
          const Int cap_residual=_capacity[pointer]-_flow[pointer];
          if (cap_residual > 0) {
-            const long child=_children[pointer];
+            const int child=_children[pointer];
             const Int reduced_cost=this->reduced_cost(i,child,pointer);
             min_prb=MIN(min_prb,reduced_cost);
          }
@@ -2761,10 +2760,10 @@ bool MinCostFlow<Int>::test_optimality_conditions() const {
 template <typename Int>
 Int MinCostFlow<Int>::compute_cost() const {
    Int cost=0;
-   for (long i = 0; i<_n; ++i) {
-      const long pr_begin=_pr_node[i];
-      const long pr_end=_pr_node[i]+_num_arcs[i];
-      for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
+   for (int i = 0; i<_n; ++i) {
+      const int pr_begin=_pr_node[i];
+      const int pr_end=_pr_node[i]+_num_arcs[i];
+      for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
          cost+=_flow[pointer]*_cost[pointer];
       }
    }
@@ -2774,10 +2773,10 @@ Int MinCostFlow<Int>::compute_cost() const {
 template <typename Int>
 double MinCostFlow<Int>::compute_cost_double() const {
    double cost=0;
-   for (long i = 0; i<_n; ++i) {
-      const long pr_begin=_pr_node[i];
-      const long pr_end=_pr_node[i]+_num_arcs[i];
-      for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
+   for (int i = 0; i<_n; ++i) {
+      const int pr_begin=_pr_node[i];
+      const int pr_end=_pr_node[i]+_num_arcs[i];
+      for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
          cost+=static_cast<double>(_flow[pointer])*static_cast<double>(_cost[pointer]);
       }
    }
@@ -2788,7 +2787,7 @@ double MinCostFlow<Int>::compute_cost_double() const {
 template <typename Int>
 Int MinCostFlow<Int>::compute_uncap_cost() const {
    Int cost=0;
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       cost += _prices[i]*_demand[i];
    }
    return cost;
@@ -2807,26 +2806,26 @@ bool MinCostFlow<Int>::price_refine(const Int eps) {
    BinaryHeap<Int> heap(_n);
    const Int infinity=std::numeric_limits<Int>::max();
 
-   long iter=0;
+   int iter=0;
    while (iter < 2) {
       ++iter;
       acyclic=this->topological_sort(true,admiss,reduced_costs);
       if (!acyclic) break;
       optimal=true;
-      for (long i = 0; i<_maxm; ++i) {
+      for (int i = 0; i<_maxm; ++i) {
          if (admiss[i] && reduced_costs[i] < -eps) { optimal=false; break; }
       }
       if (iter==2) break;
       if (optimal) break;
       memset(distances,0,_n*sizeof(Int));
       distances[_topological_order[0]]=0;
-      for (long i = 0; i<_n; ++i) {
-         const long node = _topological_order[i];
-         const long pr_begin=_pr_node[node];
-         const long pr_end=_pr_node[node]+_num_arcs[node];
-         for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
+      for (int i = 0; i<_n; ++i) {
+         const int node = _topological_order[i];
+         const int pr_begin=_pr_node[node];
+         const int pr_end=_pr_node[node]+_num_arcs[node];
+         for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
             if (admiss[pointer]) {
-               const long child = _children[pointer];
+               const int child = _children[pointer];
                const Int new_cost=distances[node] + reduced_costs[pointer]; // : distances[node] + MIN(reduced_costs[pointer]+eps,0);
                if (distances[child] > new_cost) {
                   distances[child]=new_cost;
@@ -2838,15 +2837,15 @@ bool MinCostFlow<Int>::price_refine(const Int eps) {
       
       memset(scanned,false,_n*sizeof(bool));
       while (!heap.is_empty()) {
-         long node;
+         int node;
          Int rank_node;
          heap.find_min(node,rank_node);
          heap.delete_min();
          scanned[node]=true;
-         const long pr_begin=_pr_node[node];
-         const long pr_end=_pr_node[node]+_num_arcs[node];
-         for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
-            const long child = _children[pointer];
+         const int pr_begin=_pr_node[node];
+         const int pr_end=_pr_node[node]+_num_arcs[node];
+         for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
+            const int child = _children[pointer];
             const Int reduced_cost=reduced_costs[pointer];
             if (!scanned[child] && _capacity[pointer] > _flow[pointer]) {
                if (reduced_cost < 0) {
@@ -2866,14 +2865,14 @@ bool MinCostFlow<Int>::price_refine(const Int eps) {
       }
       Int max_distances=-infinity;
       Int min_distances=infinity;
-      for (long i = 0; i<_n; ++i) {
+      for (int i = 0; i<_n; ++i) {
          if (distances[i] < min_distances) min_distances=distances[i];
          if (distances[i] > max_distances) max_distances=distances[i];
       }
     //  this->print_graph();
      
       if (min_distances==max_distances) break;
-      for (long i = 0; i<_n; ++i) {
+      for (int i = 0; i<_n; ++i) {
          _prices[i] += distances[i]-max_distances;
       }
       break;
@@ -2888,21 +2887,21 @@ bool MinCostFlow<Int>::price_refine(const Int eps) {
 }
 
 template <typename Int>
-Int MinCostFlow<Int>::cost_shortest_path_in_dag(list_long& list_path) {
+Int MinCostFlow<Int>::cost_shortest_path_in_dag(list_int& list_path) {
    if (!_topologically_sorted) this->topological_sort();
    Int* distances = new Int[_n];
-   long* prec = new long[_n];
-   for (long i = 0; i < _n; ++i) prec[i]=-1;
+   int* prec = new int[_n];
+   for (int i = 0; i < _n; ++i) prec[i]=-1;
    const Int infinity=std::numeric_limits<Int>::max();
-   for (long i = 0; i < _n; ++i) distances[i]=infinity;
+   for (int i = 0; i < _n; ++i) distances[i]=infinity;
    distances[_topological_order[0]]=0;
-   for (long i = 0; i < _n; ++i) {
-      const long node = _topological_order[i];
-      const long pr_begin=_pr_node[node];
-      const long pr_end=_pr_node[node]+_num_arcs[node];
-      for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
+   for (int i = 0; i < _n; ++i) {
+      const int node = _topological_order[i];
+      const int pr_begin=_pr_node[node];
+      const int pr_end=_pr_node[node]+_num_arcs[node];
+      for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
          if (_capacity[pointer] > 0) {
-            const long child = _children[pointer];
+            const int child = _children[pointer];
             const Int new_cost= distances[node] + _cost[pointer];
             if (distances[child] > new_cost) {
                distances[child]=new_cost;
@@ -2912,7 +2911,7 @@ Int MinCostFlow<Int>::cost_shortest_path_in_dag(list_long& list_path) {
       }
    }
    const Int shortest_path=distances[_topological_order[_n-1]];
-   long current=_topological_order[_n-1];
+   int current=_topological_order[_n-1];
    list_path.clear();
    while (current != -1) {
       list_path.push_front(current);
@@ -2924,12 +2923,12 @@ Int MinCostFlow<Int>::cost_shortest_path_in_dag(list_long& list_path) {
 };
 
 template <typename Int>
-void MinCostFlow<Int>::st_flow_decomposition_dag(List<Path<Int>*>& decomposition, const long s, const long t) const {
-   const long pr_begin=_pr_node[s];
-   const long pr_end=_pr_node[s]+_num_arcs[s];
+void MinCostFlow<Int>::st_flow_decomposition_dag(List<Path<Int>*>& decomposition, const int s, const int t) const {
+   const int pr_begin=_pr_node[s];
+   const int pr_end=_pr_node[s]+_num_arcs[s];
    BinaryHeap<Int> heap(_n);
-   long * sj_arcs = new long[_n];
-   for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
+   int * sj_arcs = new int[_n];
+   for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
       if (_capacity[pointer] >0 && _flow[pointer] > 0) {
          heap.insert(_children[pointer],-_flow[pointer]);
          sj_arcs[_children[pointer]]=pointer;
@@ -2939,22 +2938,22 @@ void MinCostFlow<Int>::st_flow_decomposition_dag(List<Path<Int>*>& decomposition
       Path<Int>* path = new Path<Int>();
       decomposition.push_back(path);
       Int& flow = path->flow_int;
-      list_long& list = path->nodes;
-      long node;
+      list_int& list = path->nodes;
+      int node;
       heap.find_min(node,flow);
       heap.delete_min();
       flow=-flow; // max flow in fact
       Int init_flow=flow;
-      long init_node=node;
-      list_long pointers;
+      int init_node=node;
+      list_int pointers;
       pointers.push_back(sj_arcs[node]);
       while (node != t) {
          list.push_back(node);
-         const long pr_begin=_pr_node[node];
-         const long pr_end=_pr_node[node]+_num_arcs[node];
-         long max_pointer=pr_begin;
+         const int pr_begin=_pr_node[node];
+         const int pr_end=_pr_node[node]+_num_arcs[node];
+         int max_pointer=pr_begin;
          Int max_flow = 0;
-         for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
+         for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
             if (_capacity[pointer] >0 && _flow[pointer] > max_flow) {
                max_pointer=pointer;
                max_flow=_flow[pointer];
@@ -2965,7 +2964,7 @@ void MinCostFlow<Int>::st_flow_decomposition_dag(List<Path<Int>*>& decomposition
          node=_children[max_pointer];
       }
       //stop();
-      for (const_iterator_long it = pointers.begin(); it != pointers.end(); ++it) {
+      for (const_iterator_int it = pointers.begin(); it != pointers.end(); ++it) {
          _flow[*it]-=flow;
          _flow[_reverse[*it]]+=flow;
       }
@@ -2981,14 +2980,14 @@ void MinCostFlow<Int>::print_dimacs(const char* name) const {
    ofstream stream;
    stream.open(name);
    stream << "p min " << _n << " " << _m << endl;
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       if (_demand[i] != 0)
          stream << "n " << i+1 << " " << _demand[i] << endl;
    }
-   for (long i = 0; i<_n; ++i) {
-      const long pr_begin=_pr_node[i];
-      const long pr_end=_pr_node[i]+_num_arcs[i];
-      for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
+   for (int i = 0; i<_n; ++i) {
+      const int pr_begin=_pr_node[i];
+      const int pr_end=_pr_node[i]+_num_arcs[i];
+      for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
          if (_capacity[pointer] > 0) {
             stream << "a " << i+1 << " " << _children[pointer]+1 << " " << 0 << " " << _capacity[pointer] << " " << _cost[pointer] << endl;
          }
@@ -2998,7 +2997,7 @@ void MinCostFlow<Int>::print_dimacs(const char* name) const {
 }
 
 template <typename Int>
-Int inline MinCostFlow<Int>::reduced_cost(const long node, const long child, const long pointer) const {
+Int inline MinCostFlow<Int>::reduced_cost(const int node, const int child, const int pointer) const {
    return (_is_quadratic_cost && _quad_cost[pointer]) ? _cost[pointer]+_flow[pointer] + _prices[node]-_prices[child] :
       _cost[pointer] + _prices[node]-_prices[child];
 };
@@ -3008,64 +3007,64 @@ template <typename Int>
 bool inline MinCostFlow<Int>::topological_sort(const bool admissible, bool* admiss_node, Int* reduced_costs) {
    const bool extern_admiss_node=admiss_node != NULL;
    const bool extern_reduced_costs=reduced_costs != NULL;
-   long* indegree = new long[_n];
-   for (long i = 0; i<_n; ++i) indegree[i]=0;
+   int* indegree = new int[_n];
+   for (int i = 0; i<_n; ++i) indegree[i]=0;
    if (admissible) {
       if (!extern_admiss_node)
          admiss_node=new bool[_maxm];
-      for (long i = 0; i<_n; ++i) {
-         const long pr_begin=_pr_node[i];
-         const long pr_end=_pr_node[i]+_num_arcs[i];
-         for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
-            const long child=_children[pointer];
-            const long rcost=this->reduced_cost(i,child,pointer);
+      for (int i = 0; i<_n; ++i) {
+         const int pr_begin=_pr_node[i];
+         const int pr_end=_pr_node[i]+_num_arcs[i];
+         for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
+            const int child=_children[pointer];
+            const int rcost=this->reduced_cost(i,child,pointer);
             if (extern_reduced_costs) reduced_costs[pointer]=rcost;
             admiss_node[pointer]=(_capacity[pointer] > _flow[pointer] && rcost < 0);
             if (admiss_node[pointer]) indegree[child]++;
          }
       }
    } else {
-      for (long i = 0; i<_n; ++i) {
-         const long pr_begin=_pr_node[i];
-         const long pr_end=_pr_node[i]+_num_arcs[i];
-         for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
+      for (int i = 0; i<_n; ++i) {
+         const int pr_begin=_pr_node[i];
+         const int pr_end=_pr_node[i]+_num_arcs[i];
+         for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
             if (_capacity[pointer] > 0)
                indegree[_children[pointer]]++;
          }
       }
    }
-   list_long list;
-   long next=0;
-   for (long i = 0; i<_n; ++i) {
+   list_int list;
+   int next=0;
+   for (int i = 0; i<_n; ++i) {
       if (indegree[i]==0) list.push_back(i);
    }
    while (!list.empty()) {
-      long node=list.front();
+      int node=list.front();
       list.pop_front();
       _topological_order[next++]=node;
       if (admissible) {
-         const long pr_begin=_pr_node[node];
-         const long pr_end=_pr_node[node]+_num_arcs[node];
-         for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
-            const long child=_children[pointer];
+         const int pr_begin=_pr_node[node];
+         const int pr_end=_pr_node[node]+_num_arcs[node];
+         for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
+            const int child=_children[pointer];
             if (admiss_node[pointer]) {
                indegree[child]--;
                if (!indegree[child]) list.push_back(child);
             }
          }
       } else {
-         const long pr_begin=_pr_node[node];
-         const long pr_end=_pr_node[node]+_num_arcs[node];
-         for (long pointer = pr_begin; pointer<pr_end; ++pointer) {
+         const int pr_begin=_pr_node[node];
+         const int pr_end=_pr_node[node]+_num_arcs[node];
+         for (int pointer = pr_begin; pointer<pr_end; ++pointer) {
             if (_capacity[pointer] > 0) {
-               const long child=_children[pointer];
+               const int child=_children[pointer];
                indegree[child]--;
                if (!indegree[child]) list.push_back(child);
             }
          }
       }
    }
-   //for (long i = next; i<_n; ++i) _topological_order[i]=-1;
+   //for (int i = next; i<_n; ++i) _topological_order[i]=-1;
 
    _topologically_sorted=!admissible;   // if admissible, only the admissible graph is sorted
    delete[](indegree);
@@ -3077,7 +3076,7 @@ bool inline MinCostFlow<Int>::topological_sort(const bool admissible, bool* admi
 template <typename Int>
 void inline MinCostFlow<Int>::print_excess() const {
    cerr << "Excess: " << endl;
-   for (long i= 0; i<_n; ++i) {
+   for (int i= 0; i<_n; ++i) {
       cerr << _excess[i] << " ";
    }
    cerr << endl;
@@ -3086,7 +3085,7 @@ void inline MinCostFlow<Int>::print_excess() const {
 template <typename Int>
 void inline MinCostFlow<Int>::print_prices() const {
    cerr << "Prices: " << endl;
-   for (long i= 0; i<_n; ++i) {
+   for (int i= 0; i<_n; ++i) {
       cerr << _prices[i] << " ";
    }
    cerr << endl;
@@ -3095,11 +3094,11 @@ void inline MinCostFlow<Int>::print_prices() const {
 template <typename Int>
 void inline MinCostFlow<Int>::print_graph() const {
    cerr << "Graph: " << _n << " x " << _m << endl;
-   for (long i= 0; i<_n; ++i) {
+   for (int i= 0; i<_n; ++i) {
       cerr <<"***********************" << endl; 
       cerr <<"Node: " << i << ", e(i): " << _excess[i] << ", pi(i): " << _prices[i] << ", d(i): " << _demand[i] << endl;
-      const long pr=_pr_node[i];
-      for (long j = 0; j<_num_arcs[i]; ++j) {
+      const int pr=_pr_node[i];
+      for (int j = 0; j<_num_arcs[i]; ++j) {
          cerr << "    child: " << _children[pr+j] << ", cap: " << _capacity[pr+j] << ", cost: " << _cost[pr+j] << ", flow: " << _flow[pr+j] << endl;
       }
    }
@@ -3114,18 +3113,18 @@ template <typename T = double, typename Int = long long> class GraphPath {
       void init_graph(const GraphPathStruct<T>& graph);
       T eval_l0(const T* variables, List<Path<Int>*>* decomposition = NULL);
       T eval_conv(const T* variables, List<Path<Int>*>* decomposition = NULL);
-      T eval_dual_norm(const T* variables, list_long* path_out = NULL);
+      T eval_dual_norm(const T* variables, list_int* path_out = NULL);
       void proximal_l0(T* variables, const T lambda);
       void proximal_conv(T* variables,const T lambda);
-      long n() const { return _n; };
+      int n() const { return _n; };
 
    protected:
       void flow_decomposition(List<Path<Int>*>& decomposition) const;
       void scale_costs(const T lambda);
 
    private:
-      long _n;
-      long _m;
+      int _n;
+      int _m;
       MinCostFlow<Int>* _min_cost_flow;
 
       Int _big_integer;        // should be 64-bits max_precision
@@ -3139,8 +3138,8 @@ template <typename T = double, typename Int = long long> class GraphPath {
       T* _init_weights;
       T* _init_start_weights;
       T* _init_stop_weights;
-    //  long* _indices;
-//      long _num_fixed;
+    //  int* _indices;
+//      int _num_fixed;
       T _graphprecision;
 };
 
@@ -3151,20 +3150,20 @@ void GraphPath<T,Int>::init_graph(const GraphPathStruct<T>& graph) {
    _big_integer=std::numeric_limits<Int>::max();
    _n=graph.n;
    _m=graph.m;
-   const long n2=_n*2+2;
+   const int n2=_n*2+2;
    _infinite_capacity=_big_integer/n2;
-   long* num_arcs=new long[n2];
-   for (long i = 0; i<_n; ++i) {
+   int* num_arcs=new int[n2];
+   for (int i = 0; i<_n; ++i) {
       // s,t, j-j' j-j' dummy connexions
       num_arcs[i]= isinf(graph.start_weights[i]) ? 2 :  3;
    }
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       num_arcs[i+_n]= isinf(graph.stop_weights[i]) ? 2 :  3;
    }
    num_arcs[n2-2]=_n+1; // s connexions
    num_arcs[n2-1]=_n+1; // t connexions
-   for (long i = 0; i<_n; ++i) {
-      for (long j = graph.jc[i]; j<graph.jc[i+1]; ++j) {
+   for (int i = 0; i<_n; ++i) {
+      for (int j = graph.jc[i]; j<graph.jc[i+1]; ++j) {
          num_arcs[i+_n]++;
          num_arcs[graph.ir[j]]++;  // i'-j connexions
       }
@@ -3184,12 +3183,12 @@ void GraphPath<T,Int>::init_graph(const GraphPathStruct<T>& graph) {
    _min_cost_flow->add_edge(2*_n,2*_n+1,0,0,_big_integer);  // s-t connexion
 
    // j-j' connexions
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       _min_cost_flow->add_edge(i,i+_n,0,0,_infinite_capacity);
       _min_cost_flow->add_edge(i,i+_n,0,0,0);  // dummy arc for piecewise linear costs
    }
    // s-j connexions
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       if (!isinf(graph.start_weights[i])) {
          const Int cost=static_cast<Int>(ceil(graph.start_weights[i]*_sf));
          const double double_cost=static_cast<double>((graph.start_weights[i]));
@@ -3197,7 +3196,7 @@ void GraphPath<T,Int>::init_graph(const GraphPathStruct<T>& graph) {
       }
    }
    // j'-t connexions
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       if (!isinf(graph.stop_weights[i])) {
          const Int cost=static_cast<Int>(ceil(graph.stop_weights[i]*_sf));
          const double double_cost=static_cast<double>((graph.stop_weights[i]));
@@ -3205,8 +3204,8 @@ void GraphPath<T,Int>::init_graph(const GraphPathStruct<T>& graph) {
       }
    }
    // other connexions
-   for (long i = 0; i<_n; ++i) {
-      for (long j= graph.jc[i]; j<graph.jc[i+1]; ++j) {
+   for (int i = 0; i<_n; ++i) {
+      for (int j= graph.jc[i]; j<graph.jc[i+1]; ++j) {
          const Int cost=static_cast<Int>(ceil(graph.weights[j]*_sf));
          const double double_cost=static_cast<double>((graph.weights[j]));
          _min_cost_flow->add_edge(i+_n,graph.ir[j],cost,double_cost,_infinite_capacity);
@@ -3220,7 +3219,7 @@ void GraphPath<T,Int>::init_graph(const GraphPathStruct<T>& graph) {
 
 template <typename T, typename Int>
 T GraphPath<T,Int>::eval_l0(const T* variables, List<Path<Int>*>* decomposition) {
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       const Int dem= variables[i] ? static_cast<Int>(_sf) :  0;
       _min_cost_flow->set_demand(i,dem);
       _min_cost_flow->set_demand(i+_n,-dem);
@@ -3228,7 +3227,7 @@ T GraphPath<T,Int>::eval_l0(const T* variables, List<Path<Int>*>* decomposition)
    _min_cost_flow->compute_min_cost(false,false);
    const T val = static_cast<T>(_min_cost_flow->compute_cost_double())/(2*_sf*_sf);
    if (decomposition) {
-      for (long i = 0; i<_n; ++i) {
+      for (int i = 0; i<_n; ++i) {
          const Int dem= variables[i] ? static_cast<Int>(_sf) :  0;
          _min_cost_flow->set_demand(i,0);
          _min_cost_flow->set_demand(i+_n,0);
@@ -3243,7 +3242,7 @@ T GraphPath<T,Int>::eval_l0(const T* variables, List<Path<Int>*>* decomposition)
 
 template <typename T, typename Int>
 T GraphPath<T,Int>::eval_conv(const T* variables, List<Path<Int>*>* decomposition) {
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       const Int dem= static_cast<Int>(_sf*abs<T>(variables[i]));
       _min_cost_flow->set_demand(i,dem);
       _min_cost_flow->set_demand(i+_n,-dem);
@@ -3251,7 +3250,7 @@ T GraphPath<T,Int>::eval_conv(const T* variables, List<Path<Int>*>* decompositio
    _min_cost_flow->compute_min_cost(false,false);
    const T val = static_cast<T>(_min_cost_flow->compute_cost_double())/(2*_sf*_sf);
    if (decomposition) {
-      for (long i = 0; i<_n; ++i) {
+      for (int i = 0; i<_n; ++i) {
          const Int dem= static_cast<Int>(_sf*abs<T>(variables[i]));
          _min_cost_flow->set_demand(i,0);
          _min_cost_flow->set_demand(i+_n,0);
@@ -3264,22 +3263,22 @@ T GraphPath<T,Int>::eval_conv(const T* variables, List<Path<Int>*>* decompositio
 };
 
 template <typename T, typename Int>
-T GraphPath<T,Int>::eval_dual_norm(const T* variables, list_long* path_out) {
+T GraphPath<T,Int>::eval_dual_norm(const T* variables, list_int* path_out) {
    T tau=T(1.0);
-   list_long path;
+   list_int path;
    bool exit_loop=false;
    bool first=true;
    _min_cost_flow->set_edge(2*_n,0,0,0);
 
    while (!exit_loop) {
-      for (long i = 0; i<_n; ++i) {
+      for (int i = 0; i<_n; ++i) {
          const Int fact= static_cast<Int>(_sf*abs<T>(variables[i]/tau));
          _min_cost_flow->set_edge(i,0,-fact,_infinite_capacity);
          _min_cost_flow->set_edge(i,1,0,0);
       }
       T delta=static_cast<T>(_min_cost_flow->cost_shortest_path_in_dag(path))/_sf;
       T gamma=0;
-      for (const_iterator_long it = path.begin(); it != path.end(); ++it) {
+      for (const_iterator_int it = path.begin(); it != path.end(); ++it) {
          if (*it  < _n) gamma+=abs<T>(variables[*it]);
       }
       T new_tau=gamma/(delta+gamma/tau);
@@ -3289,7 +3288,7 @@ T GraphPath<T,Int>::eval_dual_norm(const T* variables, list_long* path_out) {
    }
 
    _min_cost_flow->set_edge(2*_n,0,0,_big_integer);
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       _min_cost_flow->set_edge(i,0,0,_infinite_capacity);
       _min_cost_flow->set_edge(i,1,0,0);
    }
@@ -3306,10 +3305,10 @@ void GraphPath<T,Int>::proximal_l0(T* variables, const T lambda) {
    T oldsf=_sf;
    this->scale_costs(lambda);
    const Int unit= static_cast<Int>(_sf);
-   for (long i = 0; i<2*_n; ++i) {
+   for (int i = 0; i<2*_n; ++i) {
       _min_cost_flow->set_demand(i,0);
    }
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       const Int fact= static_cast<Int>(_sf*(0.5*variables[i]*variables[i]));
       _min_cost_flow->set_edge(i,0,-fact,unit);
       _min_cost_flow->set_edge(i,1,0,_infinite_capacity);
@@ -3319,12 +3318,12 @@ void GraphPath<T,Int>::proximal_l0(T* variables, const T lambda) {
 
  //     _min_cost_flow->print_graph();
 
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       /// should check significant flow or not
       variables[i]= _min_cost_flow->get_flow(i,0) > 0 ? variables[i] : 0;
    }
 
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       _min_cost_flow->set_edge(i,0,0,_infinite_capacity);
       _min_cost_flow->set_edge(i,1,0,0);
    }
@@ -3352,10 +3351,10 @@ void GraphPath<T,Int>::proximal_conv(T* variables, const T lambda) {
    T oldsf=_sf;
    this->scale_costs(lambda);
 //   _min_cost_flow->scale_costs(static_cast<double>(lambda));
-   for (long i = 0; i<2*_n; ++i) {
+   for (int i = 0; i<2*_n; ++i) {
       _min_cost_flow->set_demand(i,0);
    }
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       const Int fact= static_cast<Int>(_sf*(abs<T>(variables[i])));
       _min_cost_flow->set_edge(i,0,-fact,fact);
       _min_cost_flow->set_quad_cost(i,0,true);
@@ -3363,10 +3362,10 @@ void GraphPath<T,Int>::proximal_conv(T* variables, const T lambda) {
    }
    _min_cost_flow->compute_min_cost(false,false);
 //   _min_cost_flow->test_optimality_conditions();
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       variables[i]= variables[i] > 0 ? static_cast<T>(_min_cost_flow->get_flow(i,0))/_sf : -static_cast<T>(_min_cost_flow->get_flow(i,0))/_sf;
    }
-   for (long i = 0; i<_n; ++i) {
+   for (int i = 0; i<_n; ++i) {
       _min_cost_flow->set_edge(i,0,0,_infinite_capacity);
       _min_cost_flow->set_quad_cost(i,0,false);
       _min_cost_flow->set_edge(i,1,0,0);
@@ -3382,8 +3381,8 @@ void GraphPath<T,Int>::flow_decomposition(List<Path<Int>*>& decomposition) const
    _min_cost_flow->st_flow_decomposition_dag(decomposition,2*_n,2*_n+1);
    _min_cost_flow->set_edge(2*_n,0,0,_big_integer);  // to prevent dummy s-t path
    for (ListIterator<Path<Int>*> it_path = decomposition.begin(); it_path != decomposition.end(); ++it_path) {
-      list_long new_nodes;
-      for (const_iterator_long it = it_path->nodes.begin(); it != it_path->nodes.end(); ++it) {
+      list_int new_nodes;
+      for (const_iterator_int it = it_path->nodes.begin(); it != it_path->nodes.end(); ++it) {
          if (*it <_n) new_nodes.push_back(*it);
       }
       it_path->nodes.clear();
@@ -3397,7 +3396,7 @@ void GraphPath<T,Int>::scale_costs(const T lambda) {
    Vector<T> start_weights(_init_start_weights,_n);
    Vector<T> stop_weights(_init_stop_weights,_n);
    Vector<T> weights(_init_weights,_m);
-   const long n2=_n*2+2;
+   const int n2=_n*2+2;
    T max_weight=lambda*MAX(start_weights.fmaxval(),MAX(stop_weights.fmaxval(),weights.fmaxval()));
    _sf=MIN(_graphprecision,static_cast<T>(_big_integer)/(max_weight*1000000.0*n2));
 //   cerr << "sf " << _sf << endl;

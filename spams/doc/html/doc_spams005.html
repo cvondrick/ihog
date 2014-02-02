@@ -16,21 +16,22 @@
 <A HREF="index.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
 <A HREF="doc_spams006.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
 <HR>
-<H2 CLASS="section"><A NAME="htoc8">4</A>  Sparse Decomposition Toolbox</H2><UL>
-<LI><A HREF="doc_spams005.html#toc5">Function mexOMP</A>
-</LI><LI><A HREF="doc_spams005.html#toc6">Function mexOMPMask</A>
-</LI><LI><A HREF="doc_spams005.html#toc7">Function mexLasso</A>
-</LI><LI><A HREF="doc_spams005.html#toc8">Function mexLassoWeighted</A>
-</LI><LI><A HREF="doc_spams005.html#toc9">Function mexLassoMask</A>
-</LI><LI><A HREF="doc_spams005.html#toc10">Function mexCD</A>
-</LI><LI><A HREF="doc_spams005.html#toc11">Function mexSOMP</A>
-</LI><LI><A HREF="doc_spams005.html#toc12">Function mexL1L2BCD</A>
-</LI><LI><A HREF="doc_spams005.html#toc13">Function mexSparseProject</A>
+<H2 CLASS="section"><A NAME="htoc9">4</A>  Sparse Decomposition Toolbox</H2><UL>
+<LI><A HREF="doc_spams005.html#toc6">Function mexOMP</A>
+</LI><LI><A HREF="doc_spams005.html#toc7">Function mexOMPMask</A>
+</LI><LI><A HREF="doc_spams005.html#toc8">Function mexRidgeRegression</A>
+</LI><LI><A HREF="doc_spams005.html#toc9">Function mexLasso</A>
+</LI><LI><A HREF="doc_spams005.html#toc10">Function mexLassoWeighted</A>
+</LI><LI><A HREF="doc_spams005.html#toc11">Function mexLassoMask</A>
+</LI><LI><A HREF="doc_spams005.html#toc12">Function mexCD</A>
+</LI><LI><A HREF="doc_spams005.html#toc13">Function mexSOMP</A>
+</LI><LI><A HREF="doc_spams005.html#toc14">Function mexL1L2BCD</A>
+</LI><LI><A HREF="doc_spams005.html#toc15">Function mexSparseProject</A>
 </LI></UL>
 <P>
 This toolbox implements several algorithms for solving signal reconstruction problems. It is mostly adapted for solving a large number of small/medium scale problems, but can be also efficient sometimes with large scale ones.
-</P><H3 CLASS="subsection"><A NAME="toc5"></A><A NAME="htoc9">4.1</A>  Function mexOMP</H3><P>
-This is a fast implementation of the Orthogonal Matching Pursuit algorithm (or forward selection) [<A HREF="doc_spams009.html#mallat4">24</A>, <A HREF="doc_spams009.html#weisberg">32</A>]. Given a matrix of signals <I><B>X</B></I>=[<I><B>x</B></I><SUP>1</SUP>,…,<I><B>x</B><SUP>n</SUP></I>] in ℝ<SUP><I>m</I> × <I>n</I></SUP> and a dictionary <I><B>D</B></I>=[<I><B>d</B></I><SUP>1</SUP>,…,<I><B>d</B><SUP>p</SUP></I>] in ℝ<SUP><I>m</I> × <I>p</I></SUP>, the algorithm computes a matrix <I><B>A</B></I>=[α<SUP>1</SUP>,…,α<I><SUP>n</SUP></I>] in ℝ<SUP><I>p</I> × <I>n</I></SUP>,
+</P><H3 CLASS="subsection"><A NAME="toc6"></A><A NAME="htoc10">4.1</A>  Function mexOMP</H3><P>
+This is a fast implementation of the Orthogonal Matching Pursuit algorithm (or forward selection) [<A HREF="doc_spams009.html#mallat4">26</A>, <A HREF="doc_spams009.html#weisberg">34</A>]. Given a matrix of signals <I><B>X</B></I>=[<I><B>x</B></I><SUP>1</SUP>,…,<I><B>x</B><SUP>n</SUP></I>] in ℝ<SUP><I>m</I> × <I>n</I></SUP> and a dictionary <I><B>D</B></I>=[<I><B>d</B></I><SUP>1</SUP>,…,<I><B>d</B><SUP>p</SUP></I>] in ℝ<SUP><I>m</I> × <I>p</I></SUP>, the algorithm computes a matrix <I><B>A</B></I>=[α<SUP>1</SUP>,…,α<I><SUP>n</SUP></I>] in ℝ<SUP><I>p</I> × <I>n</I></SUP>,
 where for each column <I><B>x</B></I> of <I><B>X</B></I>, it returns a coefficient vector α which is an approximate solution of the following NP-hard problem
 </P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
 </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
@@ -114,37 +115,37 @@ decomposition with a Cholesky-based algorithm (see [<A HREF="doc_spams009.html#c
 %<BR>
 % Author: Julien Mairal, 2009</FONT></TD></TR>
 </TABLE><P>
-The following piece of code contains usage examples:
-</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
-<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+The following piece of code illustrates how to use this function.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue">clear</FONT> <FONT COLOR="blue">all</FONT>;<BR>
+<FONT COLOR="blue">randn</FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
 <BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'test mexOMP'</FONT>);<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'test mexOMP'</FONT>);<BR>
 <BR>
 <FONT COLOR="#007F00">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<BR>
 % Decomposition of a large number of signals<BR>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</FONT><BR>
-X=<FONT COLOR="blue"><B>randn</B></FONT>(64,100000);<BR>
-D=<FONT COLOR="blue"><B>randn</B></FONT>(64,200);<BR>
-D=D./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(D.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(D,1) 1]);<BR>
+X=<FONT COLOR="blue">randn</FONT>(64,400000);<BR>
+D=<FONT COLOR="blue">randn</FONT>(64,200);<BR>
+D=D./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(D.^2)),[<FONT COLOR="blue">size</FONT>(D,1) 1]);<BR>
 <FONT COLOR="#007F00">% parameter of the optimization procedure are chosen</FONT><BR>
 param.L=10; <FONT COLOR="#007F00">% not more than 10 non-zeros coefficients</FONT><BR>
-param.<FONT COLOR="blue"><B>eps</B></FONT>=0.1; <FONT COLOR="#007F00">% squared norm of the residual should be less than 0.1</FONT><BR>
+param.<FONT COLOR="blue">eps</FONT>=0.1; <FONT COLOR="#007F00">% squared norm of the residual should be less than 0.1</FONT><BR>
 param.numThreads=-1; <FONT COLOR="#007F00">% number of processors/cores to use; the default choice is -1</FONT><BR>
                     <FONT COLOR="#007F00">% and uses all the cores of the machine</FONT><BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
+<FONT COLOR="blue">tic</FONT><BR>
 alpha=mexOMP(X,D,param);<BR>
-t=<FONT COLOR="blue"><B>toc<BR>
-fprintf</B></FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t);<BR>
+t=<FONT COLOR="blue">toc<BR>
+fprintf</FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t);<BR>
 <BR>
 <FONT COLOR="#007F00">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<BR>
 % Regularization path of a single signal <BR>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</FONT><BR>
-X=<FONT COLOR="blue"><B>randn</B></FONT>(64,1);<BR>
-D=<FONT COLOR="blue"><B>randn</B></FONT>(64,10);<BR>
+X=<FONT COLOR="blue">randn</FONT>(64,1);<BR>
+D=<FONT COLOR="blue">randn</FONT>(64,10);<BR>
 param.L=5;<BR>
-D=D./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(D.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(D,1) 1]);<BR>
-[alpha <FONT COLOR="blue"><B>path</B></FONT>]=mexOMP(X,D,param);</TD></TR>
-</TABLE><H3 CLASS="subsection"><A NAME="toc6"></A><A NAME="htoc10">4.2</A>  Function mexOMPMask</H3><P>
+D=D./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(D.^2)),[<FONT COLOR="blue">size</FONT>(D,1) 1]);<BR>
+[alpha <FONT COLOR="blue">path</FONT>]=mexOMP(X,D,param);</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc7"></A><A NAME="htoc11">4.2</A>  Function mexOMPMask</H3><P>
 This is a variant of mexOMP with the possibility of handling a binary mask. 
 Given a binary mask <I><B>B</B></I>=[β<SUP>1</SUP>,…,β<I><SUP>n</SUP></I>] in {0,1}<SUP><I>m</I> × <I>n</I></SUP>, it returns a matrix <I><B>A</B></I>=[α<SUP>1</SUP>,…,α<I><SUP>n</SUP></I>] such that for every column <I><B>x</B></I> of <I><B>X</B></I>, β of <I><B>B</B></I>, it computes a column α of <I><B>A</B></I> by addressing
 </P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
@@ -228,34 +229,84 @@ where diag(β) is a diagonal matrix with the entries of β on the diagonal.</P><
 %<BR>
 % Author: Julien Mairal, 2010</FONT></TD></TR>
 </TABLE><P>
-The following piece of code contains usage examples:
-</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
+The following piece of code illustrates how to use this function.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue">clear</FONT> <FONT COLOR="blue">all</FONT>;<BR>
 <BR>
-<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'test mexOMPMask\n'</FONT>);<BR>
+<FONT COLOR="blue">randn</FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'test mexOMPMask\n'</FONT>);<BR>
 <BR>
 <FONT COLOR="#007F00">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<BR>
 % Decomposition of a large number of signals<BR>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<BR>
 % Data are generated</FONT><BR>
-X=<FONT COLOR="blue"><B>randn</B></FONT>(100,100);<BR>
-X=X./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(X.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(X,1) 1]);<BR>
-D=<FONT COLOR="blue"><B>randn</B></FONT>(100,20);<BR>
-D=D./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(D.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(D,1) 1]);<BR>
+X=<FONT COLOR="blue">randn</FONT>(100,100);<BR>
+X=X./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(X.^2)),[<FONT COLOR="blue">size</FONT>(X,1) 1]);<BR>
+D=<FONT COLOR="blue">randn</FONT>(100,20);<BR>
+D=D./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(D.^2)),[<FONT COLOR="blue">size</FONT>(D,1) 1]);<BR>
 mask=(X &gt; 0); <FONT COLOR="#007F00">% generating a binary mask<BR>
 <BR>
 % parameter of the optimization procedure are chosen</FONT><BR>
 param.L=20; <FONT COLOR="#007F00">% not more than 20 non-zeros coefficients (default: min(size(D,1),size(D,2)))</FONT><BR>
-param.<FONT COLOR="blue"><B>eps</B></FONT>=0.01; <FONT COLOR="#007F00">%</FONT><BR>
+param.<FONT COLOR="blue">eps</FONT>=0.01; <FONT COLOR="#007F00">%</FONT><BR>
 param.numThreads=-1; <FONT COLOR="#007F00">% number of processors/cores to use; the default choice is -1</FONT><BR>
                      <FONT COLOR="#007F00">% and uses all the cores of the machine</FONT><BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
+<FONT COLOR="blue">tic</FONT><BR>
 alpha=mexOMPMask(X,D,mask,param);<BR>
-t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
-<FONT COLOR="blue"><B>toc<BR>
+t=<FONT COLOR="blue">toc</FONT>;<BR>
+<FONT COLOR="blue">toc<BR>
 <BR>
-fprintf</B></FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t);</TD></TR>
-</TABLE><H3 CLASS="subsection"><A NAME="toc7"></A><A NAME="htoc11">4.3</A>  Function mexLasso</H3><P>
+fprintf</FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t);</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc8"></A><A NAME="htoc12">4.3</A>  Function mexRidgeRegression</H3><P>
+This is a ridge regression solver using a conjugate gradient solver. 
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">% <BR>
+% Usage: [W]=mexRidgeRegression(Y,X,W0,param);<BR>
+%<BR>
+% Name: mexRidgeRegression<BR>
+%<BR>
+% Description: mexFistaFlat solves sparse regularized problems.<BR>
+%         X is a design matrix of size m x p<BR>
+%         X=[x^1,...,x^n]', where the x_i's are the rows of X<BR>
+%         Y=[y^1,...,y^n] is a matrix of size m x n<BR>
+%         It implements a conjugate gradient solver for ridge regression<BR>
+%         <BR>
+% Inputs: Y:  double dense m x n matrix<BR>
+%         X:  double dense or sparse m x p matrix   <BR>
+%         W0:  double dense p x n matrix or p x Nn matrix (for multi-logistic loss)<BR>
+%              initial guess<BR>
+%         param: struct<BR>
+%            param.lambda (regularization parameter)<BR>
+%            param.numThreads (optional, number of threads for exploiting<BR>
+%                multi-core / multi-cpus. By default, it takes the value -1,<BR>
+%                which automatically selects all the available CPUs/cores).<BR>
+%            param.itermax (optional, maximum number of iterations, 100 by default)<BR>
+%            param.tol (optional, tolerance for stopping criteration, which is a relative duality gap<BR>
+%                if it is available, or a relative change of parameters).<BR>
+%<BR>
+% Output:  W:  double dense p x n matrix <BR>
+<BR>
+% Author: Julien Mairal, 2013</FONT></TD></TR>
+</TABLE><P>
+The following piece of code illustrates how to use this function.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue">format</FONT> compact;<BR>
+<FONT COLOR="blue">randn</FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+param.numThreads=-1; <FONT COLOR="#007F00">% all cores (-1 by default)</FONT><BR>
+param.lambda=0.05; <FONT COLOR="#007F00">% regularization parameter</FONT><BR>
+<BR>
+X=<FONT COLOR="blue">randn</FONT>(100,200);<BR>
+X=X-repmat(<FONT COLOR="blue">mean</FONT>(X),[<FONT COLOR="blue">size</FONT>(X,1) 1]);<BR>
+X=mexNormalize(X);<BR>
+Y=<FONT COLOR="blue">randn</FONT>(100,1);<BR>
+Y=Y-repmat(<FONT COLOR="blue">mean</FONT>(Y),[<FONT COLOR="blue">size</FONT>(Y,1) 1]);<BR>
+Y=mexNormalize(Y);<BR>
+W0=<FONT COLOR="blue">zeros</FONT>(<FONT COLOR="blue">size</FONT>(X,2),<FONT COLOR="blue">size</FONT>(Y,2));<BR>
+<FONT COLOR="#007F00">% Regression experiments <BR>
+% 100 regression problems with the same design matrix X.</FONT><BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'\nVarious regression experiments\n'</FONT>);<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'\nRidge Regression with conjugate gradient solver\n'</FONT>);<BR>
+<FONT COLOR="blue">tic</FONT><BR>
+[W]=mexRidgeRegression(Y,X,W0,param);<BR>
+t=<FONT COLOR="blue">toc</FONT></TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc9"></A><A NAME="htoc13">4.4</A>  Function mexLasso</H3><P>
 This is a fast implementation of the LARS algorithm [<A HREF="doc_spams009.html#efron">8</A>] (variant for solving the Lasso) for solving the Lasso or Elastic-Net. Given a matrix of signals <I><B>X</B></I>=[<I><B>x</B></I><SUP>1</SUP>,…,<I><B>x</B><SUP>n</SUP></I>] in ℝ<SUP><I>m</I> × <I>n</I></SUP> and a dictionary <I><B>D</B></I> in ℝ<SUP><I>m</I> × <I>p</I></SUP>, depending on the input parameters, the algorithm returns a matrix of coefficients <I><B>A</B></I>=[α<SUP>1</SUP>,…,α<I><SUP>n</SUP></I>] in ℝ<SUP><I>p</I> × <I>n</I></SUP> such that for every column <I><B>x</B></I> of <I><B>X</B></I>, the corresponding column α of <I><B>A</B></I> is the solution of
 </P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
 </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
@@ -355,19 +406,19 @@ as an argument, see below:</P><TABLE CLASS="lstframe" STYLE="padding:1ex;backgro
 %<BR>
 % Author: Julien Mairal, 2009</FONT></TD></TR>
 </TABLE><P>
-The following piece of code contains usage examples:
-</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
+The following piece of code illustrates how to use this function.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue">clear</FONT> <FONT COLOR="blue">all</FONT>;<BR>
 <BR>
-<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'test mexLasso\n'</FONT>);<BR>
+<FONT COLOR="blue">randn</FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'test mexLasso\n'</FONT>);<BR>
 <FONT COLOR="#007F00">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<BR>
 % Decomposition of a large number of signals<BR>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<BR>
 % Data are generated</FONT><BR>
-X=<FONT COLOR="blue"><B>randn</B></FONT>(100,100000);<BR>
-X=X./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(X.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(X,1) 1]);<BR>
-D=<FONT COLOR="blue"><B>randn</B></FONT>(100,200);<BR>
-D=D./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(D.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(D,1) 1]);<BR>
+X=<FONT COLOR="blue">randn</FONT>(100,100000);<BR>
+X=X./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(X.^2)),[<FONT COLOR="blue">size</FONT>(X,1) 1]);<BR>
+D=<FONT COLOR="blue">randn</FONT>(100,200);<BR>
+D=D./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(D.^2)),[<FONT COLOR="blue">size</FONT>(D,1) 1]);<BR>
 <BR>
 <FONT COLOR="#007F00">% parameter of the optimization procedure are chosen<BR>
 %param.L=20; % not more than 20 non-zeros coefficients (default: min(size(D,1),size(D,2)))</FONT><BR>
@@ -376,20 +427,20 @@ param.numThreads=-1; <FONT COLOR="#007F00">% number of processors/cores to�
                      <FONT COLOR="#007F00">% and uses all the cores of the machine</FONT><BR>
 param.mode=2;        <FONT COLOR="#007F00">% penalized formulation</FONT><BR>
 <BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
+<FONT COLOR="blue">tic</FONT><BR>
 alpha=mexLasso(X,D,param);<BR>
-t=<FONT COLOR="blue"><B>toc<BR>
-fprintf</B></FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t);<BR>
+t=<FONT COLOR="blue">toc<BR>
+fprintf</FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t);<BR>
 <BR>
 <FONT COLOR="#007F00">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<BR>
 % Regularization path of a single signal <BR>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</FONT><BR>
-X=<FONT COLOR="blue"><B>randn</B></FONT>(64,1);<BR>
-D=<FONT COLOR="blue"><B>randn</B></FONT>(64,10);<BR>
-D=D./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(D.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(D,1) 1]);<BR>
+X=<FONT COLOR="blue">randn</FONT>(64,1);<BR>
+D=<FONT COLOR="blue">randn</FONT>(64,10);<BR>
+D=D./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(D.^2)),[<FONT COLOR="blue">size</FONT>(D,1) 1]);<BR>
 param.lambda=0;<BR>
-[alpha <FONT COLOR="blue"><B>path</B></FONT>]=mexLasso(X,D,param);</TD></TR>
-</TABLE><H3 CLASS="subsection"><A NAME="toc8"></A><A NAME="htoc12">4.4</A>  Function mexLassoWeighted</H3><P>
+[alpha <FONT COLOR="blue">path</FONT>]=mexLasso(X,D,param);</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc10"></A><A NAME="htoc14">4.5</A>  Function mexLassoWeighted</H3><P>
 This is a fast implementation of a weighted version of LARS [<A HREF="doc_spams009.html#efron">8</A>]. Given a matrix of signals <I><B>X</B></I>=[<I><B>x</B></I><SUP>1</SUP>,…,<I><B>x</B><SUP>n</SUP></I>] in ℝ<SUP><I>m</I> × <I>n</I></SUP>, a matrix of weights <I><B>W</B></I>=[<I><B>w</B></I><SUP>1</SUP>,…,<I><B>w</B><SUP>n</SUP></I>] ∈ ℝ<SUP><I>p</I> × <I>n</I></SUP>, and a dictionary <I><B>D</B></I> in ℝ<SUP><I>m</I> × <I>p</I></SUP>, depending on the input parameters, the algorithm returns a matrix of coefficients <I><B>A</B></I>=[α<SUP>1</SUP>,…,α<I><SUP>n</SUP></I>] in ℝ<SUP><I>p</I> × <I>n</I></SUP>,
 such that for every column <I><B>x</B></I> of <I><B>X</B></I>, <I><B>w</B></I> of <I><B>W</B></I>, it computes a column α of <I><B>A</B></I>, which is the solution of
 </P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
@@ -420,7 +471,7 @@ or
 </TABLE><P>
 The implementation has also an option to add <B>positivity constraints</B> on
 the solutions α. This function is potentially useful for
-implementing efficiently the randomized Lasso of [<A HREF="doc_spams009.html#meinshausen">25</A>], or reweighted-ℓ<SUB>1</SUB> schemes [<A HREF="doc_spams009.html#candes4">4</A>].</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">% <BR>
+implementing efficiently the randomized Lasso of [<A HREF="doc_spams009.html#meinshausen">27</A>], or reweighted-ℓ<SUB>1</SUB> schemes [<A HREF="doc_spams009.html#candes4">4</A>].</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="#007F00">% <BR>
 % Usage:  A=mexLassoWeighted(X,D,W,param);<BR>
 %<BR>
 % Name: mexLassoWeighted.  <BR>
@@ -473,16 +524,16 @@ implementing efficiently the randomized Lasso of [<A HREF="doc_spams009.html#mei
 %<BR>
 % Author: Julien Mairal, 2009</FONT></TD></TR>
 </TABLE><P>
-The following piece of code contains usage examples:
-</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
+The following piece of code illustrates how to use this function.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue">clear</FONT> <FONT COLOR="blue">all</FONT>;<BR>
 <BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'test Lasso weighted\n'</FONT>);<BR>
-<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'test Lasso weighted\n'</FONT>);<BR>
+<FONT COLOR="blue">randn</FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
 <FONT COLOR="#007F00">% Data are generated</FONT><BR>
-X=<FONT COLOR="blue"><B>randn</B></FONT>(64,10000);<BR>
-X=X./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(X.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(X,1) 1]);<BR>
-D=<FONT COLOR="blue"><B>randn</B></FONT>(64,256);<BR>
-D=D./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(D.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(D,1) 1]);<BR>
+X=<FONT COLOR="blue">randn</FONT>(64,10000);<BR>
+X=X./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(X.^2)),[<FONT COLOR="blue">size</FONT>(X,1) 1]);<BR>
+D=<FONT COLOR="blue">randn</FONT>(64,256);<BR>
+D=D./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(D.^2)),[<FONT COLOR="blue">size</FONT>(D,1) 1]);<BR>
 <BR>
 <FONT COLOR="#007F00">% parameter of the optimization procedure are chosen</FONT><BR>
 param.L=20; <FONT COLOR="#007F00">% not more than 20 non-zeros coefficients (default: min(size(D,1),size(D,2)))</FONT><BR>
@@ -491,15 +542,15 @@ param.numThreads=8; <FONT COLOR="#007F00">% number of processors/cores to 
                     <FONT COLOR="#007F00">% and uses all the cores of the machine</FONT><BR>
 param.mode=2;       <FONT COLOR="#007F00">% penalized formulation</FONT><BR>
 <BR>
-W=<FONT COLOR="blue"><B>rand</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(D,2),<FONT COLOR="blue"><B>size</B></FONT>(X,2));<BR>
+W=<FONT COLOR="blue">rand</FONT>(<FONT COLOR="blue">size</FONT>(D,2),<FONT COLOR="blue">size</FONT>(X,2));<BR>
 <BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
+<FONT COLOR="blue">tic</FONT><BR>
 alpha=mexLassoWeighted(X,D,W,param);<BR>
-t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
-<FONT COLOR="blue"><B>toc<BR>
+t=<FONT COLOR="blue">toc</FONT>;<BR>
+<FONT COLOR="blue">toc<BR>
 <BR>
-fprintf</B></FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t);</TD></TR>
-</TABLE><H3 CLASS="subsection"><A NAME="toc9"></A><A NAME="htoc13">4.5</A>  Function mexLassoMask</H3><P>
+fprintf</FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t);</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc11"></A><A NAME="htoc15">4.6</A>  Function mexLassoMask</H3><P>
 This is a variant of mexLasso with the possibility of adding a mask <I><B>B</B></I>=[β<SUP>1</SUP>,…,β<I><SUP>n</SUP></I>], as in mexOMPMask. 
 For every column <I><B>x</B></I> of <I><B>X</B></I>, β of <I><B>B</B></I>, it computes a column α of <I><B>A</B></I>, which is the solution of
 </P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
@@ -586,20 +637,20 @@ or
 %<BR>
 % Author: Julien Mairal, 2010</FONT></TD></TR>
 </TABLE><P>
-The following piece of code contains usage examples:
-</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
+The following piece of code illustrates how to use this function.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue">clear</FONT> <FONT COLOR="blue">all</FONT>;<BR>
 <BR>
-<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'test mexLasso\n'</FONT>);<BR>
+<FONT COLOR="blue">randn</FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'test mexLasso\n'</FONT>);<BR>
 <BR>
 <FONT COLOR="#007F00">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<BR>
 % Decomposition of a large number of signals<BR>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<BR>
 % Data are generated</FONT><BR>
-X=<FONT COLOR="blue"><B>randn</B></FONT>(100,100);<BR>
-X=X./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(X.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(X,1) 1]);<BR>
-D=<FONT COLOR="blue"><B>randn</B></FONT>(100,20);<BR>
-D=D./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(D.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(D,1) 1]);<BR>
+X=<FONT COLOR="blue">randn</FONT>(100,100);<BR>
+X=X./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(X.^2)),[<FONT COLOR="blue">size</FONT>(X,1) 1]);<BR>
+D=<FONT COLOR="blue">randn</FONT>(100,20);<BR>
+D=D./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(D.^2)),[<FONT COLOR="blue">size</FONT>(D,1) 1]);<BR>
 mask=(X &gt; 0); <FONT COLOR="#007F00">% generating a binary mask<BR>
 <BR>
 % parameter of the optimization procedure are chosen<BR>
@@ -609,13 +660,13 @@ param.numThreads=-1; <FONT COLOR="#007F00">% number of processors/cores to�
                      <FONT COLOR="#007F00">% and uses all the cores of the machine</FONT><BR>
 param.mode=2;        <FONT COLOR="#007F00">% penalized formulation</FONT><BR>
 <BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
+<FONT COLOR="blue">tic</FONT><BR>
 alpha=mexLassoMask(X,D,mask,param);<BR>
-t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
-<FONT COLOR="blue"><B>toc<BR>
+t=<FONT COLOR="blue">toc</FONT>;<BR>
+<FONT COLOR="blue">toc<BR>
 <BR>
-fprintf</B></FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t);</TD></TR>
-</TABLE><H3 CLASS="subsection"><A NAME="toc10"></A><A NAME="htoc14">4.6</A>  Function mexCD</H3><P>
+fprintf</FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t);</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc12"></A><A NAME="htoc16">4.7</A>  Function mexCD</H3><P>
 Coordinate-descent approach for solving Eq. (<A HREF="#eq:lasso">10</A>) and
 Eq. (<A HREF="#eq:lasso2">9</A>). Note that unlike mexLasso, it is not implemented to solve the Elastic-Net formulation.
 To solve Eq. (<A HREF="#eq:lasso2">9</A>), the algorithm solves a
@@ -670,42 +721,42 @@ better when the correlation between the dictionary elements is small. </P><TABLE
 %<BR>
 % Author: Julien Mairal, 2009</FONT></TD></TR>
 </TABLE><P>
-The following piece of code contains usage examples:
-</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
+The following piece of code illustrates how to use this function.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue">clear</FONT> <FONT COLOR="blue">all</FONT>;<BR>
 <BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'test mexCD\n'</FONT>);<BR>
-<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'test mexCD\n'</FONT>);<BR>
+<FONT COLOR="blue">randn</FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
 <FONT COLOR="#007F00">% Data are generated</FONT><BR>
-X=<FONT COLOR="blue"><B>randn</B></FONT>(64,100);<BR>
-X=X./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(X.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(X,1) 1]);<BR>
-D=<FONT COLOR="blue"><B>randn</B></FONT>(64,100);<BR>
-D=D./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(D.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(D,1) 1]);<BR>
+X=<FONT COLOR="blue">randn</FONT>(64,100);<BR>
+X=X./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(X.^2)),[<FONT COLOR="blue">size</FONT>(X,1) 1]);<BR>
+D=<FONT COLOR="blue">randn</FONT>(64,100);<BR>
+D=D./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(D.^2)),[<FONT COLOR="blue">size</FONT>(D,1) 1]);<BR>
 <BR>
 <FONT COLOR="#007F00">% parameter of the optimization procedure are chosen</FONT><BR>
 param.lambda=0.015; <FONT COLOR="#007F00">% not more than 20 non-zeros coefficients</FONT><BR>
 param.numThreads=4; <FONT COLOR="#007F00">% number of processors/cores to use; the default choice is -1</FONT><BR>
 param.mode=2;       <FONT COLOR="#007F00">% penalized formulation</FONT><BR>
 <BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
+<FONT COLOR="blue">tic</FONT><BR>
 alpha=mexLasso(X,D,param);<BR>
-t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
-<FONT COLOR="blue"><B>toc</B></FONT><BR>
-E=<FONT COLOR="blue"><B>mean</B></FONT>(0.5*<FONT COLOR="blue"><B>sum</B></FONT>((X-D*alpha).^2)+param.lambda*<FONT COLOR="blue"><B>sum</B></FONT>(<FONT COLOR="blue"><B>abs</B></FONT>(alpha)));<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'%f signals processed per second for LARS\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t);<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Objective function for LARS: %g\n'</FONT>,E);<BR>
+t=<FONT COLOR="blue">toc</FONT>;<BR>
+<FONT COLOR="blue">toc</FONT><BR>
+E=<FONT COLOR="blue">mean</FONT>(0.5*<FONT COLOR="blue">sum</FONT>((X-D*alpha).^2)+param.lambda*<FONT COLOR="blue">sum</FONT>(<FONT COLOR="blue">abs</FONT>(alpha)));<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'%f signals processed per second for LARS\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t);<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'Objective function for LARS: %g\n'</FONT>,E);<BR>
 <BR>
 param.tol=0.001;<BR>
 param.itermax=1000;<BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
-alpha2=mexCD(X,D,<FONT COLOR="blue"><B>sparse</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(alpha,1),<FONT COLOR="blue"><B>size</B></FONT>(alpha,2)),param);<BR>
-t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
-<FONT COLOR="blue"><B>toc<BR>
+<FONT COLOR="blue">tic</FONT><BR>
+alpha2=mexCD(X,D,<FONT COLOR="blue">sparse</FONT>(<FONT COLOR="blue">size</FONT>(alpha,1),<FONT COLOR="blue">size</FONT>(alpha,2)),param);<BR>
+t=<FONT COLOR="blue">toc</FONT>;<BR>
+<FONT COLOR="blue">toc<BR>
 <BR>
-fprintf</B></FONT>(<FONT COLOR="red">'%f signals processed per second for CD\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t);<BR>
-E=<FONT COLOR="blue"><B>mean</B></FONT>(0.5*<FONT COLOR="blue"><B>sum</B></FONT>((X-D*alpha2).^2)+param.lambda*<FONT COLOR="blue"><B>sum</B></FONT>(<FONT COLOR="blue"><B>abs</B></FONT>(alpha2)));<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Objective function for CD: %g\n'</FONT>,E);<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'With Random Design, CD can be much faster than LARS\n'</FONT>);</TD></TR>
-</TABLE><H3 CLASS="subsection"><A NAME="toc11"></A><A NAME="htoc15">4.7</A>  Function mexSOMP</H3><P>
+fprintf</FONT>(<FONT COLOR="red">'%f signals processed per second for CD\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t);<BR>
+E=<FONT COLOR="blue">mean</FONT>(0.5*<FONT COLOR="blue">sum</FONT>((X-D*alpha2).^2)+param.lambda*<FONT COLOR="blue">sum</FONT>(<FONT COLOR="blue">abs</FONT>(alpha2)));<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'Objective function for CD: %g\n'</FONT>,E);<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'With Random Design, CD can be much faster than LARS\n'</FONT>);</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc13"></A><A NAME="htoc17">4.8</A>  Function mexSOMP</H3><P>
 This is a fast implementation of the Simultaneous Orthogonal Matching Pursuit algorithm. Given a set of matrices <I><B>X</B></I>=[<I><B>X</B></I><SUP>1</SUP>,…,<I><B>X</B><SUP>n</SUP></I>] in ℝ<SUP><I>m</I> × <I>N</I></SUP>, where the <I><B>X</B><SUP>i</SUP></I>’s are in ℝ<SUP><I>m</I> × <I>n<SUB>i</SUB></I></SUP>, and a dictionary <I><B>D</B></I> in ℝ<SUP><I>m</I> × <I>p</I></SUP>, the algorithm returns a matrix of coefficients <I><B>A</B></I>=[<I><B>A</B></I><SUP>1</SUP>,…,<I><B>A</B><SUP>n</SUP></I>] in ℝ<SUP><I>p</I> × <I>N</I></SUP> which is an approximate solution of the following NP-hard problem
 </P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
 ∀ <I>i</I>   </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
@@ -772,30 +823,30 @@ To be efficient, the method first compute the covariance matrix <I><B>D</B><SUP>
 %<BR>
 % Author: Julien Mairal, 2010</FONT></TD></TR>
 </TABLE><P>
-The following piece of code contains usage examples:
-</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
-<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+The following piece of code illustrates how to use this function.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue">clear</FONT> <FONT COLOR="blue">all</FONT>;<BR>
+<FONT COLOR="blue">randn</FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
 <BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'test mexSOMP\n'</FONT>);<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'test mexSOMP\n'</FONT>);<BR>
 <BR>
 <FONT COLOR="#007F00">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<BR>
 % Decomposition of a large number of groups <BR>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</FONT><BR>
-X=<FONT COLOR="blue"><B>randn</B></FONT>(64,10000);<BR>
-D=<FONT COLOR="blue"><B>randn</B></FONT>(64,200);<BR>
-D=D./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(D.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(D,1) 1]);<BR>
+X=<FONT COLOR="blue">randn</FONT>(64,10000);<BR>
+D=<FONT COLOR="blue">randn</FONT>(64,200);<BR>
+D=D./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(D.^2)),[<FONT COLOR="blue">size</FONT>(D,1) 1]);<BR>
 ind_groups=int32(0:10:9999); <FONT COLOR="#007F00">% indices of the first signals in each group<BR>
 <BR>
 % parameter of the optimization procedure are chosen</FONT><BR>
 param.L=10; <FONT COLOR="#007F00">% not more than 10 non-zeros coefficients</FONT><BR>
-param.<FONT COLOR="blue"><B>eps</B></FONT>=0.1; <FONT COLOR="#007F00">% squared norm of the residual should be less than 0.1</FONT><BR>
+param.<FONT COLOR="blue">eps</FONT>=0.1; <FONT COLOR="#007F00">% squared norm of the residual should be less than 0.1</FONT><BR>
 param.numThreads=-1; <FONT COLOR="#007F00">% number of processors/cores to use; the default choice is -1</FONT><BR>
                     <FONT COLOR="#007F00">% and uses all the cores of the machine</FONT><BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
+<FONT COLOR="blue">tic</FONT><BR>
 alpha=mexSOMP(X,D,ind_groups,param);<BR>
-t=<FONT COLOR="blue"><B>toc<BR>
-fprintf</B></FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t);</TD></TR>
-</TABLE><H3 CLASS="subsection"><A NAME="toc12"></A><A NAME="htoc16">4.8</A>  Function mexL1L2BCD</H3><P>
+t=<FONT COLOR="blue">toc<BR>
+fprintf</FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t);</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc14"></A><A NAME="htoc18">4.9</A>  Function mexL1L2BCD</H3><P>
 This is a fast implementation of a simultaneous signal decomposition formulation. Given a set of matrices <I><B>X</B></I>=[<I><B>X</B></I><SUP>1</SUP>,…,<I><B>X</B><SUP>n</SUP></I>] in ℝ<SUP><I>m</I> × <I>N</I></SUP>, where the <I><B>X</B><SUP>i</SUP></I>’s are in ℝ<SUP><I>m</I> × <I>n<SUB>i</SUB></I></SUP>, and a dictionary <I><B>D</B></I> in ℝ<SUP><I>m</I> × <I>p</I></SUP>, the algorithm returns a matrix of coefficients <I><B>A</B></I>=[<I><B>A</B></I><SUP>1</SUP>,…,<I><B>A</B><SUP>n</SUP></I>] in ℝ<SUP><I>p</I> × <I>N</I></SUP> which is an approximate solution of the following NP-hard problem
 </P><TABLE CLASS="display dcenter"><TR VALIGN="middle"><TD CLASS="dcell">
 ∀ <I>i</I>   </TD><TD CLASS="dcell"><TABLE CLASS="display"><TR><TD CLASS="dcell" ALIGN="center">&nbsp;</TD></TR>
@@ -862,18 +913,18 @@ To be efficient, the method first compute the covariance matrix <I><B>D</B><SUP>
 %<BR>
 % Author: Julien Mairal, 2010</FONT></TD></TR>
 </TABLE><P>
-The following piece of code contains usage examples:
-</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
-<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+The following piece of code illustrates how to use this function.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue">clear</FONT> <FONT COLOR="blue">all</FONT>;<BR>
+<FONT COLOR="blue">randn</FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
 <BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'test mexL1L2BCD\n'</FONT>);<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'test mexL1L2BCD\n'</FONT>);<BR>
 <FONT COLOR="#007F00">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<BR>
 % Decomposition of a large number of groups <BR>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</FONT><BR>
-X=<FONT COLOR="blue"><B>randn</B></FONT>(64,100);<BR>
-D=<FONT COLOR="blue"><B>randn</B></FONT>(64,200);<BR>
-D=D./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(D.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(D,1) 1]);<BR>
-ind_groups=int32(0:10:<FONT COLOR="blue"><B>size</B></FONT>(X,2)-1); <FONT COLOR="#007F00">% indices of the first signals in each group<BR>
+X=<FONT COLOR="blue">randn</FONT>(64,100);<BR>
+D=<FONT COLOR="blue">randn</FONT>(64,200);<BR>
+D=D./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(D.^2)),[<FONT COLOR="blue">size</FONT>(D,1) 1]);<BR>
+ind_groups=int32(0:10:<FONT COLOR="blue">size</FONT>(X,2)-1); <FONT COLOR="#007F00">% indices of the first signals in each group<BR>
 <BR>
 % parameter of the optimization procedure are chosen</FONT><BR>
 param.itermax=100;<BR>
@@ -882,12 +933,12 @@ param.mode=2; <FONT COLOR="#007F00">% penalty mode</FONT><BR>
 param.lambda=0.15; <FONT COLOR="#007F00">% squared norm of the residual should be less than 0.1</FONT><BR>
 param.numThreads=-1; <FONT COLOR="#007F00">% number of processors/cores to use; the default choice is -1</FONT><BR>
                     <FONT COLOR="#007F00">% and uses all the cores of the machine</FONT><BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
-alpha0=<FONT COLOR="blue"><B>zeros</B></FONT>(<FONT COLOR="blue"><B>size</B></FONT>(D,2),<FONT COLOR="blue"><B>size</B></FONT>(X,2));<BR>
+<FONT COLOR="blue">tic</FONT><BR>
+alpha0=<FONT COLOR="blue">zeros</FONT>(<FONT COLOR="blue">size</FONT>(D,2),<FONT COLOR="blue">size</FONT>(X,2));<BR>
 alpha=mexL1L2BCD(X,D,alpha0,ind_groups,param);<BR>
-t=<FONT COLOR="blue"><B>toc<BR>
-fprintf</B></FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t);</TD></TR>
-</TABLE><H3 CLASS="subsection"><A NAME="toc13"></A><A NAME="htoc17">4.9</A>  Function mexSparseProject</H3><P>
+t=<FONT COLOR="blue">toc<BR>
+fprintf</FONT>(<FONT COLOR="red">'%f signals processed per second\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t);</TD></TR>
+</TABLE><H3 CLASS="subsection"><A NAME="toc15"></A><A NAME="htoc19">4.10</A>  Function mexSparseProject</H3><P>
 This is a multi-purpose function, implementing fast algorithms for projecting
 on convex sets, but it also solves the fused lasso signal approximation
 problem. The proposed method is detailed in [<A HREF="doc_spams009.html#mairal9">20</A>]. The main problems
@@ -984,12 +1035,12 @@ This will be corrected in a future release of the toolbox.</P><TABLE CLASS="lstf
 %<BR>
 % Author: Julien Mairal, 2009</FONT></TD></TR>
 </TABLE><P>
-The following piece of code contains usage examples:
-</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue"><B>clear</B></FONT> <FONT COLOR="blue"><B>all</B></FONT>;<BR>
-<FONT COLOR="blue"><B>randn</B></FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
+The following piece of code illustrates how to use this function.
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;background-color:#E5EDFF;"><TR><TD CLASS="mouselstlisting"><FONT COLOR="blue">clear</FONT> <FONT COLOR="blue">all</FONT>;<BR>
+<FONT COLOR="blue">randn</FONT>(<FONT COLOR="red">'seed'</FONT>,0);<BR>
 <FONT COLOR="#007F00">% Data are generated</FONT><BR>
-X=<FONT COLOR="blue"><B>randn</B></FONT>(20000,100);<BR>
-X=X./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(X.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(X,1) 1]);<BR>
+X=<FONT COLOR="blue">randn</FONT>(20000,100);<BR>
+X=X./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(X.^2)),[<FONT COLOR="blue">size</FONT>(X,1) 1]);<BR>
 <BR>
 <FONT COLOR="#007F00">% parameter of the optimization procedure are chosen</FONT><BR>
 param.numThreads=-1; <FONT COLOR="#007F00">% number of processors/cores to use; the default choice is -1</FONT><BR>
@@ -998,58 +1049,58 @@ param.numThreads=-1; <FONT COLOR="#007F00">% number of processors/cores to�
 param.pos=0;<BR>
 param.mode=1;       <FONT COLOR="#007F00">% projection on the l1 ball</FONT><BR>
 param.thrs=2;<BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
+<FONT COLOR="blue">tic</FONT><BR>
 X1=mexSparseProject(X,param);<BR>
-t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
-<FONT COLOR="blue"><B>toc<BR>
-fprintf</B></FONT>(<FONT COLOR="red">'%f signals of size %d projected per second\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t,<FONT COLOR="blue"><B>size</B></FONT>(X,1));<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Checking constraint: %f, %f\n'</FONT>,<FONT COLOR="blue"><B>min</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(<FONT COLOR="blue"><B>abs</B></FONT>(X1))),<FONT COLOR="blue"><B>max</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(<FONT COLOR="blue"><B>abs</B></FONT>(X1))));<BR>
+t=<FONT COLOR="blue">toc</FONT>;<BR>
+<FONT COLOR="blue">toc<BR>
+fprintf</FONT>(<FONT COLOR="red">'%f signals of size %d projected per second\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t,<FONT COLOR="blue">size</FONT>(X,1));<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'Checking constraint: %f, %f\n'</FONT>,<FONT COLOR="blue">min</FONT>(<FONT COLOR="blue">sum</FONT>(<FONT COLOR="blue">abs</FONT>(X1))),<FONT COLOR="blue">max</FONT>(<FONT COLOR="blue">sum</FONT>(<FONT COLOR="blue">abs</FONT>(X1))));<BR>
 <BR>
 <BR>
 param.mode=2;       <FONT COLOR="#007F00">% projection on the Elastic-Net</FONT><BR>
 param.lambda1=0.15;<BR>
 <BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
+<FONT COLOR="blue">tic</FONT><BR>
 X1=mexSparseProject(X,param);<BR>
-t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
-<FONT COLOR="blue"><B>toc<BR>
-fprintf</B></FONT>(<FONT COLOR="red">'%f signals of size %d projected per second\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t,<FONT COLOR="blue"><B>size</B></FONT>(X,1));<BR>
-constraints=<FONT COLOR="blue"><B>sum</B></FONT>((X1.^2))+param.lambda1*<FONT COLOR="blue"><B>sum</B></FONT>(<FONT COLOR="blue"><B>abs</B></FONT>(X1));<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Checking constraint: %f, %f\n'</FONT>,<FONT COLOR="blue"><B>min</B></FONT>(constraints),<FONT COLOR="blue"><B>max</B></FONT>(constraints));<BR>
+t=<FONT COLOR="blue">toc</FONT>;<BR>
+<FONT COLOR="blue">toc<BR>
+fprintf</FONT>(<FONT COLOR="red">'%f signals of size %d projected per second\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t,<FONT COLOR="blue">size</FONT>(X,1));<BR>
+constraints=<FONT COLOR="blue">sum</FONT>((X1.^2))+param.lambda1*<FONT COLOR="blue">sum</FONT>(<FONT COLOR="blue">abs</FONT>(X1));<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'Checking constraint: %f, %f\n'</FONT>,<FONT COLOR="blue">min</FONT>(constraints),<FONT COLOR="blue">max</FONT>(constraints));<BR>
 <BR>
 param.mode=6;       <FONT COLOR="#007F00">% projection on the FLSA</FONT><BR>
 param.lambda1=0.7;<BR>
 param.lambda2=0.7;<BR>
 param.lambda3=1.0;<BR>
 <BR>
-X=<FONT COLOR="blue"><B>rand</B></FONT>(2000,100);<BR>
-X=X./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(X.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(X,1) 1]);<BR>
+X=<FONT COLOR="blue">rand</FONT>(2000,100);<BR>
+X=X./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(X.^2)),[<FONT COLOR="blue">size</FONT>(X,1) 1]);<BR>
 <BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
+<FONT COLOR="blue">tic</FONT><BR>
 X1=mexSparseProject(X,param);<BR>
-t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
-<FONT COLOR="blue"><B>toc<BR>
-fprintf</B></FONT>(<FONT COLOR="red">'%f signals of size %d projected per second\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t,<FONT COLOR="blue"><B>size</B></FONT>(X,1));<BR>
-constraints=0.5*param.lambda3*<FONT COLOR="blue"><B>sum</B></FONT>(X1.^2)+param.lambda1*<FONT COLOR="blue"><B>sum</B></FONT>(<FONT COLOR="blue"><B>abs</B></FONT>(X1))+param.lambda2*<FONT COLOR="blue"><B>sum</B></FONT>(<FONT COLOR="blue"><B>abs</B></FONT>(X1(2:<FONT COLOR="blue"><B>end</B></FONT>,:)-X1(1:<FONT COLOR="blue"><B>end</B></FONT>-1,:)));<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Checking constraint: %f, %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(constraints),<FONT COLOR="blue"><B>max</B></FONT>(constraints));<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Projection is approximate (stops at a kink)\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(constraints),<FONT COLOR="blue"><B>max</B></FONT>(constraints));<BR>
+t=<FONT COLOR="blue">toc</FONT>;<BR>
+<FONT COLOR="blue">toc<BR>
+fprintf</FONT>(<FONT COLOR="red">'%f signals of size %d projected per second\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t,<FONT COLOR="blue">size</FONT>(X,1));<BR>
+constraints=0.5*param.lambda3*<FONT COLOR="blue">sum</FONT>(X1.^2)+param.lambda1*<FONT COLOR="blue">sum</FONT>(<FONT COLOR="blue">abs</FONT>(X1))+param.lambda2*<FONT COLOR="blue">sum</FONT>(<FONT COLOR="blue">abs</FONT>(X1(2:<FONT COLOR="blue">end</FONT>,:)-X1(1:<FONT COLOR="blue">end</FONT>-1,:)));<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'Checking constraint: %f, %f\n'</FONT>,<FONT COLOR="blue">mean</FONT>(constraints),<FONT COLOR="blue">max</FONT>(constraints));<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'Projection is approximate (stops at a kink)\n'</FONT>,<FONT COLOR="blue">mean</FONT>(constraints),<FONT COLOR="blue">max</FONT>(constraints));<BR>
 <BR>
 param.mode=6;       <FONT COLOR="#007F00">% projection on the FLSA</FONT><BR>
 param.lambda1=0.7;<BR>
 param.lambda2=0.7;<BR>
 param.lambda3=1.0;<BR>
 <BR>
-X=<FONT COLOR="blue"><B>rand</B></FONT>(2000,100);<BR>
-X=X./repmat(<FONT COLOR="blue"><B>sqrt</B></FONT>(<FONT COLOR="blue"><B>sum</B></FONT>(X.^2)),[<FONT COLOR="blue"><B>size</B></FONT>(X,1) 1]);<BR>
+X=<FONT COLOR="blue">rand</FONT>(2000,100);<BR>
+X=X./repmat(<FONT COLOR="blue">sqrt</FONT>(<FONT COLOR="blue">sum</FONT>(X.^2)),[<FONT COLOR="blue">size</FONT>(X,1) 1]);<BR>
 <BR>
-<FONT COLOR="blue"><B>tic</B></FONT><BR>
+<FONT COLOR="blue">tic</FONT><BR>
 X1=mexSparseProject(X,param);<BR>
-t=<FONT COLOR="blue"><B>toc</B></FONT>;<BR>
-<FONT COLOR="blue"><B>toc<BR>
-fprintf</B></FONT>(<FONT COLOR="red">'%f signals of size %d projected per second\n'</FONT>,<FONT COLOR="blue"><B>size</B></FONT>(X,2)/t,<FONT COLOR="blue"><B>size</B></FONT>(X,1));<BR>
-constraints=0.5*param.lambda3*<FONT COLOR="blue"><B>sum</B></FONT>(X1.^2)+param.lambda1*<FONT COLOR="blue"><B>sum</B></FONT>(<FONT COLOR="blue"><B>abs</B></FONT>(X1))+param.lambda2*<FONT COLOR="blue"><B>sum</B></FONT>(<FONT COLOR="blue"><B>abs</B></FONT>(X1(2:<FONT COLOR="blue"><B>end</B></FONT>,:)-X1(1:<FONT COLOR="blue"><B>end</B></FONT>-1,:)));<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Checking constraint: %f, %f\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(constraints),<FONT COLOR="blue"><B>max</B></FONT>(constraints));<BR>
-<FONT COLOR="blue"><B>fprintf</B></FONT>(<FONT COLOR="red">'Projection is approximate (stops at a kink)\n'</FONT>,<FONT COLOR="blue"><B>mean</B></FONT>(constraints),<FONT COLOR="blue"><B>max</B></FONT>(constraints));</TD></TR>
+t=<FONT COLOR="blue">toc</FONT>;<BR>
+<FONT COLOR="blue">toc<BR>
+fprintf</FONT>(<FONT COLOR="red">'%f signals of size %d projected per second\n'</FONT>,<FONT COLOR="blue">size</FONT>(X,2)/t,<FONT COLOR="blue">size</FONT>(X,1));<BR>
+constraints=0.5*param.lambda3*<FONT COLOR="blue">sum</FONT>(X1.^2)+param.lambda1*<FONT COLOR="blue">sum</FONT>(<FONT COLOR="blue">abs</FONT>(X1))+param.lambda2*<FONT COLOR="blue">sum</FONT>(<FONT COLOR="blue">abs</FONT>(X1(2:<FONT COLOR="blue">end</FONT>,:)-X1(1:<FONT COLOR="blue">end</FONT>-1,:)));<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'Checking constraint: %f, %f\n'</FONT>,<FONT COLOR="blue">mean</FONT>(constraints),<FONT COLOR="blue">max</FONT>(constraints));<BR>
+<FONT COLOR="blue">fprintf</FONT>(<FONT COLOR="red">'Projection is approximate (stops at a kink)\n'</FONT>,<FONT COLOR="blue">mean</FONT>(constraints),<FONT COLOR="blue">max</FONT>(constraints));</TD></TR>
 </TABLE><HR>
 <A HREF="doc_spams004.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
 <A HREF="index.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>

@@ -44,7 +44,7 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[]) {
       mexErrMsgTxt("type of argument 2 is not consistent");
    if (mxIsSparse(prhs[1])) mexErrMsgTxt("argument 2 should be full");
    if (mxIsSparse(prhs[2])) mexErrMsgTxt("argument 3 should be full");
-   if (!mexCheckType<long>(prhs[2])) 
+   if (!mexCheckType<int>(prhs[2])) 
       mexErrMsgTxt("type of argument 3 is not consistent");
 
    if (!mxIsStruct(prhs[3])) 
@@ -52,28 +52,28 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[]) {
       
    T* prX=reinterpret_cast<T*>(mxGetPr(prhs[0]));
    const mwSize* dims=mxGetDimensions(prhs[0]);
-   long n=static_cast<long>(dims[0]);
-   long M=static_cast<long>(dims[1]);
+   INTM n=static_cast<INTM>(dims[0]);
+   INTM M=static_cast<INTM>(dims[1]);
 
    T * prD = reinterpret_cast<T*>(mxGetPr(prhs[1]));
    const mwSize* dimsD=mxGetDimensions(prhs[1]);
-   long nD=static_cast<long>(dimsD[0]);
+   INTM nD=static_cast<INTM>(dimsD[0]);
    if (nD != n) mexErrMsgTxt("wrong size for argument 2");
-   long K=static_cast<long>(dimsD[1]);
+   INTM K=static_cast<INTM>(dimsD[1]);
 
    const mwSize* dimsList = mxGetDimensions(prhs[2]);
-   long Ng = static_cast<long>(dimsList[0]*dimsList[1]);
-   long* list_groups=reinterpret_cast<long*>(mxGetPr(prhs[2]));
+   int Ng = static_cast<int>(dimsList[0]*dimsList[1]);
+   int* list_groups=reinterpret_cast<int*>(mxGetPr(prhs[2]));
 
-   long L= getScalarStruct<long>(prhs[3],"L");
+   int L= getScalarStruct<int>(prhs[3],"L");
    T eps= getScalarStructDef<T>(prhs[3],"eps",0);
-   long numThreads = getScalarStructDef<long>(prhs[3],"numThreads",-1);
+   int numThreads = getScalarStructDef<int>(prhs[3],"numThreads",-1);
 
    Matrix<T> D(prD,n,K);
    Matrix<T>* X = new Matrix<T>[Ng];
    if (list_groups[0] != 0)
       mexErrMsgTxt("First group index should be zero");
-   for (long i = 0; i<Ng-1; ++i) {
+   for (int i = 0; i<Ng-1; ++i) {
       if (list_groups[i] >= M) 
          mexErrMsgTxt("Size of groups is not consistent");
       if (list_groups[i] >= list_groups[i+1]) 
@@ -85,29 +85,29 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[]) {
 
    somp(X,D,spAlpha,Ng,L,eps,numThreads);
 
-   long nzmax=0;
-   for (long i = 0; i<Ng; ++i) {
+   INTM nzmax=0;
+   for (INTM i = 0; i<Ng; ++i) {
       nzmax += spAlpha[i].nzmax();
    }
    plhs[0]=mxCreateSparse(K,M,nzmax,mxREAL);
    double* Pr = mxGetPr(plhs[0]);
    mwSize* Ir = mxGetIr(plhs[0]);
    mwSize* Jc = mxGetJc(plhs[0]);
-   long count=0;
-   long countcol=0;
-   long offset=0;
-   for (long i = 0; i<Ng; ++i) {
+   INTM count=0;
+   INTM countcol=0;
+   INTM offset=0;
+   for (INTM i = 0; i<Ng; ++i) {
       const T* v = spAlpha[i].v();
-      const long* r = spAlpha[i].r();
-      const long* pB = spAlpha[i].pB();
-      long nn = spAlpha[i].n();
+      const INTM* r = spAlpha[i].r();
+      const INTM* pB = spAlpha[i].pB();
+      INTM nn = spAlpha[i].n();
       nzmax = spAlpha[i].nzmax();
       if (nn != 0) {
-         for (long j = 0; j<pB[nn]; ++j) {
+         for (INTM j = 0; j<pB[nn]; ++j) {
             Pr[count]=static_cast<double>(v[j]);
             Ir[count++]=static_cast<mwSize>(r[j]);
          }
-         for (long j = 0; j<=nn; ++j) 
+         for (INTM j = 0; j<=nn; ++j) 
             Jc[countcol++]=static_cast<mwSize>(offset+pB[j]);
          --countcol;
          offset = Jc[countcol];

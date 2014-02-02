@@ -56,8 +56,7 @@
 %            "retraining" the data.
 %
 % Author: Julien Mairal, 2009
-
-[U V] = function nnsc(X,param)
+function [U V] = nnsc(X,param)
 
 param.mode=2;
 param.posAlpha=1;

@@ -84,3 +84,18 @@ param.intercept=false;
 param.lambda2=param.lambda;
 param.regul='multi-task-tree';  % with linf
 alpha=mexProximalTree(U,tree,param);
+
+
+tree.own_variables=int32([0 1 2 3 4 5 6]);   % pointer to the first variable of each group
+tree.N_own_variables=int32([1 1 1 1 1 1]); % number of "root" variables in each group
+                              % (variables that are in a group, but not in its descendants).
+                              % for instance root(g1)={0,1}, root(g2)={2 3 4}, root(g3)={5 6 7 8 9}
+tree.eta_g=[1 1 1 1 1 1];           % weights for each group, they should be non-zero to use fenchel duality
+tree.groups=sparse([0 0 0; ...
+                    1 0 0; ...
+                    1 0 0]);    % first group should always be the root of the tree
+                                % non-zero entriees mean inclusion relation ship, here g2 is a children of g1,
+                                % g3 is a children of g1
+
+
+

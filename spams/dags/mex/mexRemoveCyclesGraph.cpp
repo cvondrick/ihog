@@ -39,12 +39,12 @@ template <typename T>
          mexErrMsgTxt("argument 1 should be sparse");
 
       const mwSize* dimsD=mxGetDimensions(prhs[0]);
-      long mD=static_cast<long>(dimsD[0]);
-      long p=static_cast<long>(dimsD[1]);
-      const long n = p;
+      INTM mD=static_cast<INTM>(dimsD[0]);
+      INTM p=static_cast<INTM>(dimsD[1]);
+      const INTM n = p;
       double* D_v;
       mwSize* D_r, *D_pB, *D_pE;
-      long* D_r2, *D_pB2, *D_pE2;
+      INTM* D_r2, *D_pB2, *D_pE2;
       T* D_v2;
       D_v=static_cast<double*>(mxGetPr(prhs[0]));
       D_r=mxGetIr(prhs[0]);

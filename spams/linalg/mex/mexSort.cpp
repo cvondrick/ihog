@@ -33,7 +33,7 @@
 
 template <typename T>
    inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
-         const long nrhs) {
+         const int nrhs) {
       if (!mexCheckType<T>(prhs[0])) 
          mexErrMsgTxt("type of argument 1 is not consistent");
       if (mxIsSparse(prhs[0])) 
@@ -43,9 +43,9 @@ template <typename T>
 
       T* prX = reinterpret_cast<T*>(mxGetPr(prhs[0]));
       const mwSize* dimsX=mxGetDimensions(prhs[0]);
-      long nx=static_cast<long>(dimsX[0]);
-      long ny=static_cast<long>(dimsX[1]);
-      long n = nx*ny;
+      int nx=static_cast<int>(dimsX[0]);
+      int ny=static_cast<int>(dimsX[1]);
+      int n = nx*ny;
 
       plhs[0]=createMatrix<T>(1,n);
       T* prY=reinterpret_cast<T*>(mxGetPr(plhs[0]));

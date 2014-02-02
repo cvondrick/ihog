@@ -1,3 +1,4 @@
+clear all;
 get_architecture;
 
 %%%%%%%%%%%%% COMPILER CONFIGURATION %%%%%%%%%%%%%%%%
@@ -21,19 +22,30 @@ compiler='gcc';
 %           same as mex: good choice if matlab is correctly configured.
 %   - mkl: (intel math kernel library), usually the fastest, but not free.
 %   - acml: (AMD Core math library), optimized for opteron cpus
-%   - blas: (netlib at atlas version of blas/lapack), free
+%   - blas: (netlib version of blas/lapack), free
+%   - atlas: (atlas version of blas/lapack), free,
 % ==> you can also tweak this script to include your favorite blas/lapack library
 blas='builtin';
 
 %%%%%%%%%%%% MULTITHREADING CONFIGURATION %%%%%%%%%%%%%%
 % set true if you want to use multi-threaded capabilities of the toolbox. You
 % need an appropriate compiler for that (intel compiler, most recent gcc, or visual studio pro)
-use_multithread=true;   % (might not compatible with compiler=mex)
+use_multithread=true; % (might not compatible with compiler=mex)
 % if the compilation fails on Mac, try the single-threaded version.
 % to run the toolbox on a cluster, it can be a good idea to deactivate this
 
+use_64bits_integers=true;
+% use this option if you have VERY large arrays/matrices 
+% this option allows such matrices, but may slightly reduce the speed of the computations.
+
 % if you use the options 'mex' and 'builtin', you can proceed with the compilation by
 % typing 'compile' in the matlab shell. Otherwise, you need to set up a few path below.
+
+add_flag='';
+% WARNING: on Mac OS  mountain lion, you may have to uncomment the line
+%add_flag=' -mmacosx-version-min=10.7'
+
+path_matlab='';  % optional  
 
 %%%%%%%%%%%% PATH CONFIGURATION %%%%%%%%%%%%%%%%%%%%
 % only if you do not use the options 'mex' and 'builtin'
@@ -41,11 +53,11 @@ use_multithread=true;   % (might not compatible with compiler=mex)
 if strcmp(compiler,'gcc') 
     if linux || mac
        % example when compiler='gcc' for Linux/Mac:   (path containing the files libgcc_s.*)
-       % NOTE: you might try using one of these libraries
-       %path_to_compiler_libraries='/usr/lib/x86_64-linux-gnu/gcc/x86_64-linux-gnu/4.5/';
-       %path_to_compiler_libraries='/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/x86_64/';
-       path_to_compiler_libraries='/usr/local/lib/gcc/x86_64-apple-darwin13.0.0/4.7.3/';
-       path_to_compiler='/usr/bin/';
+       path_to_compiler_libraries='/usr/lib/gcc/x86_64-redhat-linux/4.7.2/';
+       path_to_compiler_libraries='/usr/lib/gcc/x86_64-linux-gnu/4.7';
+       path_to_compiler_libraries='/usr/lib/gcc/x86_64-linux-gnu/4.8/';
+       path_to_compiler_libraries='/usr/local/lib/gcc/x86_64-apple-darwin13.0.0/4.9.0/';
+       path_to_compiler='/usr/local/bin/';
     else
        % example when compiler='gcc' for Windows+cygwin:   (the script does not
        % work at the moment in this configuration
@@ -59,6 +71,8 @@ elseif strcmp(compiler,'open64')
 elseif strcmp(compiler,'icc')
     if linux || mac
        % example when compiler='icc' for Linux/Mac
+       path_to_gcccompiler_libraries='/usr/lib/gcc/x86_64-linux-gnu/4.7/';
+       path_to_gcccompiler_libraries='/usr/lib/gcc/x86_64-linux-gnu/4.8/';
        path_to_compiler_libraries='/opt/intel/composerxe/lib/intel64/';
        path_to_compiler='/opt/intel/composerxe/bin/';
     else
@@ -83,12 +97,20 @@ end
 if strcmp(blas,'mkl')
    if linux || mac
       path_to_blas='/opt/intel/composerxe/mkl/lib/intel64/';
+      path_to_blas='/scratch2/clear/mairal/intel/composerxe/mkl/lib/intel64/';
+      path_to_blas='/opt/intel/composerxe/mkl/lib/intel64/';
    else
       path_to_blas='C:\Program Files (x86)\Intel\Composer XE\mkl\lib\intel64\';
    end
 elseif strcmp(blas,'blas')
    if linux || mac
-       path_to_blas='/usr/lib/';
+       path_to_blas='/usr/lib64/';
+   else
+       path_to_blas='?';
+   end
+elseif strcmp(blas,'atlas')
+   if linux || mac
+       path_to_blas='/usr/lib64/atlas/';
    else
        path_to_blas='?';
    end
@@ -113,15 +135,17 @@ end
 out_dir='./build/';
 
 COMPILE = { 
-            % compile dictLearn toolbox
-            '-I./linalg/ -I./decomp/ -I./dictLearn/ dictLearn/mex/mexTrainDL.cpp', 
-            %'-I./linalg/ -I./decomp/ -I./dictLearn/ dictLearn/mex/mexTrainDL_Memory.cpp',
-            % compile dag toolbox
+            %% compile dictLearn toolbox
+            '-I./linalg/ -I./decomp/ -I./prox/ -I./dictLearn/ dictLearn/mex/mexTrainDL.cpp', 
+            %'-I./linalg/ -I./decomp/ -I./prox/ -I./dictLearn/ dictLearn/mex/mexStructTrainDL.cpp', 
+            %'-I./linalg/ -I./decomp/ -I./prox/ -I./dictLearn/ dictLearn/mex/mexTrainDL_Memory.cpp',
+            %% compile dag toolbox
             %'-I./dags/ -I./linalg/ dags/mex/mexRemoveCyclesGraph.cpp',
             %'-I./dags/ -I./linalg/ dags/mex/mexCountPathsDAG.cpp',
             %'-I./dags/ -I./linalg/ dags/mex/mexCountConnexComponents.cpp',
             %% compile proximal toolbox
-            %'-I./linalg/ -I./prox/ prox/mex/mexEvalPathCoding.cpp',  
+            %'-I./linalg/ -I./prox/ prox/mex/mexStochasticProx.cpp',
+            %'-I./linalg/ -I./prox/ prox/mex/mexIncrementalProx.cpp',
             %'-I./linalg/ -I./prox/ prox/mex/mexFistaFlat.cpp',
             %'-I./linalg/ -I./prox/ prox/mex/mexFistaTree.cpp',  
             %'-I./linalg/ -I./prox/ prox/mex/mexFistaGraph.cpp',  
@@ -130,6 +154,7 @@ COMPILE = {
             %'-I./linalg/ -I./prox/ prox/mex/mexProximalTree.cpp',  
             %'-I./linalg/ -I./prox/ prox/mex/mexProximalGraph.cpp',
             %'-I./linalg/ -I./prox/ prox/mex/mexProximalPathCoding.cpp',  
+            %'-I./linalg/ -I./prox/ prox/mex/mexEvalPathCoding.cpp',  
             %% compile linalg toolbox
             %'-I./linalg/ linalg/mex/mexCalcAAt.cpp',
             %'-I./linalg/ linalg/mex/mexCalcXAt.cpp',  
@@ -140,18 +165,25 @@ COMPILE = {
             %'-I./linalg/ linalg/mex/mexInvSym.cpp',  
             %'-I./linalg/ linalg/mex/mexSort.cpp', 
             %'-I./linalg/ linalg/mex/mexNormalize.cpp',  
-            % compile decomp toolbox
-            '-I./linalg/ -I./decomp/ decomp/mex/mexLasso.cpp',
+            %% compile decomp toolbox
             %'-I./linalg/ -I./decomp/ decomp/mex/mexOMP.cpp',
+            '-I./linalg/ -I./decomp/ decomp/mex/mexLasso.cpp',
+            %'-I./linalg/ -I./decomp/ decomp/mex/mexLassoWeighted.cpp',
+            %'-I./linalg/ -I./decomp/ decomp/mex/mexRidgeRegression.cpp',
             %'-I./linalg/ -I./decomp/ decomp/mex/mexCD.cpp'
             %'-I./linalg/ -I./decomp/ decomp/mex/mexL1L2BCD.cpp', 
             %'-I./linalg/ -I./decomp/ decomp/mex/mexLassoMask.cpp',
-            %'-I./linalg/ -I./decomp/ decomp/mex/mexLassoWeighted.cpp',
             %'-I./linalg/ -I./decomp/ decomp/mex/mexOMPMask.cpp',
             %'-I./linalg/ -I./decomp/ decomp/mex/mexSOMP.cpp',
-            %'-I./linalg/ -I./decomp/ decomp/mex/mexSparseProject.cpp'
+            %'-I./linalg/ -I./decomp/ decomp/mex/mexSparseProject.cpp',
+            %% misc
+            %'-I./linalg/ linalg/mex/mexBayer.cpp',
+            %'-I./linalg/ -I./prox/ prox/mex/mexGraphOfGroupStruct.cpp',  
+            %'-I./linalg/ -I./prox/ prox/mex/mexGroupStructOfString.cpp',  
+            %'-I./linalg/ -I./prox/ prox/mex/mexReadGroupStruct.cpp',  
+            %'-I./linalg/ -I./prox/ prox/mex/mexSimpleGroupTree.cpp',  
+            %'-I./linalg/ -I./prox/ prox/mex/mexTreeOfGroupStruct.cpp'
             };
-
 if linux || mac
    fid=fopen('run_matlab.sh','w+');
    fprintf(fid,'#!/bin/sh\n');
@@ -176,17 +208,29 @@ end
 
 DEFBLAS='';
 if strcmp(blas,'mkl') 
-   DEFBLAS='-DUSE_BLAS_LIB';
+   DEFBLAS='-DUSE_BLAS_LIB -DAXPBY';
    if strcmp(arch,'GLNXA64')
-      blas_link = sprintf('-Wl,--start-group %slibmkl_intel_lp64.a %slibmkl_sequential.a %slibmkl_core.a -Wl,--end-group',path_to_blas,path_to_blas,path_to_blas);
+      if use_64bits_integers
+         blas_link = sprintf('-Wl,--start-group %slibmkl_intel_ilp64.a %slibmkl_sequential.a %slibmkl_core.a -Wl,--end-group -ldl',path_to_blas,path_to_blas,path_to_blas);
+      else
+         blas_link = sprintf('-Wl,--start-group %slibmkl_intel_lp64.a %slibmkl_sequential.a %slibmkl_core.a -Wl,--end-group -ldl',path_to_blas,path_to_blas,path_to_blas);
+      end
    elseif strcmp(arch,'GLNX86')
       blas_link = sprintf('-Wl,--start-group %slibmkl_intel.a %slibmkl_sequential.a %slibmkl_core.a -Wl,--end-group',path_to_blas,path_to_blas,path_to_blas);
    elseif strcmp(arch,'MACI64')
-      blas_link = sprintf('%slibmkl_intel_lp64.a %slibmkl_sequential.a %slibmkl_core.a',path_to_blas,path_to_blas,path_to_blas);
+      if use_64bits_integers
+         blas_link = sprintf('%slibmkl_intel_ilp64.a %slibmkl_sequential.a %slibmkl_core.a',path_to_blas,path_to_blas,path_to_blas);
+      else
+         blas_link = sprintf('%slibmkl_intel_lp64.a %slibmkl_sequential.a %slibmkl_core.a',path_to_blas,path_to_blas,path_to_blas);
+      end
    elseif strcmp(arch,'MACI') || strcmp(arch,'MAC')
       blas_link = sprintf('%slibmkl_intel.a %slibmkl_sequential.a %slibmkl_core.a',path_to_blas,path_to_blas,path_to_blas);
    elseif strcmp(arch,'PCWIN64')
-      blas_link = sprintf(' -L"%s" -lmkl_intel_lp64 -lmkl_sequential -lmkl_core',path_to_blas);
+      if use_64bits_integers
+         blas_link = sprintf(' -L"%s" -lmkl_intel_ilp64 -lmkl_sequential -lmkl_core',path_to_blas);
+      else
+         blas_link = sprintf(' -L"%s" -lmkl_intel_lp64 -lmkl_sequential -lmkl_core',path_to_blas);
+      end
    elseif strcmp(arch,'PCWIN')
       blas_link = sprintf(' -L"%s" -lmkl_intel -lmkl_sequential -lmkl_core',path_to_blas);
    else
@@ -195,7 +239,10 @@ if strcmp(blas,'mkl')
    end
 elseif strcmp(blas,'blas')
    DEFBLAS='-DUSE_BLAS_LIB';
-   blas_link='-lblas -llapack';
+   blas_link='-lblas -l:liblapack.so.3';
+elseif strcmp(blas,'atlas')
+   DEFBLAS='-DUSE_BLAS_LIB -DADD_ATL -DAXPBY';
+   blas_link='-l:libatlas.so.3 -l:liblapack.so.3';
 elseif strcmp(blas,'builtin')
    blas_link='-lmwblas -lmwlapack';
    DEFBLAS='-DUSE_BLAS_LIB';
@@ -207,9 +254,19 @@ else
    'please provide a correct blas library';
    return;
 end
-if ~verLessThan('matlab','7.9.0')
-   DEFBLAS=[DEFBLAS ' -DNEW_MATLAB'];
+
+
+if strcmp(blas,'builtin')
+   if ~verLessThan('matlab','7.9.0')
+      DEFBLAS=[DEFBLAS ' -DNEW_MATLAB_BLAS'];
+   else
+      DEFBLAS=[DEFBLAS ' -DOLD_MATLAB_BLAS'];
+   end
 end
+if use_64bits_integers
+   DEFBLAS=[DEFBLAS ' -DINT_64BITS'];
+end
+
 
 links_lib=[blas_link];
 link_flags=' -O ';
@@ -232,9 +289,10 @@ if strcmp(compiler,'icc')
       fprintf(fid,sprintf('export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:%s:%s\n',path_to_compiler_libraries,path_to_blas));
       fprintf(fid,'export DYLD_INSERT_LIBRARIES=$LIB_INTEL/libimf.dylib:$LIB_INTEL/libintlc.dylib:$LIB_INTEL/libiomp5.dylib:$LIB_INTEL/libsvml.dylib\n');
    elseif linux
+      fprintf(fid,'export LIB_GCC=%s\n',path_to_gcccompiler_libraries);
       fprintf(fid,'export LIB_INTEL=%s\n',path_to_compiler_libraries);
       fprintf(fid,sprintf('export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%s:%s\n',path_to_compiler_libraries,path_to_blas));
-      fprintf(fid,'export LD_PRELOAD=$LIB_INTEL/libimf.so:$LIB_INTEL/libintlc.so.5:$LIB_INTEL/libiomp5.so:$LIB_INTEL/libsvml.so\n');
+      fprintf(fid,'export LD_PRELOAD=$LIB_INTEL/libimf.so:$LIB_INTEL/libintlc.so.5:$LIB_INTEL/libiomp5.so:$LIB_INTEL/libsvml.so:$LIB_GCC/libstdc++.so\n');
    end
    if use_multithread
       if windows
@@ -310,34 +368,28 @@ else
 end
 
 if ~windows
-   fprintf(fid,'matlab $* -r \"addpath(''./build/''); addpath(''./test_release''); setenv(''MKL_NUM_THREADS'',''1''); setenv(''MKL_SERIAL'',''YES'');"\n'); 
+   fprintf(fid,[path_matlab 'matlab $* -singleCompThread -r \"addpath(''./build/''); addpath(''./test_release''); setenv(''MKL_NUM_THREADS'',''1''); setenv(''MKL_SERIAL'',''YES'');"\n']); 
    fclose(fid);
    !chmod +x run_matlab.sh
 end
 
 DEFS=[DEFBLAS ' ' DEFCOMMON ' ' DEFCOMP];
 
+if mac
+   compile_flags=[compile_flags add_flag];
+end
+
 for k = 1:length(COMPILE),
     str = COMPILE{k};
     fprintf('compilation of: %s\n',str);
-    try,
-      if windows
-        str = [str ' -outdir ' out_dir, ' ' DEFS ' ' links_lib ' OPTIMFLAGS="' compile_flags '" ']; 
-      else
-        str = [str ' -outdir ' out_dir, ' ' DEFS ' CXXOPTIMFLAGS="' compile_flags '" LDOPTIMFLAGS="' link_flags '" ' links_lib];
-      end
-      args = regexp(str, '\s+', 'split');
-      args = args(find(~cellfun(@isempty, args)));
-      mex(args{:});
-  catch e,
-    fprintf('error: failed to compile: %s\n', str); 
-    fprintf('error: reason: %s\n', e.message);
-    fprintf('error: you might consider adjusting spams/compile.m settings\n');
-    fprintf('error: in particular, adjust path_to_compiler_libraries\n');
-    fprintf('error: we will continue to attempt to compile the rest of the system\n');
-    fprintf('error: since it might be ok that this failed to compile, but if the\n');
-    fprintf('error: full system does not work, please fix this error\n');
-  end
+    if windows
+       str = [str ' -outdir ' out_dir, ' ' DEFS ' ' links_lib ' OPTIMFLAGS="' compile_flags '" ']; 
+    else
+       str = [str ' -outdir ' out_dir, ' ' DEFS ' CXXOPTIMFLAGS="' compile_flags '" LDOPTIMFLAGS="' link_flags '" ' links_lib];
+    end
+    args = regexp(str, '\s+', 'split');
+    args = args(find(~cellfun(@isempty, args)));
+    mex(args{:});
 end
 
 copyfile src_release/*.m build/

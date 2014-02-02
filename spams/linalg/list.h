@@ -56,6 +56,9 @@ template <typename T> class List {
       inline T front() const { 
          return _first->element;
       };
+      inline T last() const { 
+         return _last->element;
+      };
       void inline pop_front() { 
          Element<T>* fr=_first;
          _first=fr->next;
@@ -110,7 +113,7 @@ template <typename T> class List {
             }
          }
       };
-      long inline size() const { return _size; };
+      int inline size() const { return _size; };
       inline ListIterator<T>& begin() const { _iterator->set(_first); return *_iterator; };
       inline void* end() const { return NULL; };
       inline void fusion(const List<T>& list) {
@@ -124,8 +127,14 @@ template <typename T> class List {
             list.push_front(*it);
          }
       }
+      inline void copy(List<T>& list) {
+         list.clear();
+         for (ListIterator<T> it = this->begin(); it != this->end(); ++it) {
+            list.push_back(*it);
+         }
+      }
       void inline print() const {
-         cerr << " prlong list " << endl;
+         cerr << " print list " << endl;
          for (ListIterator<T> it = this->begin(); it != this->end(); ++it) {
             cerr << *it << " ";
          }
@@ -137,21 +146,21 @@ template <typename T> class List {
       ListIterator<T>* _iterator;
       Element<T>* _first;
       Element<T>* _last;
-      long _size;
+      int _size;
 };
 
-typedef List<long> list_long;
-typedef ListIterator<long> const_iterator_long;
+typedef List<int> list_int;
+typedef ListIterator<int> const_iterator_int;
 
 template <typename T> class BinaryHeap {
    public:
-      BinaryHeap(long size) { _last=-1; _values=new T[size]; _id=new long[size]; _position=new long[size]; _size=size;};
+      BinaryHeap(int size) { _last=-1; _values=new T[size]; _id=new int[size]; _position=new int[size]; _size=size;};
       ~BinaryHeap() { delete[](_values); delete[](_id); delete[](_position); };
 
       bool inline is_empty() const { return _last==-1; };
-      void inline find_min(long& node, T& val) const { 
+      void inline find_min(int& node, T& val) const { 
          node=_id[0]; val=_values[node]; };
-      void inline insert(const long node, const T val) {
+      void inline insert(const int node, const T val) {
          ++_last;
          assert(_last < _size);
          _values[node]=val;
@@ -165,35 +174,35 @@ template <typename T> class BinaryHeap {
          _last--;
          this->siftdown(0);
       };
-      void inline decrease_key(const long node, const T val) {
+      void inline decrease_key(const int node, const T val) {
          assert(val <= _values[node]);
          _values[node]=val;
          this->siftup(_position[node]);
       };
       void inline print() const {
-         for (long i = 0; i<=_last; ++i) {
+         for (int i = 0; i<=_last; ++i) {
             cerr << _id[i] << " ";
          }
          cerr << endl;
-         for (long i = 0; i<=_last; ++i) {
+         for (int i = 0; i<=_last; ++i) {
             cerr << _values[_id[i]] << " ";
          }
          cerr << endl;
       }
 
    private:
-      void inline siftup(const long pos) {
-         long current_pos=pos;
-         long parent=(current_pos-1)/2;
+      void inline siftup(const int pos) {
+         int current_pos=pos;
+         int parent=(current_pos-1)/2;
          while (current_pos != 0 && _values[_id[current_pos]] < _values[_id[parent]]) {
             this->swapping(current_pos,parent);
             parent=(current_pos-1)/2;
          }
       };
-      void inline siftdown(const long pos) {
-         long current_pos=pos;
-         long first_succ=pos+pos+1;
-         long second_succ=first_succ+1;
+      void inline siftdown(const int pos) {
+         int current_pos=pos;
+         int first_succ=pos+pos+1;
+         int second_succ=first_succ+1;
          bool lop=true;
          while (lop) {
             if (first_succ == _last) {
@@ -223,17 +232,17 @@ template <typename T> class BinaryHeap {
             }
          }
       };
-      void inline swapping(long& pos1, long& pos2) {
+      void inline swapping(int& pos1, int& pos2) {
          swap(_position[_id[pos1]],_position[_id[pos2]]);
          swap(_id[pos1],_id[pos2]);
          swap(pos1,pos2);
       };
 
       T* _values;
-      long* _id;
-      long* _position;
-      long _last;
-      long _size;
+      int* _id;
+      int* _position;
+      int _last;
+      int _size;
 };
 
 

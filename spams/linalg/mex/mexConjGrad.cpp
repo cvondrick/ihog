@@ -34,7 +34,7 @@
 
 template <typename T>
    inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
-         const long nrhs) {
+         const int nrhs) {
       if (!mexCheckType<T>(prhs[0])) 
          mexErrMsgTxt("type of argument 1 is not consistent");
       if (mxIsSparse(prhs[0])) 
@@ -52,11 +52,11 @@ template <typename T>
 
       T* prA = reinterpret_cast<T*>(mxGetPr(prhs[0]));
       const mwSize* dimsX=mxGetDimensions(prhs[0]);
-      long m=static_cast<long>(dimsX[0]);
-      long n=static_cast<long>(dimsX[1]);
+      int m=static_cast<int>(dimsX[0]);
+      int n=static_cast<int>(dimsX[1]);
       T* prb = reinterpret_cast<T*>(mxGetPr(prhs[1]));
       const mwSize* dimsY=mxGetDimensions(prhs[1]);
-      long nb=static_cast<long>(dimsY[0]*dimsY[1]);
+      int nb=static_cast<int>(dimsY[0]*dimsY[1]);
       if (nb != m)
          mexErrMsgTxt("argument sizes are not consistent");
 
@@ -68,7 +68,7 @@ template <typename T>
       if (nrhs >= 3) {
          T* prx0 = reinterpret_cast<T*>(mxGetPr(prhs[2]));
          const mwSize* dimsx0=mxGetDimensions(prhs[2]);
-         long nx=static_cast<long>(dimsx0[0]*dimsx0[1]);
+         int nx=static_cast<int>(dimsx0[0]*dimsx0[1]);
          if (nx != n)
             mexErrMsgTxt("argument sizes are not consistent");
          Vector<T> x0(prx0,nx);
@@ -80,10 +80,10 @@ template <typename T>
          T* prtol = reinterpret_cast<T*>(mxGetPr(prhs[3]));
          tol=*prtol;
       }
-      long itermax=n;
+      int itermax=n;
       if (nrhs >= 5) {
          T* pritermax = reinterpret_cast<T*>(mxGetPr(prhs[4]));
-         itermax=static_cast<long>(*pritermax);
+         itermax=static_cast<int>(*pritermax);
       }
       
       Matrix<T> A(prA,m,n);

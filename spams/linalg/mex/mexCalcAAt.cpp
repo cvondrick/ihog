@@ -40,13 +40,13 @@ template <typename T>
 
       double* alpha_v = reinterpret_cast<double*>(mxGetPr(prhs[0]));
       const mwSize* dims=mxGetDimensions(prhs[0]);
-      long K=static_cast<long>(dims[0]);
-      long M=static_cast<long>(dims[1]);
+      INTM K=static_cast<INTM>(dims[0]);
+      INTM M=static_cast<INTM>(dims[1]);
       mwSize* alpha_r=mxGetIr(prhs[0]);
       mwSize* alpha_pB=mxGetJc(prhs[0]);
       mwSize* alpha_pE=alpha_pB+1;
 
-      long* alpha_r2, *alpha_pB2, *alpha_pE2;
+      INTM* alpha_r2, *alpha_pB2, *alpha_pE2;
       T* alpha_v2;
       createCopySparse<T>(alpha_v2,alpha_r2,alpha_pB2,alpha_pE2,
             alpha_v,alpha_r,alpha_pB,alpha_pE,M);

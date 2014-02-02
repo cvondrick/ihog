@@ -28,7 +28,7 @@ using namespace std;
 /// a useful debugging function
 static inline void stop();
 /// seed for random number generation
-static long seed = 0;
+static int seed = 0;
 /// first random number generator from Numerical Recipe
 template <typename T> static inline T ran1(); 
 /// standard random number generator 
@@ -37,10 +37,10 @@ template <typename T> static inline T ran1b();
 template <typename T> static inline T normalDistrib();
 /// reorganize a sparse table between indices beg and end,
 /// using quicksort
-template <typename T>
-static void sort(long* irOut, T* prOut,long beg, long end);
-template <typename T>
-static void quick_sort(long* irOut, T* prOut,const long beg, const long end, const bool incr);
+template <typename T, typename I>
+static void sort(I* irOut, T* prOut,I beg, I end);
+template <typename T, typename I>
+static void quick_sort(I* irOut, T* prOut,const I beg, const I end, const bool incr);
 /// template version of the power function
 template <typename T>
 T power(const T x, const T y);
@@ -54,7 +54,7 @@ template <typename T>
 T sqr_alt(const T x);
 /// template version of the fabs function
 template <typename T>
-T sqr(const long x) {
+T sqr(const int x) {
    return sqr<T>(static_cast<T>(x));
 }
 
@@ -75,12 +75,12 @@ static inline void stop() {
 
 /// first random number generator from Numerical Recipe
 template <typename T> static inline T ran1() {
-   const long IA=16807,IM=2147483647,IQ=127773,IR=2836,NTAB=32;
-   const long NDIV=(1+(IM-1)/NTAB);
+   const int IA=16807,IM=2147483647,IQ=127773,IR=2836,NTAB=32;
+   const int NDIV=(1+(IM-1)/NTAB);
    const T EPS=3.0e-16,AM=1.0/IM,RNMX=(1.0-EPS);
-   static long iy=0;
-   static long iv[NTAB];
-   long j,k;
+   static int iy=0;
+   static int iv[NTAB];
+   int j,k;
    T temp;
 
    if (seed <= 0 || !iy) {
@@ -134,22 +134,22 @@ static inline T normalDistrib() {
 
 /// reorganize a sparse table between indices beg and end,
 /// using quicksort
-template <typename T>
-static void sort(long* irOut, T* prOut,long beg, long end) {
-   long i;
+template <typename T, typename I>
+static void sort(I* irOut, T* prOut,I beg, I end) {
+   I i;
    if (end <= beg) return;
-   long pivot=beg;
+   I pivot=beg;
    for (i = beg+1; i<=end; ++i) {
       if (irOut[i] < irOut[pivot]) {
          if (i == pivot+1) {
-            long tmp = irOut[i];
+            I tmp = irOut[i];
             T tmpd = prOut[i];
             irOut[i]=irOut[pivot];
             prOut[i]=prOut[pivot];
             irOut[pivot]=tmp;
             prOut[pivot]=tmpd;
          } else {
-            long tmp = irOut[pivot+1];
+            I tmp = irOut[pivot+1];
             T tmpd = prOut[pivot+1];
             irOut[pivot+1]=irOut[pivot];
             prOut[pivot+1]=prOut[pivot];
@@ -164,14 +164,14 @@ static void sort(long* irOut, T* prOut,long beg, long end) {
    sort(irOut,prOut,beg,pivot-1);
    sort(irOut,prOut,pivot+1,end);
 }
-template <typename T>
-static void quick_sort(long* irOut, T* prOut,const long beg, const long end, const bool incr) {
+template <typename T, typename I>
+static void quick_sort(I* irOut, T* prOut,const I beg, const I end, const bool incr) {
    if (end <= beg) return;
-   long pivot=beg;
+   I pivot=beg;
    if (incr) {
       const T val_pivot=prOut[pivot];
-      const long key_pivot=irOut[pivot];
-      for (long i = beg+1; i<=end; ++i) {
+      const I key_pivot=irOut[pivot];
+      for (I i = beg+1; i<=end; ++i) {
          if (prOut[i] < val_pivot) {
             prOut[pivot]=prOut[i];
             irOut[pivot]=irOut[i];
@@ -183,8 +183,8 @@ static void quick_sort(long* irOut, T* prOut,const long beg, const long end, con
       }
    } else {
       const T val_pivot=prOut[pivot];
-      const long key_pivot=irOut[pivot];
-      for (long i = beg+1; i<=end; ++i) {
+      const I key_pivot=irOut[pivot];
+      for (I i = beg+1; i<=end; ++i) {
          if (prOut[i] > val_pivot) {
             prOut[pivot]=prOut[i];
             irOut[pivot]=irOut[i];
@@ -197,6 +197,33 @@ static void quick_sort(long* irOut, T* prOut,const long beg, const long end, con
    }
    quick_sort(irOut,prOut,beg,pivot-1,incr);
    quick_sort(irOut,prOut,pivot+1,end,incr);
+}
+
+template <typename T, typename I>
+static void quick_sort(T* prOut,const I beg, const I end, const bool incr) {
+   if (end <= beg) return;
+   I pivot=beg;
+   if (incr) {
+      const T val_pivot=prOut[pivot];
+      for (I i = beg+1; i<=end; ++i) {
+         if (prOut[i] < val_pivot) {
+            prOut[pivot]=prOut[i];
+            prOut[i]=prOut[++pivot];
+            prOut[pivot]=val_pivot;
+         } 
+      }
+   } else {
+      const T val_pivot=prOut[pivot];
+      for (I i = beg+1; i<=end; ++i) {
+         if (prOut[i] > val_pivot) {
+            prOut[pivot]=prOut[i];
+            prOut[i]=prOut[++pivot];
+            prOut[pivot]=val_pivot;
+         } 
+      }
+   }
+   quick_sort(prOut,beg,pivot-1,incr);
+   quick_sort(prOut,pivot+1,end,incr);
 }
 
 
@@ -258,8 +285,8 @@ inline float sqr_alt(const float x) {
    return sqrtf(x);
 };
 
-static inline long init_omp(const long numThreads) {
-   long NUM_THREADS;
+static inline int init_omp(const int numThreads) {
+   int NUM_THREADS;
 #ifdef _OPENMP
    NUM_THREADS = (numThreads == -1) ? MIN(MAX_THREADS,omp_get_num_procs()) : numThreads;
    omp_set_nested(0);
@@ -270,6 +297,13 @@ static inline long init_omp(const long numThreads) {
 #endif
    return NUM_THREADS;
 }
+
+template <typename T1, typename T2, typename T3> 
+struct Triplet {
+   T1 x;
+   T2 z;
+   T3 s;
+};
 
 
 #endif

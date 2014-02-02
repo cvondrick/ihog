@@ -51,6 +51,11 @@ J.~Friedman, T.~Hastie, H.~H\"olfling, and R.~Tibshirani.
 \newblock Pathwise coordinate optimization.
 \newblock {\em Annals of statistics}, 1(2):302--332, 2007.
 
+\bibitem{Friedman2010}
+J.~Friedman, T.~Hastie, and R.~Tibshirani.
+\newblock {A note on the group lasso and a sparse group lasso}.
+\newblock Technical report, Preprint arXiv:1001.0736, 2010.
+
 \bibitem{fu}
 W.~J. Fu.
 \newblock Penalized regressions: The bridge versus the {L}asso.
@@ -113,6 +118,28 @@ J.~Mairal, R.~Jenatton, G.~Obozinski, and F.~Bach.
 \newblock Network flow algorithms for structured sparsity.
 \newblock In {\em Advances in Neural Information Processing Systems}, 2010.
 
+\bibitem{mairal13}
+J.~Mairal, R.~Jenatton, G.~Obozinski, and F.~Bach.
+\newblock Convex and network flow optimization for structured sparsity.
+\newblock {\em Journal of Machine Learning Research}, 12:2649--2689, 2011.
+
+\bibitem{mairal14}
+J.~Mairal and B.~Yu.
+\newblock Supervised feature selection in graphs with path coding penalties and
+  network flows.
+\newblock {\em Journal of Machine Learning Research}, 2013.
+
+\bibitem{mairal16}
+Julien Mairal.
+\newblock Optimization with first-order surrogate functions.
+\newblock 2013.
+
+\bibitem{mairal15}
+Julien Mairal.
+\newblock Stochastic majorization-minimization algorithms for large-scale
+  optimization.
+\newblock 2013.
+
 \bibitem{mallat4}
 S.~Mallat and Z.~Zhang.
 \newblock Matching pursuit in a time-frequency dictionary.
@@ -130,6 +157,12 @@ G.~Obozinski, B.~Taskar, and M.I. Jordan.
 \newblock {Joint covariate selection and joint subspace selection for multiple
   classification problems}.
 \newblock {\em Statistics and Computing}, pages 1--22.
+
+\bibitem{osborne}
+M.~R. Osborne, B.~Presnell, and B.~A. Turlach.
+\newblock On the {L}asso and its dual.
+\newblock {\em Journal of Computational and Graphical Statistics},
+  9(2):319--37, 2000.
 
 \bibitem{sprechmann}
 P.~Sprechmann, I.~Ramirez, G.~Sapiro, and Y.~C. Eldar.

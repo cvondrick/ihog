@@ -40,10 +40,10 @@ template <typename T>
 
       T* prV = reinterpret_cast<T*>(mxGetPr(prhs[0]));
       const mwSize* dimsX=mxGetDimensions(prhs[0]);
-      long n=static_cast<long>(dimsX[0]);
-      long M=static_cast<long>(dimsX[1]);
+      mwSize n=(dimsX[0]);
+      mwSize M=(dimsX[1]);
       Vector<T> X(prV,n*M);
-      const long offset = static_cast<long>(mxGetScalar(prhs[1]));
+      const int offset = static_cast<int>(mxGetScalar(prhs[1]));
 
       plhs[0]=createMatrix<T>(n*M,1);
       T* prXY=reinterpret_cast<T*>(mxGetPr(plhs[0]));

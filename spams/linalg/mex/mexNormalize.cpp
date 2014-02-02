@@ -28,8 +28,8 @@ template <typename T>
 
       T* prD = reinterpret_cast<T*>(mxGetPr(prhs[0]));
       const mwSize* dimsX=mxGetDimensions(prhs[0]);
-      long n=static_cast<long>(dimsX[0]);
-      long K=static_cast<long>(dimsX[1]);
+      int n=static_cast<int>(dimsX[0]);
+      int K=static_cast<int>(dimsX[1]);
 
       plhs[0]=createMatrix<T>(n,K);
       T* prD2=reinterpret_cast<T*>(mxGetPr(plhs[0]));

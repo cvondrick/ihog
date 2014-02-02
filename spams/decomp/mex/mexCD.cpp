@@ -51,31 +51,31 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[]) {
 
    T* prX=reinterpret_cast<T*>(mxGetPr(prhs[0]));
    const mwSize* dims=mxGetDimensions(prhs[0]);
-   long n=static_cast<long>(dims[0]);
-   long M=static_cast<long>(dims[1]);
+   INTM n=static_cast<INTM>(dims[0]);
+   INTM M=static_cast<INTM>(dims[1]);
 
    T * prD = reinterpret_cast<T*>(mxGetPr(prhs[1]));
    const mwSize* dimsD=mxGetDimensions(prhs[1]);
-   long nD=static_cast<long>(dimsD[0]);
+   INTM nD=static_cast<INTM>(dimsD[0]);
    if (nD != n) mexErrMsgTxt("wrong size for argument 2");
-   long K=static_cast<long>(dimsD[1]);
+   INTM K=static_cast<INTM>(dimsD[1]);
 
    const mwSize* dimsA=mxGetDimensions(prhs[2]);
-   long Ka = static_cast<long>(dimsA[0]);
-   long Ma = static_cast<long>(dimsA[1]);
+   INTM Ka = static_cast<INTM>(dimsA[0]);
+   INTM Ma = static_cast<INTM>(dimsA[1]);
    if (Ma != M || Ka != K) mexErrMsgTxt("wrong size for argument 3");
    double * alpha_v=static_cast<double*>(mxGetPr(prhs[2]));
    mwSize* alpha_r=mxGetIr(prhs[2]);
    mwSize* alpha_pB=mxGetJc(prhs[2]);
    mwSize* alpha_pE=alpha_pB+1;
 
-   constraint_type mode = (constraint_type)getScalarStructDef<long>(prhs[3],"mode",PENALTY);
-   long numThreads = getScalarStructDef<long>(prhs[3],"numThreads",-1);
-   long itermax = getScalarStructDef<long>(prhs[3],"itermax",100);
+   constraint_type mode = (constraint_type)getScalarStructDef<int>(prhs[3],"mode",PENALTY);
+   int numThreads = getScalarStructDef<int>(prhs[3],"numThreads",-1);
+   int itermax = getScalarStructDef<int>(prhs[3],"itermax",100);
    T tol = getScalarStructDef<T>(prhs[3],"tol",0.001);
    T lambda = getScalarStruct<T>(prhs[3],"lambda");
 
-   long* alpha_r2, *alpha_pB2, *alpha_pE2;
+   INTM* alpha_r2, *alpha_pB2, *alpha_pE2;
    T* alpha_v2;
    createCopySparse<T>(alpha_v2,alpha_r2,alpha_pB2,alpha_pE2,
          alpha_v,alpha_r,alpha_pB,alpha_pE,M);

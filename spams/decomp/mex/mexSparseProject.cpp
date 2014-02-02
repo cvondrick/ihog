@@ -42,8 +42,8 @@ template <typename T>
 
       T* prX = reinterpret_cast<T*>(mxGetPr(prhs[0]));
       const mwSize* dimsX=mxGetDimensions(prhs[0]);
-      long m=static_cast<long>(dimsX[0]);
-      long n=static_cast<long>(dimsX[1]);
+      int m=static_cast<int>(dimsX[0]);
+      int n=static_cast<int>(dimsX[1]);
 
       plhs[0]=createMatrix<T>(m,n);
       T* prY=reinterpret_cast<T*>(mxGetPr(plhs[0]));
@@ -56,8 +56,8 @@ template <typename T>
       T lambda2 = getScalarStructDef<T>(prhs[1],"lambda2",0);
       T lambda3 = getScalarStructDef<T>(prhs[1],"lambda3",0);
       bool pos = getScalarStructDef<bool>(prhs[1],"pos",false);
-      long mode = getScalarStructDef<long>(prhs[1],"mode",1);
-      long numThreads = getScalarStructDef<long>(prhs[1],"numThreads",-1);
+      int mode = getScalarStructDef<int>(prhs[1],"mode",1);
+      int numThreads = getScalarStructDef<int>(prhs[1],"numThreads",-1);
       if (pos && mode >= 5) 
          mexErrMsgTxt("mode >= 5 is not compatible with positivity constraints");
       X.sparseProject(Y,thrs,mode,lambda1,lambda2,lambda3,pos,numThreads);

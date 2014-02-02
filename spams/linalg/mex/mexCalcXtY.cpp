@@ -44,12 +44,12 @@ template <typename T>
 
       T* prX = reinterpret_cast<T*>(mxGetPr(prhs[0]));
       const mwSize* dimsX=mxGetDimensions(prhs[0]);
-      long n=static_cast<long>(dimsX[0]);
-      long M=static_cast<long>(dimsX[1]);
+      int n=static_cast<int>(dimsX[0]);
+      int M=static_cast<int>(dimsX[1]);
       T* prY = reinterpret_cast<T*>(mxGetPr(prhs[1]));
       const mwSize* dimsY=mxGetDimensions(prhs[1]);
-      long nY=static_cast<long>(dimsY[0]);
-      long MY=static_cast<long>(dimsY[1]);
+      int nY=static_cast<int>(dimsY[0]);
+      int MY=static_cast<int>(dimsY[1]);
       if (n != nY)
          mexErrMsgTxt("argument sizes are not consistent");
 

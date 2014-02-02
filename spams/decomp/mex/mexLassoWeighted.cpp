@@ -51,26 +51,26 @@ template <typename T>
 
       T* prX = reinterpret_cast<T*>(mxGetPr(prhs[0]));
       const mwSize* dimsX=mxGetDimensions(prhs[0]);
-      long n=static_cast<long>(dimsX[0]);
-      long M=static_cast<long>(dimsX[1]);
+      int n=static_cast<int>(dimsX[0]);
+      int M=static_cast<int>(dimsX[1]);
 
       T* prD = reinterpret_cast<T*>(mxGetPr(prhs[1]));
       const mwSize* dimsD=mxGetDimensions(prhs[1]);
-      long nD=static_cast<long>(dimsD[0]);
-      long K=static_cast<long>(dimsD[1]);
+      int nD=static_cast<int>(dimsD[0]);
+      int K=static_cast<int>(dimsD[1]);
       if (n != nD) mexErrMsgTxt("argument sizes are not consistent");
 
       T lambda = getScalarStruct<T>(prhs[3],"lambda");
-      long L = getScalarStructDef<long>(prhs[3],"L",K);
-      long numThreads = getScalarStructDef<long>(prhs[3],"numThreads",-1);
+      int L = getScalarStructDef<int>(prhs[3],"L",K);
+      int numThreads = getScalarStructDef<int>(prhs[3],"numThreads",-1);
       bool pos = getScalarStructDef<bool>(prhs[3],"pos",false);
-      constraint_type mode = (constraint_type)getScalarStructDef<long>(prhs[3],"mode",PENALTY);
+      constraint_type mode = (constraint_type)getScalarStructDef<int>(prhs[3],"mode",PENALTY);
       if (L > n) {
-         printf("L is changed to %ld\n",n);
+         printf("L is changed to %d\n",n);
          L=n;
       }
       if (L > K) {
-         printf("L is changed to %ld\n",K);
+         printf("L is changed to %d\n",K);
          L=K;
       }
       Matrix<T> X(prX,n,M);
@@ -79,8 +79,8 @@ template <typename T>
 
       T* prWeight = reinterpret_cast<T*>(mxGetPr(prhs[2]));
       const mwSize* dimsW=mxGetDimensions(prhs[2]);
-      long KK=static_cast<long>(dimsW[0]);
-      long MM=static_cast<long>(dimsW[1]);
+      int KK=static_cast<int>(dimsW[0]);
+      int MM=static_cast<int>(dimsW[1]);
       if (K != KK || M != MM) mexErrMsgTxt("argument sizes are not consistent");
 
 

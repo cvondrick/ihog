@@ -42,19 +42,19 @@ template <typename T>
 
       T* prX = reinterpret_cast<T*>(mxGetPr(prhs[0]));
       const mwSize* dimsX=mxGetDimensions(prhs[0]);
-      long n=static_cast<long>(dimsX[0]);
-      long M=static_cast<long>(dimsX[1]);
+      INTM n=static_cast<INTM>(dimsX[0]);
+      INTM M=static_cast<INTM>(dimsX[1]);
 
       double* alpha_v = static_cast<double*>(mxGetPr(prhs[1]));
       const mwSize* dims=mxGetDimensions(prhs[1]);
-      long K=static_cast<long>(dims[0]);
-      long M2=static_cast<long>(dims[1]);
+      INTM K=static_cast<INTM>(dims[0]);
+      INTM M2=static_cast<INTM>(dims[1]);
       if (M != M2) mexErrMsgTxt("argument sizes are not consistent");
       mwSize* alpha_r=mxGetIr(prhs[1]);
       mwSize* alpha_pB=mxGetJc(prhs[1]);
       mwSize* alpha_pE=alpha_pB+1;
 
-      long* alpha_r2, *alpha_pB2, *alpha_pE2;
+      INTM* alpha_r2, *alpha_pB2, *alpha_pE2;
       T* alpha_v2;
       createCopySparse<T>(alpha_v2,alpha_r2,alpha_pB2,alpha_pE2,
             alpha_v,alpha_r,alpha_pB,alpha_pE,M);

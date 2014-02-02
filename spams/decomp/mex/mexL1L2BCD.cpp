@@ -47,39 +47,39 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[]) {
       mexErrMsgTxt("type of argument 2 is not consistent");
    if (mxIsSparse(prhs[1])) mexErrMsgTxt("argument 2 should be full");
    if (mxIsSparse(prhs[2])) mexErrMsgTxt("argument 3 should be full");
-   if (!mexCheckType<long>(prhs[3])) 
+   if (!mexCheckType<int>(prhs[3])) 
       mexErrMsgTxt("type of argument 4 is not consistent");
    if (!mxIsStruct(prhs[4])) 
       mexErrMsgTxt("argument 5 should be struct");
 
    T* prX=reinterpret_cast<T*>(mxGetPr(prhs[0]));
    const mwSize* dims=mxGetDimensions(prhs[0]);
-   long n=static_cast<long>(dims[0]);
-   long M=static_cast<long>(dims[1]);
+   int n=static_cast<int>(dims[0]);
+   int M=static_cast<int>(dims[1]);
 
    T * prD = reinterpret_cast<T*>(mxGetPr(prhs[1]));
    const mwSize* dimsD=mxGetDimensions(prhs[1]);
-   long nD=static_cast<long>(dimsD[0]);
+   int nD=static_cast<int>(dimsD[0]);
    if (nD != n) mexErrMsgTxt("wrong size for argument 2");
-   long K=static_cast<long>(dimsD[1]);
+   int K=static_cast<int>(dimsD[1]);
 
    /// modify matrix in place
    const mwSize* dimsA=mxGetDimensions(prhs[2]);
-   long Ka = static_cast<long>(dimsA[0]);
-   long Ma = static_cast<long>(dimsA[1]);
+   int Ka = static_cast<int>(dimsA[0]);
+   int Ma = static_cast<int>(dimsA[1]);
    if (Ma != M || Ka != K) mexErrMsgTxt("wrong size for argument 3");
    plhs[0]=mxDuplicateArray(prhs[2]);
    T* pr_alpha=reinterpret_cast<T*>(mxGetPr(plhs[0]));
 
    const mwSize* dimsList = mxGetDimensions(prhs[3]);
-   long Ng = static_cast<long>(dimsList[0]*dimsList[1]);
-   long* list_groups=reinterpret_cast<long*>(mxGetPr(prhs[3]));
+   int Ng = static_cast<int>(dimsList[0]*dimsList[1]);
+   int* list_groups=reinterpret_cast<int*>(mxGetPr(prhs[3]));
 
    T lambda= getScalarStruct<T>(prhs[4],"lambda");
    T tol= getScalarStructDef<T>(prhs[4],"tol",1e-3);
-   long itermax= getScalarStructDef<long>(prhs[4],"itermax",100);
-   long numThreads = getScalarStructDef<long>(prhs[4],"numThreads",-1);
-   constraint_type mode= (constraint_type)getScalarStructDef<long>(prhs[4],"mode",PENALTY);
+   int itermax= getScalarStructDef<int>(prhs[4],"itermax",100);
+   int numThreads = getScalarStructDef<int>(prhs[4],"numThreads",-1);
+   constraint_type mode= (constraint_type)getScalarStructDef<int>(prhs[4],"mode",PENALTY);
 
 
    Matrix<T> D(prD,n,K);
@@ -88,7 +88,7 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[]) {
    Matrix<T>* alpha = new Matrix<T>[Ng];
    if (list_groups[0] != 0)
       mexErrMsgTxt("First group index should be zero");
-   for (long i = 0; i<Ng-1; ++i) {
+   for (int i = 0; i<Ng-1; ++i) {
       if (list_groups[i] >= M) 
          mexErrMsgTxt("Size of groups is not consistent");
       if (list_groups[i] >= list_groups[i+1]) 

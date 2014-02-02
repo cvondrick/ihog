@@ -15,7 +15,7 @@ end
 %    end
 % end
 
-p=4.5;
+p=3.5;
         M=max((D(:)));
         m=min((D(:)));
         if (m >= 0)

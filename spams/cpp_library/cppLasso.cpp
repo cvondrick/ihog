@@ -1,8 +1,8 @@
 #include "linalg.h"
 
-long main(long argc, char** argv) {
-   long m = 10;
-   long p = 20;
+int main(int argc, char** argv) {
+   int m = 10;
+   int p = 20;
    /// external allocation for the matrix
    double* prD = new double[m*p];
    Matrix<double> D(prD,m,p); 
@@ -14,7 +14,7 @@ long main(long argc, char** argv) {
    D2.setAleat();
    D2.normalize();
 
-   long n = 100;
+   int n = 100;
    Matrix<double> X(m,n);
    X.setAleat();
    

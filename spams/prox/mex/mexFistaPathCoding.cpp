@@ -26,7 +26,7 @@ using namespace FISTA;
 
 template <typename T>
 inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
-      const long nlhs) {
+      const int nlhs) {
    if (!mexCheckType<T>(prhs[0])) 
       mexErrMsgTxt("type of argument 1 is not consistent");
    if (mxIsSparse(prhs[0])) 
@@ -47,17 +47,17 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
 
    T* prX = reinterpret_cast<T*>(mxGetPr(prhs[0]));
    const mwSize* dimsX=mxGetDimensions(prhs[0]);
-   long m=static_cast<long>(dimsX[0]);
-   long n=static_cast<long>(dimsX[1]);
+   INTM m=static_cast<INTM>(dimsX[0]);
+   INTM n=static_cast<INTM>(dimsX[1]);
    Matrix<T> X(prX,m,n);
 
    const mwSize* dimsD=mxGetDimensions(prhs[1]);
-   long mD=static_cast<long>(dimsD[0]);
-   long p=static_cast<long>(dimsD[1]);
+   INTM mD=static_cast<INTM>(dimsD[0]);
+   INTM p=static_cast<INTM>(dimsD[1]);
    AbstractMatrixB<T>* D;
    double* D_v;
    mwSize* D_r, *D_pB, *D_pE;
-   long* D_r2, *D_pB2, *D_pE2;
+   INTM* D_r2, *D_pB2, *D_pE2;
    T* D_v2;
    if (mxIsSparse(prhs[1])) {
       D_v=static_cast<double*>(mxGetPr(prhs[1]));
@@ -74,8 +74,8 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
 
    T* pr_alpha0 = reinterpret_cast<T*>(mxGetPr(prhs[2]));
    const mwSize* dimsAlpha=mxGetDimensions(prhs[2]);
-   long pAlpha=static_cast<long>(dimsAlpha[0]);
-   long nAlpha=static_cast<long>(dimsAlpha[1]);
+   INTM pAlpha=static_cast<INTM>(dimsAlpha[0]);
+   INTM nAlpha=static_cast<INTM>(dimsAlpha[1]);
    Matrix<T> alpha0(pr_alpha0,pAlpha,nAlpha);
 
 
@@ -86,22 +86,22 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
    mwSize* GG_r=mxGetIr(ppr_GG);
    mwSize* GG_pB=mxGetJc(ppr_GG);
    const mwSize* dims_GG=mxGetDimensions(ppr_GG);
-   long GGm=static_cast<long>(dims_GG[0]);
-   long GGn=static_cast<long>(dims_GG[1]);
+   INTM GGm=static_cast<INTM>(dims_GG[0]);
+   INTM GGn=static_cast<INTM>(dims_GG[1]);
 
    mxArray* ppr_weights = mxGetField(prhs[3],0,"start_weights");
    if (mxIsSparse(ppr_weights)) 
       mexErrMsgTxt("field start_weights should not be sparse");
    T* start_weights = reinterpret_cast<T*>(mxGetPr(ppr_weights));
    const mwSize* dims_weights=mxGetDimensions(ppr_weights);
-   long nweights=static_cast<long>(dims_weights[0])*static_cast<long>(dims_weights[1]);
+   INTM nweights=static_cast<INTM>(dims_weights[0])*static_cast<INTM>(dims_weights[1]);
 
    mxArray* ppr_weights2 = mxGetField(prhs[3],0,"stop_weights");
    if (mxIsSparse(ppr_weights2)) 
       mexErrMsgTxt("field stop_weights should not be sparse");
    T* stop_weights = reinterpret_cast<T*>(mxGetPr(ppr_weights2));
    const mwSize* dims_weights2=mxGetDimensions(ppr_weights2);
-   long nweights2=static_cast<long>(dims_weights2[0])*static_cast<long>(dims_weights2[1]);
+   INTM nweights2=static_cast<INTM>(dims_weights2[0])*static_cast<INTM>(dims_weights2[1]);
 
 
    plhs[0]=createMatrix<T>(pAlpha,nAlpha);
@@ -109,13 +109,13 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
    Matrix<T> alpha(pr_alpha,pAlpha,nAlpha);
 
    FISTA::ParamFISTA<T> param;
-   param.num_threads = getScalarStructDef<long>(prhs[4],"numThreads",-1);
+   param.num_threads = getScalarStructDef<int>(prhs[4],"numThreads",-1);
    param.pos = getScalarStructDef<bool>(prhs[4],"pos",false);
-   param.max_it = getScalarStructDef<long>(prhs[4],"max_it",1000);
+   param.max_it = getScalarStructDef<int>(prhs[4],"max_it",1000);
    param.tol = getScalarStructDef<T>(prhs[4],"tol",0.000001);
-   param.it0 = getScalarStructDef<long>(prhs[4],"it0",100);
+   param.it0 = getScalarStructDef<int>(prhs[4],"it0",100);
    param.compute_gram = getScalarStructDef<bool>(prhs[4],"compute_gram",false);
-   param.max_iter_backtracking = getScalarStructDef<long>(prhs[4],"max_iter_backtracking",1000);
+   param.max_iter_backtracking = getScalarStructDef<int>(prhs[4],"max_iter_backtracking",1000);
    param.L0 = getScalarStructDef<T>(prhs[4],"L0",1.0);
    param.gamma = MAX(1.01,getScalarStructDef<T>(prhs[4],"gamma",1.5));
    param.c= getScalarStructDef<T>(prhs[4],"c",1.0);
@@ -136,7 +136,7 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
    param.delta = getScalarStructDef<T>(prhs[4],"delta",1.0);
    param.lambda2= getScalarStructDef<T>(prhs[4],"lambda2",0.0);
    param.lambda3= getScalarStructDef<T>(prhs[4],"lambda3",0.0);
-   param.size_group= getScalarStructDef<long>(prhs[4],"size_group",1);
+   param.size_group= getScalarStructDef<int>(prhs[4],"size_group",1);
    param.admm = getScalarStructDef<bool>(prhs[4],"admm",false);
    param.lin_admm = getScalarStructDef<bool>(prhs[4],"lin_admm",false);
    param.sqrt_step = getScalarStructDef<bool>(prhs[4],"sqrt_step",true);
@@ -172,7 +172,7 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
       mxArray *stringData = mxGetField(prhs[4],0,"logName");
       if (!stringData) 
          mexErrMsgTxt("Missing field logName");
-      long stringLength = mxGetN(stringData)+1;
+      int stringLength = mxGetN(stringData)+1;
       param.logName= new char[stringLength];
       mxGetString(stringData,param.logName,stringLength);
    }
@@ -205,7 +205,7 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
    if (nlhs==2) {
       plhs[1]=createMatrix<T>(duality_gap.m(),duality_gap.n());
       T* pr_dualitygap=reinterpret_cast<T*>(mxGetPr(plhs[1]));
-      for (long i = 0; i<duality_gap.n()*duality_gap.m(); ++i) pr_dualitygap[i]=duality_gap[i];
+      for (int i = 0; i<duality_gap.n()*duality_gap.m(); ++i) pr_dualitygap[i]=duality_gap[i];
    }
    if (param.logName) delete[](param.logName);
 

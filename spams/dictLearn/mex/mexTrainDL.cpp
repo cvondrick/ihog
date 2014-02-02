@@ -38,7 +38,7 @@
 
 template <typename T>
    inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
-         const long nlhs,const long nrhs) {
+         const int nlhs,const int nrhs) {
       if (!mexCheckType<T>(prhs[0])) 
          mexErrMsgTxt("type of argument 1 is not consistent");
 
@@ -51,14 +51,14 @@ template <typename T>
 
       Data<T> *X;
       const mwSize* dimsX=mxGetDimensions(prhs[0]);
-      long n=static_cast<long>(dimsX[0]);
-      long M=static_cast<long>(dimsX[1]);
+      INTM n=static_cast<INTM>(dimsX[0]);
+      INTM M=static_cast<int>(dimsX[1]);
       if (mxIsSparse(prhs[0])) {
          double * X_v=static_cast<double*>(mxGetPr(prhs[0]));
          mwSize* X_r=mxGetIr(prhs[0]);
          mwSize* X_pB=mxGetJc(prhs[0]);
          mwSize* X_pE=X_pB+1;
-         long* X_r2, *X_pB2, *X_pE2;
+         INTM* X_r2, *X_pB2, *X_pE2;
          T* X_v2;
          createCopySparse<T>(X_v2,X_r2,X_pB2,X_pE2,
                X_v,X_r,X_pB,X_pE,M);
@@ -68,25 +68,25 @@ template <typename T>
          X= new Matrix<T>(prX,n,M);
       }
 
-      long NUM_THREADS = getScalarStructDef<long>(prhs[1],"numThreads",-1);
+      int NUM_THREADS = getScalarStructDef<int>(prhs[1],"numThreads",-1);
 #ifdef _OPENMP
       NUM_THREADS = NUM_THREADS == -1 ? omp_get_num_procs() : NUM_THREADS;
 #else
       NUM_THREADS=1;
 #endif 
-      long batch_size = getScalarStructDef<long>(prhs[1],"batchsize",
+      int batch_size = getScalarStructDef<int>(prhs[1],"batchsize",
             256*(NUM_THREADS+1));
       mxArray* pr_D = mxGetField(prhs[1],0,"D");
       Trainer<T>* trainer;
 
       if (!pr_D) {
-         long K = getScalarStruct<long>(prhs[1],"K");
+         int K = getScalarStruct<int>(prhs[1],"K");
          trainer = new Trainer<T>(K,batch_size,NUM_THREADS);
       } else {
          T* prD = reinterpret_cast<T*>(mxGetPr(pr_D));
          const mwSize* dimsD=mxGetDimensions(pr_D);
-         long nD=static_cast<long>(dimsD[0]);
-         long K=static_cast<long>(dimsD[1]);
+         int nD=static_cast<int>(dimsD[0]);
+         int K=static_cast<int>(dimsD[1]);
          if (n != nD) mexErrMsgTxt("sizes of D are not consistent");
          Matrix<T> D1(prD,n,K);
          if (nrhs == 3) {
@@ -94,8 +94,8 @@ template <typename T>
             if (!pr_A) mexErrMsgTxt("field A is not provided");
             T* prA = reinterpret_cast<T*>(mxGetPr(pr_A));
             const mwSize* dimsA=mxGetDimensions(pr_A);
-            long xA=static_cast<long>(dimsA[0]);
-            long yA=static_cast<long>(dimsA[1]);
+            int xA=static_cast<int>(dimsA[0]);
+            int yA=static_cast<int>(dimsA[1]);
             if (xA != K || yA != K) mexErrMsgTxt("Size of A is not consistent");
             Matrix<T> A(prA,K,K);
 
@@ -103,11 +103,11 @@ template <typename T>
             if (!pr_B) mexErrMsgTxt("field B is not provided");
             T* prB = reinterpret_cast<T*>(mxGetPr(pr_B));
             const mwSize* dimsB=mxGetDimensions(pr_B);
-            long xB=static_cast<long>(dimsB[0]);
-            long yB=static_cast<long>(dimsB[1]);
+            int xB=static_cast<int>(dimsB[0]);
+            int yB=static_cast<int>(dimsB[1]);
             if (xB != n || yB != K) mexErrMsgTxt("Size of B is not consistent");
             Matrix<T> B(prB,n,K);
-            long iter = getScalarStruct<long>(prhs[2],"iter");
+            int iter = getScalarStruct<int>(prhs[2],"iter");
             trainer = new Trainer<T>(A,B,D1,iter,batch_size,NUM_THREADS);
          } else {
             trainer = new Trainer<T>(D1,batch_size,NUM_THREADS);
@@ -117,13 +117,13 @@ template <typename T>
       ParamDictLearn<T> param;
       param.lambda = getScalarStruct<T>(prhs[1],"lambda");
       param.lambda2 = getScalarStructDef<T>(prhs[1],"lambda2",10e-10);
-      param.iter=getScalarStruct<long>(prhs[1],"iter");
+      param.iter=getScalarStruct<int>(prhs[1],"iter");
       param.t0 = getScalarStructDef<T>(prhs[1],"t0",1e-5);
-      param.mode =(constraint_type)getScalarStructDef<long>(prhs[1],"mode",PENALTY);
+      param.mode =(constraint_type)getScalarStructDef<int>(prhs[1],"mode",PENALTY);
       param.posAlpha = getScalarStructDef<bool>(prhs[1],"posAlpha",false);
       param.posD = getScalarStructDef<bool>(prhs[1],"posD",false);
       param.expand= getScalarStructDef<bool>(prhs[1],"expand",false);
-      param.modeD=(constraint_type_D)getScalarStructDef<long>(prhs[1],"modeD",L2);
+      param.modeD=(constraint_type_D)getScalarStructDef<int>(prhs[1],"modeD",L2);
       param.whiten = getScalarStructDef<bool>(prhs[1],"whiten",false);
       param.clean = getScalarStructDef<bool>(prhs[1],"clean",true);
       param.verbose = getScalarStructDef<bool>(prhs[1],"verbose",true);
@@ -133,7 +133,7 @@ template <typename T>
       param.stochastic = 
          getScalarStructDef<bool>(prhs[1],"stochastic_deprecated",
                false);
-      param.modeParam = static_cast<mode_compute>(getScalarStructDef<long>(prhs[1],"modeParam",0));
+      param.modeParam = static_cast<mode_compute>(getScalarStructDef<int>(prhs[1],"modeParam",0));
       param.batch = getScalarStructDef<bool>(prhs[1],"batch",false);
       param.iter_updateD = getScalarStructDef<T>(prhs[1],"iter_updateD",param.batch ? 5 : 1);
       param.log = getScalarStructDef<bool>(prhs[1],"log_deprecated",
@@ -143,7 +143,7 @@ template <typename T>
                "logName_deprecated");
          if (!stringData) 
             mexErrMsgTxt("Missing field logName_deprecated");
-         long stringLength = mxGetN(stringData)+1;
+         int stringLength = mxGetN(stringData)+1;
          param.logName= new char[stringLength];
          mxGetString(stringData,param.logName,stringLength);
       }
@@ -154,7 +154,7 @@ template <typename T>
 
       Matrix<T> D;
       trainer->getD(D);
-      long K  = D.n();
+      int K  = D.n();
       plhs[0] = createMatrix<T>(n,K);
       T* prD2 = reinterpret_cast<T*>(mxGetPr(plhs[0]));
       Matrix<T> D2(prD2,n,K);
@@ -162,7 +162,7 @@ template <typename T>
 
       if (nlhs == 2) {
          mwSize dims[1] = {1};
-         long nfields=3; 
+         int nfields=3; 
          const char *names[] = {"A", "B", "iter"};
          plhs[1]=mxCreateStructArray(1, dims,nfields, names);
          mxArray* prA = createMatrix<T>(K,K);
@@ -184,10 +184,10 @@ template <typename T>
    }
 
    void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[]) {
-      if (nrhs < 2 && nrhs > 3)
+      if (nrhs < 2 || nrhs > 3)
          mexErrMsgTxt("Bad number of inputs arguments");
 
-      if ((nlhs < 1) && (nlhs > 2))
+      if ((nlhs < 1) || (nlhs > 2))
          mexErrMsgTxt("Bad number of output arguments");
 
       if (mxGetClassID(prhs[0]) == mxDOUBLE_CLASS) {

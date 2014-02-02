@@ -34,8 +34,8 @@
 #include <decomp.h>
 
 template <typename T>
-inline void callFunction(mxArray* plhs[], const mxArray*prhs[],const long nrhs,
-      const long nlhs) {
+inline void callFunction(mxArray* plhs[], const mxArray*prhs[],const int nrhs,
+      const int nlhs) {
    if (nrhs==3) {
       if (!mexCheckType<T>(prhs[0])) 
          mexErrMsgTxt("type of argument 1 is not consistent");
@@ -50,32 +50,32 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],const long nrhs,
 
       T* prX = reinterpret_cast<T*>(mxGetPr(prhs[0]));
       const mwSize* dimsX=mxGetDimensions(prhs[0]);
-      long n=static_cast<long>(dimsX[0]);
-      long M=static_cast<long>(dimsX[1]);
+      int n=static_cast<int>(dimsX[0]);
+      int M=static_cast<int>(dimsX[1]);
 
       T* prD = reinterpret_cast<T*>(mxGetPr(prhs[1]));
       const mwSize* dimsD=mxGetDimensions(prhs[1]);
-      long nD=static_cast<long>(dimsD[0]);
-      long K=static_cast<long>(dimsD[1]);
+      int nD=static_cast<int>(dimsD[0]);
+      int K=static_cast<int>(dimsD[1]);
       if (n != nD) mexErrMsgTxt("argument sizes are not consistent");
       T lambda = getScalarStruct<T>(prhs[2],"lambda");
       T lambda2 = getScalarStructDef<T>(prhs[2],"lambda2",0);
-      long L = getScalarStructDef<long>(prhs[2],"L",K);
-      long length_path = MAX(2,getScalarStructDef<long>(prhs[2],"length_path",4*L));
-      long numThreads = getScalarStructDef<long>(prhs[2],"numThreads",-1);
+      int L = getScalarStructDef<int>(prhs[2],"L",K);
+      int length_path = MAX(2,getScalarStructDef<int>(prhs[2],"length_path",4*L));
+      int numThreads = getScalarStructDef<int>(prhs[2],"numThreads",-1);
       bool pos = getScalarStructDef<bool>(prhs[2],"pos",false);
       bool verbose = getScalarStructDef<bool>(prhs[2],"verbose",false);
       bool ols = getScalarStructDef<bool>(prhs[2],"ols",false);
       bool cholesky = ols || getScalarStructDef<bool>(prhs[2],"cholesky",false);
-      constraint_type mode = (constraint_type)getScalarStructDef<long>(prhs[2],"mode",PENALTY);
+      constraint_type mode = (constraint_type)getScalarStructDef<int>(prhs[2],"mode",PENALTY);
       if (L > n && !(mode == PENALTY && isZero(lambda) && !pos && lambda2 > 0)) {
 //         if (verbose)
-//            printf("L is changed to %ld\n",n);
+//            printf("L is changed to %d\n",n);
          L=n;
       }
       if (L > K) {
 //         if (verbose)
-//            printf("L is changed to %ld\n",K);
+//            printf("L is changed to %d\n",K);
          L=K;
       }
       Matrix<T> X(prX,n,M);
@@ -92,14 +92,14 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],const long nrhs,
          }
          Vector<T> norms_col;
          norm.norm_2_cols(norms_col);
-         long length=1;
-         for (long i = 1; i<norms_col.n(); ++i)
+         int length=1;
+         for (int i = 1; i<norms_col.n(); ++i)
             if (norms_col[i]) ++length;
          plhs[1]=createMatrix<T>(K,length);
          T* pr_norm=reinterpret_cast<T*>(mxGetPr(plhs[1]));
          Matrix<T> norm2(pr_norm,K,length);
          Vector<T> col;
-         for (long i = 0; i<length; ++i) {
+         for (int i = 0; i<length; ++i) {
             norm2.refCol(i,col);
             norm.copyCol(i,col);
          }
@@ -130,41 +130,41 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],const long nrhs,
 
       T* prX = reinterpret_cast<T*>(mxGetPr(prhs[0]));
       const mwSize* dimsX=mxGetDimensions(prhs[0]);
-      long n=static_cast<long>(dimsX[0]);
-      long M=static_cast<long>(dimsX[1]);
+      int n=static_cast<int>(dimsX[0]);
+      int M=static_cast<int>(dimsX[1]);
 
       T* prG = reinterpret_cast<T*>(mxGetPr(prhs[1]));
       const mwSize* dimsD=mxGetDimensions(prhs[1]);
-      long K1=static_cast<long>(dimsD[0]);
-      long K2=static_cast<long>(dimsD[1]);
+      int K1=static_cast<int>(dimsD[0]);
+      int K2=static_cast<int>(dimsD[1]);
       if (K1 != K2) mexErrMsgTxt("argument sizes are not consistent");
-      long K=K1;
+      int K=K1;
 
       T* prDtR = reinterpret_cast<T*>(mxGetPr(prhs[2]));
       const mwSize* dimsDtR=mxGetDimensions(prhs[2]);
-      long K3=static_cast<long>(dimsDtR[0]);
-      long M2=static_cast<long>(dimsDtR[1]);
+      int K3=static_cast<int>(dimsDtR[0]);
+      int M2=static_cast<int>(dimsDtR[1]);
       if (K1 != K3) mexErrMsgTxt("argument sizes are not consistent");
       if (M != M2) mexErrMsgTxt("argument sizes are not consistent");
 
       T lambda = getScalarStruct<T>(prhs[3],"lambda");
       T lambda2 = getScalarStructDef<T>(prhs[3],"lambda2",0);
-      long L = getScalarStructDef<long>(prhs[3],"L",K1);
-      long length_path = getScalarStructDef<long>(prhs[3],"length_path",4*L);
-      long numThreads = getScalarStructDef<long>(prhs[3],"numThreads",-1);
+      int L = getScalarStructDef<int>(prhs[3],"L",K1);
+      int length_path = getScalarStructDef<int>(prhs[3],"length_path",4*L);
+      int numThreads = getScalarStructDef<int>(prhs[3],"numThreads",-1);
       bool pos = getScalarStructDef<bool>(prhs[3],"pos",false);
       bool verbose = getScalarStructDef<bool>(prhs[3],"verbose",true);
       bool ols = getScalarStructDef<bool>(prhs[3],"ols",false);
       bool cholesky = ols || getScalarStructDef<bool>(prhs[3],"cholesky",false);
-      constraint_type mode = (constraint_type)getScalarStructDef<long>(prhs[3],"mode",PENALTY);
+      constraint_type mode = (constraint_type)getScalarStructDef<int>(prhs[3],"mode",PENALTY);
       if (L > n && !(mode == PENALTY && isZero(lambda) && !pos && lambda2 > 0)) {
 //         if (verbose)
-//            printf("L is changed to %ld\n",n);
+//            printf("L is changed to %d\n",n);
          L=n;
       }
       if (L > K) {
 //         if (verbose)
-//            printf("L is changed to %ld\n",K);
+//            printf("L is changed to %d\n",K);
          L=K;
       }
       Matrix<T> X(prX,n,M);
@@ -182,14 +182,14 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],const long nrhs,
          }
          Vector<T> norms_col;
          norm.norm_2_cols(norms_col);
-         long length=1;
-         for (long i = 1; i<norms_col.n(); ++i)
+         int length=1;
+         for (int i = 1; i<norms_col.n(); ++i)
             if (norms_col[i]) ++length;
          plhs[1]=createMatrix<T>(K,length);
          T* pr_norm=reinterpret_cast<T*>(mxGetPr(plhs[1]));
          Matrix<T> norm2(pr_norm,K,length);
          Vector<T> col;
-         for (long i = 0; i<length; ++i) {
+         for (int i = 0; i<length; ++i) {
             norm2.refCol(i,col);
             norm.copyCol(i,col);
          }

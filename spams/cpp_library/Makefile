@@ -1,37 +1,34 @@
-mexobjects=cppLasso.out 
+TARGETS= bin/test_decomp
+LIBS= -lstdc++ -lblas -llapack
+SRCS= test_decomp.cpp
 
-headers=../linalg/misc.h ../linalg/cblas_template.h \
-	../linalg/misc.h ../linalg/linalg.h \
+#HEADERS= spams.h cppspams.h ../linalg/misc.h ../linalg/cblas_template.h \
+	../linalg/linalg.h \
        	../decomp/decomp.h 
 
-INCLUDE+=-I../ -I../linalg/ -I../decomp/
+INCLUDE+=-I. -I../linalg/ -I../decomp/ -I../prox -I../dictLearn
+CXXFLAGS = -fopenmp -g   -DNDEBUG -DUSE_BLAS_LIB $(INCLUDE)
 
-all:
-	rm -f compile*
-	$(MAKE) lib
-	$(MAKE) $(mexobjects)
-	mv $(LIBNAME) ../build/
+all: depend $(TARGETS)
+	
 
-lib:
-	$(CXX) -c $(CFLAGS) $(INCLUDE) $(NAME) lib.o lib.cpp
-	ar -cvr $(LIBNAME) lib.o
-	rm lib.o
 
 clean:
 	rm -f *.o *.a *.out
 
-%.o : %.cpp $(headers)
-	$(CXX) -c $(CFLAGS) $(INCLUDE) $(NAME)$@ $<
+%.o : %.cpp 
+	$(CXX) -c $(CXXFLAGS) $<
 
-%.out: %.cpp $(headers)
-ifeq ($(VER),linuxmac)
-	$(MAKE) $*.o
-	echo "$(CXX) $(CPPLINK) $*.o $(INCLUDELIB) $(LIBS) -lSPAMS -o $@" >> "compile.sh"
-	$(CXX) $(CPPLINK) $*.o -lSPAMS $(INCLUDELIB) $(LIBS) -o $@ 
-	mv $*.out $*
-	mv $* ../build/
-	mv compile* ../build/
-else
-   #TODO
-endif
+bin/test_decomp: test_decomp.o 
+	$(CXX) $(CXXFLAGS) -o $@  $< $(LIBS)
+
+# Dependencies
+.depend: $(HEADERS)
+	 touch .depend
+	 makedepend -f .depend -- $(CXXFLAGS) -- $(SRCS)
+
+depend: .depend
+	touch depend
+
+include .depend
 

@@ -1,0 +1,1 @@
+../swig/spams.h

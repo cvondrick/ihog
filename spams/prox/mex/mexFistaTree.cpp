@@ -27,7 +27,7 @@ using namespace FISTA;
 
 template <typename T>
 inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
-      const long nlhs) {
+      const int nlhs) {
    if (!mexCheckType<T>(prhs[0])) 
       mexErrMsgTxt("type of argument 1 is not consistent");
    if (mxIsSparse(prhs[0])) 
@@ -48,18 +48,18 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
 
    T* prX = reinterpret_cast<T*>(mxGetPr(prhs[0]));
    const mwSize* dimsX=mxGetDimensions(prhs[0]);
-   long m=static_cast<long>(dimsX[0]);
-   long n=static_cast<long>(dimsX[1]);
+   INTM m=static_cast<INTM>(dimsX[0]);
+   INTM n=static_cast<INTM>(dimsX[1]);
    Matrix<T> X(prX,m,n);
 
    const mwSize* dimsD=mxGetDimensions(prhs[1]);
-   long mD=static_cast<long>(dimsD[0]);
-   long p=static_cast<long>(dimsD[1]);
+   INTM mD=static_cast<INTM>(dimsD[0]);
+   INTM p=static_cast<INTM>(dimsD[1]);
    AbstractMatrixB<T>* D;
 
    double* D_v;
    mwSize* D_r, *D_pB, *D_pE;
-   long* D_r2, *D_pB2, *D_pE2;
+   INTM* D_r2, *D_pB2, *D_pE2;
    T* D_v2;
    if (mxIsSparse(prhs[1])) {
       D_v=static_cast<double*>(mxGetPr(prhs[1]));
@@ -76,29 +76,29 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
 
    T* pr_alpha0 = reinterpret_cast<T*>(mxGetPr(prhs[2]));
    const mwSize* dimsAlpha=mxGetDimensions(prhs[2]);
-   long pAlpha=static_cast<long>(dimsAlpha[0]);
-   long nAlpha=static_cast<long>(dimsAlpha[1]);
+   INTM pAlpha=static_cast<INTM>(dimsAlpha[0]);
+   INTM nAlpha=static_cast<INTM>(dimsAlpha[1]);
    Matrix<T> alpha0(pr_alpha0,pAlpha,nAlpha);
 
    mxArray* ppr_own_variables = mxGetField(prhs[3],0,"own_variables");
-   if (!mexCheckType<long>(ppr_own_variables)) 
+   if (!mexCheckType<int>(ppr_own_variables)) 
          mexErrMsgTxt("own_variables field should be int32");
    if (!ppr_own_variables) mexErrMsgTxt("field own_variables is not provided");
-   long* pr_own_variables = reinterpret_cast<long*>(mxGetPr(ppr_own_variables));
+   int* pr_own_variables = reinterpret_cast<int*>(mxGetPr(ppr_own_variables));
    const mwSize* dims_groups =mxGetDimensions(ppr_own_variables);
-   long num_groups=static_cast<long>(dims_groups[0])*static_cast<long>(dims_groups[1]);
+   int num_groups=static_cast<int>(dims_groups[0])*static_cast<int>(dims_groups[1]);
 
    mxArray* ppr_N_own_variables = mxGetField(prhs[3],0,"N_own_variables");
    if (!ppr_N_own_variables) mexErrMsgTxt("field N_own_variables is not provided");
-   if (!mexCheckType<long>(ppr_N_own_variables)) 
+   if (!mexCheckType<int>(ppr_N_own_variables)) 
          mexErrMsgTxt("N_own_variables field should be int32");
    const mwSize* dims_var =mxGetDimensions(ppr_N_own_variables);
-   long num_groups2=static_cast<long>(dims_var[0])*static_cast<long>(dims_var[1]);
+   int num_groups2=static_cast<int>(dims_var[0])*static_cast<int>(dims_var[1]);
    if (num_groups != num_groups2)
       mexErrMsgTxt("Error in tree definition");
-   long* pr_N_own_variables = reinterpret_cast<long*>(mxGetPr(ppr_N_own_variables));
-   long num_var=0;
-   for (long i = 0; i<num_groups; ++i)
+   int* pr_N_own_variables = reinterpret_cast<int*>(mxGetPr(ppr_N_own_variables));
+   int num_var=0;
+   for (int i = 0; i<num_groups; ++i)
       num_var+=pr_N_own_variables[i];
    if (pAlpha < num_var) 
       mexErrMsgTxt("Input alpha is too small");
@@ -106,15 +106,15 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
    mxArray* ppr_lambda_g = mxGetField(prhs[3],0,"eta_g");
    if (!ppr_lambda_g) mexErrMsgTxt("field eta_g is not provided");
    const mwSize* dims_weights =mxGetDimensions(ppr_lambda_g);
-   long num_groups3=static_cast<long>(dims_weights[0])*static_cast<long>(dims_weights[1]);
+   INTM num_groups3=static_cast<INTM>(dims_weights[0])*static_cast<INTM>(dims_weights[1]);
    if (num_groups != num_groups3)
       mexErrMsgTxt("Error in tree definition");
    T* pr_lambda_g = reinterpret_cast<T*>(mxGetPr(ppr_lambda_g));
 
    mxArray* ppr_groups = mxGetField(prhs[3],0,"groups");
    const mwSize* dims_gg =mxGetDimensions(ppr_groups);
-   if ((num_groups != static_cast<long>(dims_gg[0])) || 
-         (num_groups != static_cast<long>(dims_gg[1])))
+   if ((num_groups != static_cast<int>(dims_gg[0])) || 
+         (num_groups != static_cast<int>(dims_gg[1])))
       mexErrMsgTxt("Error in tree definition");
    if (!ppr_groups) mexErrMsgTxt("field groups is not provided");
    mwSize* pr_groups_ir = reinterpret_cast<mwSize*>(mxGetIr(ppr_groups));
@@ -125,13 +125,13 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
    Matrix<T> alpha(pr_alpha,pAlpha,nAlpha);
 
    FISTA::ParamFISTA<T> param;
-   param.num_threads = getScalarStructDef<long>(prhs[4],"numThreads",-1);
-   param.max_it = getScalarStructDef<long>(prhs[4],"max_it",1000);
+   param.num_threads = getScalarStructDef<int>(prhs[4],"numThreads",-1);
+   param.max_it = getScalarStructDef<int>(prhs[4],"max_it",1000);
    param.tol = getScalarStructDef<T>(prhs[4],"tol",0.000001);
-   param.it0 = getScalarStructDef<long>(prhs[4],"it0",100);
+   param.it0 = getScalarStructDef<int>(prhs[4],"it0",100);
    param.pos = getScalarStructDef<bool>(prhs[4],"pos",false);
    param.compute_gram = getScalarStructDef<bool>(prhs[4],"compute_gram",false);
-   param.max_iter_backtracking = getScalarStructDef<long>(prhs[4],"max_iter_backtracking",1000);
+   param.max_iter_backtracking = getScalarStructDef<int>(prhs[4],"max_iter_backtracking",1000);
    param.L0 = getScalarStructDef<T>(prhs[4],"L0",1.0);
    param.fixed_step = getScalarStructDef<T>(prhs[4],"fixed_step",false);
    param.gamma = MAX(1.01,getScalarStructDef<T>(prhs[4],"gamma",1.5));
@@ -139,7 +139,7 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
    param.lambda= getScalarStructDef<T>(prhs[4],"lambda",1.0);
    param.lambda2= getScalarStructDef<T>(prhs[4],"lambda2",0.0);
    param.lambda3= getScalarStructDef<T>(prhs[4],"lambda3",0.0);
-   param.size_group= getScalarStructDef<long>(prhs[4],"size_group",1);
+   param.size_group= getScalarStructDef<int>(prhs[4],"size_group",1);
    param.delta = getScalarStructDef<T>(prhs[4],"delta",1.0);
    param.admm = getScalarStructDef<bool>(prhs[4],"admm",false);
    param.lin_admm = getScalarStructDef<bool>(prhs[4],"lin_admm",false);
@@ -177,7 +177,7 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
       mxArray *stringData = mxGetField(prhs[4],0,"logName");
       if (!stringData) 
          mexErrMsgTxt("Missing field logName");
-      long stringLength = mxGetN(stringData)+1;
+      int stringLength = mxGetN(stringData)+1;
       param.logName= new char[stringLength];
       mxGetString(stringData,param.logName,stringLength);
    }
@@ -187,8 +187,8 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
    } else if (param.loss == MULTILOG) {
       Vector<T> Xv;
       X.toVect(Xv);
-      long maxval = static_cast<long>(Xv.maxval());
-      long minval = static_cast<long>(Xv.minval());
+      INTM maxval = static_cast<INTM>(Xv.maxval());
+      INTM minval = static_cast<INTM>(Xv.minval());
       if (minval != 0)
          mexErrMsgTxt("smallest class should be 0");
       if (maxval*X.n() > nAlpha || mD != m) {
@@ -217,7 +217,7 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
 
    TreeStruct<T> tree;
    tree.Nv=0;
-   for (long i = 0; i<num_groups; ++i) tree.Nv+=pr_N_own_variables[i];
+   for (int i = 0; i<num_groups; ++i) tree.Nv+=pr_N_own_variables[i];
    tree.Ng=num_groups;
    tree.weights=pr_lambda_g;
    tree.own_variables=pr_own_variables;
@@ -230,7 +230,7 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
    if (nlhs==2) {
       plhs[1]=createMatrix<T>(duality_gap.m(),duality_gap.n());
       T* pr_dualitygap=reinterpret_cast<T*>(mxGetPr(plhs[1]));
-      for (long i = 0; i<duality_gap.n()*duality_gap.m(); ++i) pr_dualitygap[i]=duality_gap[i];
+      for (int i = 0; i<duality_gap.n()*duality_gap.m(); ++i) pr_dualitygap[i]=duality_gap[i];
    }
    if (param.logName) delete[](param.logName);
 

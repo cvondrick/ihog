@@ -26,7 +26,7 @@
 namespace FISTA {
 
    enum loss_t { SQUARE, SQUARE_MISSING, LOG, LOGWEIGHT, MULTILOG, CUR, HINGE, INCORRECT_LOSS};
-   enum regul_t { L0, L1, RIDGE, L2, LINF, L1CONSTRAINT, ELASTICNET, FUSEDLASSO, GROUPLASSO_L2, GROUPLASSO_LINF, GROUPLASSO_L2_L1, GROUPLASSO_LINF_L1, L1L2, L1LINF, L1L2_L1, L1LINF_L1, TREE_L0, TREE_L2, TREE_LINF, GRAPH, GRAPH_RIDGE, GRAPH_L2, TREEMULT, GRAPHMULT, L1LINFCR, NONE, TRACE_NORM, TRACE_NORM_VEC, RANK, RANK_VEC, INCORRECT_REG, GRAPH_PATH_L0, GRAPH_PATH_CONV};
+   enum regul_t { L0, L1, RIDGE, L2, LINF, L1CONSTRAINT, ELASTICNET, FUSEDLASSO, GROUPLASSO_L2, GROUPLASSO_LINF, GROUPLASSO_L2_L1, GROUPLASSO_LINF_L1, L1L2, L1LINF, L1L2_L1, L1LINF_L1, TREE_L0, TREE_L2, TREE_LINF, GRAPH, GRAPH_RIDGE, GRAPH_L2, TREEMULT, GRAPHMULT, L1LINFCR, NONE, TRACE_NORM, TRACE_NORM_VEC, RANK, RANK_VEC, INCORRECT_REG, GRAPH_PATH_L0, GRAPH_PATH_CONV, NA};
 
    regul_t regul_from_string(char* regul) {
       if (strcmp(regul,"l0")==0) return L0;
@@ -163,11 +163,11 @@ namespace FISTA {
             delete[](name_loss); 
          }
       };
-      long num_threads;
-      long max_it;
+      int num_threads;
+      int max_it;
       T L0;
       T gamma;
-      long length_names;
+      int length_names;
       T lambda;
       T delta;
       T lambda2;
@@ -176,8 +176,8 @@ namespace FISTA {
       T b;
       T c;
       T tol;
-      long it0;
-      long max_iter_backtracking;
+      int it0;
+      int max_iter_backtracking;
       loss_t loss;
       bool compute_gram;
       bool lin_admm;
@@ -198,13 +198,13 @@ namespace FISTA {
       bool is_inner_weights;
       T* inner_weights;
       bool eval;
-      long size_group;
+      int size_group;
       bool sqrt_step;
       bool transpose;
       bool fixed_step;
       bool eval_dual_norm;
-      long* groups;
-      long ngroups;
+      int* groups;
+      int ngroups;
    };
 
    template <typename T> struct ParamReg { 
@@ -214,10 +214,10 @@ namespace FISTA {
       T lambda2d1;
       T lambda3d1;
       T lambda;
-      long size_group;
+      int size_group;
       bool pos;
       bool intercept;
-      long num_cols;
+      int num_cols;
       GraphPathStruct<T>* graph_path_st;
       GraphStruct<T>* graph_st;
       TreeStruct<T>* tree_st;
@@ -225,8 +225,8 @@ namespace FISTA {
       bool clever;
       bool linf;
       bool transpose;
-      long ngroups;
-      long* groups;
+      int ngroups;
+      int* groups;
    };
 
    template <typename T>
@@ -248,7 +248,7 @@ namespace FISTA {
                      virtual void reset() { };
                      virtual T eval_split(const F& input) const = 0;
                      virtual T eval_weighted(const D& input,const F& input_struct, const T* weights) const { return this->eval(input);};
-                     virtual long num_components() const = 0;
+                     virtual int num_components() const = 0;
                      virtual void prox_split(F& splitted_w, const T lambda) const = 0;
                      virtual void init_split_variables(F& splitted_w) const = 0;
                      virtual void init_prim_var(E& prim_var) const { };
@@ -295,7 +295,7 @@ namespace FISTA {
             inline void init(const Vector<T>& x) { 
                _x.copy(x); 
                _missingvalues.clear();
-               for (long i = 0; i<_x.n(); ++i) {
+               for (int i = 0; i<_x.n(); ++i) {
                   if (isnan(_x[i])) {
                      _x[i]=0;
                      _missingvalues.push_back(i);
@@ -309,7 +309,7 @@ namespace FISTA {
                SpVector<T> spalpha(alpha.n());
                alpha.toSparse(spalpha);
                _D->mult(spalpha,residual,T(-1.0),T(1.0));
-               for (ListIterator<long> it = _missingvalues.begin();
+               for (ListIterator<int> it = _missingvalues.begin();
                      it != _missingvalues.end(); ++it)
                   residual[*it]=0;
                return 0.5*residual.nrm2sq();
@@ -321,7 +321,7 @@ namespace FISTA {
                SpVector<T> spalpha(alpha.n());
                alpha.toSparse(spalpha);
                _D->mult(spalpha,residual,T(-1.0),T(1.0));
-               for (ListIterator<long> it = _missingvalues.begin();
+               for (ListIterator<int> it = _missingvalues.begin();
                      it != _missingvalues.end(); ++it)
                   residual[*it]=0;
                _D->multTrans(residual,grad,T(-1.0),T(0.0));
@@ -336,7 +336,7 @@ namespace FISTA {
                SpVector<T> spalpha(x.n());
                x.toSparse(spalpha);
                _D->mult(spalpha,grad1,T(1.0),T(-1.0));
-               for (ListIterator<long> it = _missingvalues.begin();
+               for (ListIterator<int> it = _missingvalues.begin();
                      it != _missingvalues.end(); ++it)
                   grad1[*it]=0;
                if (intercept)
@@ -349,7 +349,7 @@ namespace FISTA {
             SqLossMissing<T>& operator=(const SqLossMissing<T>& dict);
             const AbstractMatrixB<T>* _D;
             Vector<T> _x;
-            List<long> _missingvalues;
+            List<int> _missingvalues;
       };
 
    template <typename T> 
@@ -421,13 +421,13 @@ namespace FISTA {
                   grad1.whiten(1); // remove the mean of grad1
                _D->multTrans(grad1,grad2,T(1.0),T(0.0));
             };
-            inline long num_components() const { return _D->m();};
+            inline int num_components() const { return _D->m();};
 
             inline void prox_split(Matrix<T>& splitted_w, const T lambda) const {
-               const long n = this->num_components();
+               const int n = this->num_components();
                Vector<T> row(_D->n());
                Vector<T> wi;
-               for (long i = 0; i<n; ++i) {
+               for (int i = 0; i<n; ++i) {
                   _D->copyRow(i,row);
                   splitted_w.refCol(i,wi);
                   const T xtw=row.dot(wi);
@@ -436,11 +436,11 @@ namespace FISTA {
                }
             };
             inline T eval_split(const Matrix<T>& input) const {
-               const long n = this->num_components();
+               const int n = this->num_components();
                Vector<T> row(_D->n());
                Vector<T> wi;
                T sum = 0;
-               for (long i = 0; i<n; ++i) {
+               for (int i = 0; i<n; ++i) {
                   _D->copyRow(i,row);
                   input.refCol(i,wi);
                   const T xtw=row.dot(wi);
@@ -513,14 +513,14 @@ namespace FISTA {
                Vector<T> row(_X->n());
                Vector<T> wi;
                T sum = 0;
-               for (long i = 0; i<_X->n(); ++i) {
+               for (int i = 0; i<_X->n(); ++i) {
                   _X->copyRow(i,row);
                   input.refCol(i,wi);
                   sum += MAX(0,T(1.0)-_y[i]*row.dot(wi));
                }
                return sum/_X->m();
             };
-            virtual long num_components() const { return _X->m(); };
+            virtual int num_components() const { return _X->m(); };
             inline void init_split_variables(Matrix<T>& splitted_w) const {
                splitted_w.resize(_X->n(),_X->m());
                splitted_w.setZeros();
@@ -536,7 +536,7 @@ namespace FISTA {
                out.scal(-gamma);
                _X->mult(prim_var,out,T(1.0),T(1.0));
                const T thrs=T(1.0)-gamma;
-               for (long i = 0; i<out.n(); ++i) {
+               for (int i = 0; i<out.n(); ++i) {
                   const T y = _y[i]*out[i];
                   if (y < thrs) {
                      out[i]+=_y[i]*gamma;
@@ -559,10 +559,10 @@ namespace FISTA {
                _X->mult(prim,out,fact,T(1.0));
             };
             inline void prox_split(Matrix<T>& splitted_w, const T lambda) const {
-               const long n = this->num_components();
+               const int n = this->num_components();
                Vector<T> row(_X->n());
                Vector<T> wi;
-               for (long i = 0; i<n; ++i) {
+               for (int i = 0; i<n; ++i) {
                   _X->copyRow(i,row);
                   splitted_w.refCol(i,wi);
                   const T xtw=row.dot(wi);
@@ -593,8 +593,8 @@ namespace FISTA {
             inline void init(const Vector<T>& y) { 
                _y.copy(y);
                if (weighted) {
-                  long countpos=0;
-                  for (long i = 0; i<y.n(); ++i)
+                  int countpos=0;
+                  for (int i = 0; i<y.n(); ++i)
                      if (y[i]>0) countpos++; 
                   _weightpos=T(1.0)/countpos;
                   _weightneg=T(1.0)/MAX(1e-3,(y.n()-countpos));
@@ -611,7 +611,7 @@ namespace FISTA {
                tmp.logexp();
                if (weighted) {
                   T sum=0;
-                  for (long i = 0; i<tmp.n(); ++i)
+                  for (int i = 0; i<tmp.n(); ++i)
                      sum+= _y[i]>0 ? _weightpos*tmp[i] : _weightneg*tmp[i];
                   return sum;
                } else {
@@ -630,7 +630,7 @@ namespace FISTA {
                tmp.mult(_y,tmp);
                tmp.neg();
                if (weighted) {
-                  for (long i = 0; i<tmp.n(); ++i)
+                  for (int i = 0; i<tmp.n(); ++i)
                      tmp[i] *= _y[i] > 0 ? _weightpos : _weightneg;
                   _X->multTrans(tmp,grad);
                } else {
@@ -643,13 +643,13 @@ namespace FISTA {
                T sum = 0;
                if (weighted) {
                // TODO : check that
-                  for (long i = 0; i<input.n(); ++i) {
+                  for (int i = 0; i<input.n(); ++i) {
                      T prod = _y[i]>0 ? input[i]/_weightpos : -input[i]/_weightneg;
                      sum += _y[i] >0 ? _weightpos*(xlogx(1.0+prod)+xlogx(-prod)) : _weightneg*(xlogx(1.0+prod)+xlogx(-prod));
                   }
                   return sum;
                } else {
-                  for (long i = 0; i<input.n(); ++i) {
+                  for (int i = 0; i<input.n(); ++i) {
                      T prod = _y[i]*input[i]*_X->m();
                      sum += xlogx(1.0+prod)+xlogx(-prod);
                   }
@@ -691,8 +691,8 @@ namespace FISTA {
 
             inline void init(const Vector<T>& y) { 
                _y.resize(y.n());
-               for (long i = 0; i<y.n(); ++i)
-                  _y[i] = static_cast<long>(y[i]);
+               for (int i = 0; i<y.n(); ++i)
+                  _y[i] = static_cast<int>(y[i]);
             };
             inline T eval(const Matrix<T>& W) const {
                Matrix<T> tmp;
@@ -700,7 +700,7 @@ namespace FISTA {
                //W.mult(*_X,tmp,true,true);
                Vector<T> col;
                T sum=0;
-               for (long i = 0; i<tmp.n(); ++i) {
+               for (int i = 0; i<tmp.n(); ++i) {
                   tmp.refCol(i,col);
                   sum+=col.softmax(_y[i]);
                }
@@ -712,15 +712,15 @@ namespace FISTA {
                //W.mult(*_X,tmp,true,true);
                Vector<T> col;
                grad.resize(W.m(),W.n());
-               for (long i = 0; i<tmp.n(); ++i) {
+               for (int i = 0; i<tmp.n(); ++i) {
                   tmp.refCol(i,col);
                   col.add(-col[_y[i]]);
                   bool overweight=false;
-                  for (long j = 0; j<col.n(); ++j)
+                  for (int j = 0; j<col.n(); ++j)
                      if (col[j] > 1e2)
                         overweight=true;
                   if (overweight) {
-                     const long ind =col.fmax();
+                     const int ind =col.fmax();
                      col.setZeros();
                      col[ind]=1;
                   } else {
@@ -736,10 +736,10 @@ namespace FISTA {
             virtual T fenchel(const Matrix<T>& input) const {
                T sum = 0;
                Vector<T> col;
-               for (long i = 0; i<input.n(); ++i) {
-                  const long clas = _y[i];
+               for (int i = 0; i<input.n(); ++i) {
+                  const int clas = _y[i];
                   input.refCol(i,col);
-                  for (long j = 0; j<input.m(); ++j) {
+                  for (int j = 0; j<input.m(); ++j) {
                      if (j == clas) {
                         sum += xlogx(_X->m()*input[i*input.m()+j]+1.0);
                      } else {
@@ -753,15 +753,15 @@ namespace FISTA {
                _X->multSwitch(W,grad1,true,true);
                //W.mult(*_X,grad1,true,true);
                Vector<T> col;
-               for (long i = 0; i<grad1.n(); ++i) {
+               for (int i = 0; i<grad1.n(); ++i) {
                   grad1.refCol(i,col);
                   col.add(-col[_y[i]]);
                   bool overweight=false;
-                  for (long j = 0; j<col.n(); ++j)
+                  for (int j = 0; j<col.n(); ++j)
                      if (col[j] > 1e2)
                         overweight=true;
                   if (overweight) {
-                     const long ind =col.fmax();
+                     const int ind =col.fmax();
                      col.setZeros();
                      col[ind]=1;
                   } else {
@@ -773,7 +773,7 @@ namespace FISTA {
                }
                if (intercept) {
                   Vector<T> row;
-                  for (long i = 0; i<grad1.m(); ++i) {
+                  for (int i = 0; i<grad1.m(); ++i) {
                      grad1.extractRow(i,row);
                      row.project_sft(_y,i);
                      grad1.setRow(i,row);
@@ -788,7 +788,7 @@ namespace FISTA {
             MultiLogLoss<T>& operator=(const MultiLogLoss<T>& dict);
 
             const AbstractMatrixB<T>* _X;
-            Vector<long> _y;
+            Vector<int> _y;
       };
 
    template <typename T> 
@@ -890,7 +890,7 @@ namespace FISTA {
                if (_compute_gram) {
                   SpVector<T> col;
                   T sum=0;
-                  for (long i = 0; i<sptmp.n(); ++i) {
+                  for (int i = 0; i<sptmp.n(); ++i) {
                      sptmp.refCol(i,col);
                      sum += _G->quad(col);
                   }
@@ -930,7 +930,7 @@ namespace FISTA {
             LossMatSup() { };
 
             virtual ~LossMatSup() { 
-               for (long i = 0; i<_N; ++i) {
+               for (int i = 0; i<_N; ++i) {
                   delete(_losses[i]);
                   _losses[i]=NULL;
                }
@@ -940,7 +940,7 @@ namespace FISTA {
             virtual void init(const Matrix<T>& input) {
                Vector<T> col;
                _m=input.m();
-               for (long i = 0; i<_N; ++i) {
+               for (int i = 0; i<_N; ++i) {
                   input.refCol(i,col);
                   _losses[i]->init(col);
                }
@@ -949,7 +949,7 @@ namespace FISTA {
             inline T eval(const Matrix<T>& w) const {
                Vector<T> col;
                T sum = 0;
-               for (long i = 0; i<_N; ++i) {
+               for (int i = 0; i<_N; ++i) {
                   w.refCol(i,col);
                   sum+=_losses[i]->eval(col);
                }
@@ -958,7 +958,7 @@ namespace FISTA {
             inline void grad(const Matrix<T>& w, Matrix<T>& grad) const {
                Vector<T> col, col2;
                grad.resize(w.m(),w.n());
-               for (long i = 0; i<_N; ++i) {
+               for (int i = 0; i<_N; ++i) {
                   w.refCol(i,col);
                   grad.refCol(i,col2);
                   _losses[i]->grad(col,col2);
@@ -967,7 +967,7 @@ namespace FISTA {
             virtual T fenchel(const Matrix<T>& input) const {
                Vector<T> col;
                T sum = 0;
-               for (long i = 0; i<_N; ++i) {
+               for (int i = 0; i<_N; ++i) {
                   input.refCol(i,col);
                   sum += _losses[i]->fenchel(col);
                }
@@ -977,7 +977,7 @@ namespace FISTA {
                grad1.resize(_m,x.n());
                grad2.resize(x.m(),x.n());
                Vector<T> col, col2, col3;
-               for (long i = 0; i<_N; ++i) {
+               for (int i = 0; i<_N; ++i) {
                   x.refCol(i,col);
                   grad1.refCol(i,col2);
                   grad2.refCol(i,col3);
@@ -986,7 +986,7 @@ namespace FISTA {
             };
             virtual bool is_fenchel() const {
                bool ok=true;
-               for (long i = 0; i<_N; ++i) 
+               for (int i = 0; i<_N; ++i) 
                   ok = ok && _losses[i]->is_fenchel();
                return ok;
             };
@@ -995,10 +995,10 @@ namespace FISTA {
          private:
             explicit LossMatSup<T,L>(const LossMatSup<T,L>& dict);
             LossMatSup<T,L>& operator=(const LossMatSup<T,L>& dict);
-            long _m;
+            int _m;
 
          protected:
-            long _N;
+            int _N;
             L** _losses;
       };
 
@@ -1008,11 +1008,11 @@ namespace FISTA {
    template <typename T, bool weighted>
       class LossMat<T, LogLoss<T,weighted> > : public LossMatSup<T, LogLoss<T,weighted> > {
          public:
-            LossMat(const long N, const AbstractMatrixB<T>& X) {
+            LossMat(const int N, const AbstractMatrixB<T>& X) {
                this->_N=N;
                this->_losses=new LogLoss<T,weighted>*[this->_N];
                Vector<T> col;
-               for (long i = 0; i<this->_N; ++i) 
+               for (int i = 0; i<this->_N; ++i) 
                   this->_losses[i]=new LogLoss<T,weighted>(X);
             }
             virtual void dummy() { };
@@ -1022,11 +1022,11 @@ namespace FISTA {
    template <typename T>
       class LossMat<T, SqLossMissing<T> > : public LossMatSup<T, SqLossMissing<T> > {
          public:
-            LossMat(const long N, const AbstractMatrixB<T>& X) {
+            LossMat(const int N, const AbstractMatrixB<T>& X) {
                this->_N=N;
                this->_losses=new SqLossMissing<T>*[this->_N];
                Vector<T> col;
-               for (long i = 0; i<this->_N; ++i) 
+               for (int i = 0; i<this->_N; ++i) 
                   this->_losses[i]=new SqLossMissing<T>(X);
             }
             virtual void dummy() { };
@@ -1037,7 +1037,7 @@ namespace FISTA {
       class Regularizer {
          public:
             Regularizer() { };
-            Regularizer(const ParamReg<T>& param) { 
+            Regularizer(const ParamReg<T>& param) : _id(NA) { 
                _intercept=param.intercept;
                _pos=param.pos;
             }
@@ -1057,21 +1057,23 @@ namespace FISTA {
             virtual T eval_dual_norm(const D& x) const { return 0; };
             // TODO complete for all norms
             virtual T eval_dual_norm_paths(const D& x, SpMatrix<T>& path) const { return this->eval_dual_norm(x); };
+            regul_t inline id() const { return _id; };
+            
 
          protected:
             bool _pos;
             bool _intercept;
+            regul_t _id;
 
          private:
             explicit Regularizer<T,D>(const Regularizer<T,D>& reg);
             Regularizer<T,D>& operator=(const Regularizer<T,D>& reg);
-
       };
 
    template <typename T> 
       class Lasso : public Regularizer<T> {
          public:
-            Lasso(const ParamReg<T>& param) : Regularizer<T>(param) { };
+            Lasso(const ParamReg<T>& param) : Regularizer<T>(param) { this->_id = L1; };
             virtual ~Lasso() { };
 
             void inline prox(const Vector<T>& x, Vector<T>& y, const T lambda) {
@@ -1096,11 +1098,11 @@ namespace FISTA {
             virtual void sub_grad(const Vector<T>& input, Vector<T>& output) const {  
                output.resize(input.n());
                if (!this->_pos) {
-                  for (long i = 0; i<input.n(); ++i) {
+                  for (int i = 0; i<input.n(); ++i) {
                      output[i] = input[i] > 0 ? T(1.0) : input[i] < 0 ? -T(1.0) : 0;
                   }
                } else {
-                  for (long i = 0; i<input.n(); ++i) {
+                  for (int i = 0; i<input.n(); ++i) {
                      output[i] = input[i] > 0 ? T(1.0) : 0;
                   }
                }
@@ -1111,7 +1113,10 @@ namespace FISTA {
    template <typename T> 
       class LassoConstraint : public Regularizer<T> {
          public:
-            LassoConstraint(const ParamReg<T>& param) : Regularizer<T>(param) { _thrs=param.lambda; };
+            LassoConstraint(const ParamReg<T>& param) : Regularizer<T>(param) { 
+               _thrs=param.lambda;
+               this->_id = L1CONSTRAINT; 
+            };
             virtual ~LassoConstraint() { };
 
             void inline prox(const Vector<T>& x, Vector<T>& y, const T lambda) {
@@ -1168,6 +1173,7 @@ namespace FISTA {
 
             void inline prox(const Vector<T>& x, Vector<T>& y, const T lambda) {
                y.copy(x);
+               if (this->_pos) y.thrsPos();
             };
             T inline eval(const Vector<T>& x) const {  return 0; };
             void inline fenchel(const Vector<T>& input, T& val, T& scal) const {  };
@@ -1178,7 +1184,7 @@ namespace FISTA {
             } 
             virtual void reset() { };
             virtual T eval_split(const SpMatrix<T>& input) const { return 0; };
-            virtual long num_components() const { return 0; };
+            virtual int num_components() const { return 0; };
             virtual void prox_split(SpMatrix<T>& splitted_w, const T lambda) const { };
             virtual void init_split_variables(SpMatrix<T>& splitted_w) const { };
             virtual void init(const Vector<T>& y) { };
@@ -1187,7 +1193,7 @@ namespace FISTA {
    template <typename T> 
       class Ridge: public Regularizer<T> {
          public:
-            Ridge(const ParamReg<T>& param) : Regularizer<T>(param) { };
+            Ridge(const ParamReg<T>& param) : Regularizer<T>(param) { this->_id = RIDGE; };
             virtual ~Ridge() { };
 
             void inline prox(const Vector<T>& x, Vector<T>& y, const T lambda) {
@@ -1211,7 +1217,7 @@ namespace FISTA {
             virtual void sub_grad(const Vector<T>& input, Vector<T>& output) const {  
                output.resize(input.n());
                if (!this->_pos) {
-                  for (long i = 0; i<input.n(); ++i) {
+                  for (int i = 0; i<input.n(); ++i) {
                      output[i] = input[i] > 0 ? 0.5*input[i] : 0;
                   }
                } else {
@@ -1268,7 +1274,7 @@ namespace FISTA {
                Vector<T> xref(y.rawX(),this->_intercept ? x.n()-1 : x.n());
                Vector<T> row(xref.n());
                xref.l1project(row,lambda);
-               for (long j = 0; j<xref.n(); ++j)
+               for (int j = 0; j<xref.n(); ++j)
                   y[j]=y[j]-row[j];
                if (this->_intercept) y[y.n()-1] = x[y.n()-1];
             };
@@ -1358,8 +1364,8 @@ namespace FISTA {
             };
             T inline eval(const Vector<T>& x) const { 
                T sum = T();
-               const long maxn = this->_intercept ? x.n()-1 : x.n();
-               for (long i = 0; i<maxn-1; ++i)
+               const int maxn = this->_intercept ? x.n()-1 : x.n();
+               for (int i = 0; i<maxn-1; ++i)
                   sum += abs(x[i+1]-x[i]) + _lambda2d1*abs(x[i]) + 0.5*_lambda3d1*x[i]*x[i];
                sum += _lambda2d1*abs(x[maxn-1])+0.5*_lambda3d1*x[maxn-1]*x[maxn-1];
                return sum;
@@ -1387,7 +1393,7 @@ namespace FISTA {
                _graph.save_capacities();
                _work.resize(graph_st.Nv+graph_st.Ng+2);
                _weights.resize(graph_st.Ng);
-               for (long i = 0; i<graph_st.Ng; ++i) _weights[i] = graph_st.weights[i];
+               for (int i = 0; i<graph_st.Ng; ++i) _weights[i] = graph_st.weights[i];
                _old_lambda=-1.0;
                _linf=linf;
             };
@@ -1451,12 +1457,12 @@ namespace FISTA {
             };
 
             virtual void init(const Vector<T>& y) { };
-            inline long num_components() const { return _weights.n(); };
+            inline int num_components() const { return _weights.n(); };
             inline void prox_split(SpMatrix<T>& splitted_w, const T lambda) const {
                Vector<T> tmp;
                SpVector<T> col;
                if (_linf) {
-                  for (long i = 0; i<splitted_w.n(); ++i) {
+                  for (int i = 0; i<splitted_w.n(); ++i) {
                      splitted_w.refCol(i,col);
                      tmp.setData(col.rawX(),col.nzmax());                     
                      Vector<T> res;
@@ -1466,7 +1472,7 @@ namespace FISTA {
                      tmp.thrsabsmin(thrs);
                   }
                } else {
-                  for (long i = 0; i<splitted_w.n(); ++i) {
+                  for (int i = 0; i<splitted_w.n(); ++i) {
                      splitted_w.refCol(i,col);
                      tmp.setData(col.rawX(),col.nzmax());                     
                      const T nrm = tmp.nrm2();
@@ -1485,7 +1491,7 @@ namespace FISTA {
             inline T eval_split(const SpMatrix<T>& input) const {
                SpVector<T> col;
                T sum = 0;
-               for (long i = 0; i<input.n(); ++i) {
+               for (int i = 0; i<input.n(); ++i) {
                   input.refCol(i,col);
                   sum += _linf ? _weights[i]*col.fmaxval()  : _weights[i]*col.nrm2();
                }
@@ -1496,10 +1502,10 @@ namespace FISTA {
                SpVector<T> col;
                T sum = 0;
                Vector<T> tmp(input_struct.m());
-               for (long i = 0; i<input_struct.n(); ++i) {
+               for (int i = 0; i<input_struct.n(); ++i) {
                   input_struct.refCol(i,col);
                   tmp.setn(col.L());
-                  for (long j = 0; j<col.L(); ++j)
+                  for (int j = 0; j<col.L(); ++j)
                      tmp[j]=inner_weight[j]*input[col.r(j)];
                   sum += _linf ? _weights[i]*tmp.fmaxval()  : _weights[i]*tmp.nrm2();
                }
@@ -1627,26 +1633,26 @@ namespace FISTA {
 
             void inline prox(const Vector<T>& x, Vector<T>& y, const T lambda) {
                y.resize(x.n());
-               long size_vec=this->_intercept ? x.n()-1 : x.n();
+               int size_vec=this->_intercept ? x.n()-1 : x.n();
                Matrix<T> mX(x.rawX(),_size_group,size_vec/_size_group);
                Matrix<T> mY(y.rawX(),_size_group,size_vec/_size_group);
                _proxy->prox(mX,mY,lambda);
                if (this->_intercept) y[y.n()-1]=x[x.n()-1];
             }
             T inline eval(const Vector<T>& x) const {
-               long size_vec=this->_intercept ? x.n()-1 : x.n();
+               int size_vec=this->_intercept ? x.n()-1 : x.n();
                Matrix<T> mX(x.rawX(),_size_group,size_vec/_size_group);
                return _proxy->eval(mX);
             }
             virtual bool is_fenchel() const { return (_proxy->is_fenchel()); };
             void inline fenchel(const Vector<T>& x, T& val, T& scal) const {
-               long size_vec=this->_intercept ? x.n()-1 : x.n();
+               int size_vec=this->_intercept ? x.n()-1 : x.n();
                Matrix<T> mX(x.rawX(),_size_group,size_vec/_size_group);
                _proxy->fenchel(mX,val,scal);
             };
 
          private:
-            long _size_group;
+            int _size_group;
             ProxMat* _proxy;
       };
 
@@ -1658,42 +1664,42 @@ namespace FISTA {
                param2.intercept=false;
                _size_group=param.size_group;
                if (param.groups) {
-                  long num_groups=0;
-                  for (long i = 0; i<param.ngroups; ++i) num_groups=MAX(num_groups,param.groups[i]);
+                  int num_groups=0;
+                  for (int i = 0; i<param.ngroups; ++i) num_groups=MAX(num_groups,param.groups[i]);
                   _groups.resize(num_groups);
-                  for (long i = 0; i<num_groups; ++i) _groups[i]=new list_long();
-                  for (long i = 0; i<param.ngroups; ++i) _groups[param.groups[i]-1]->push_back(i); 
+                  for (int i = 0; i<num_groups; ++i) _groups[i]=new list_int();
+                  for (int i = 0; i<param.ngroups; ++i) _groups[param.groups[i]-1]->push_back(i); 
                } 
                _prox = new Reg(param2);
             }
             virtual ~GroupProx() { 
                delete(_prox); 
-               for (long i = 0; i<_groups.size(); ++i) delete(_groups[i]);
+               for (int i = 0; i<_groups.size(); ++i) delete(_groups[i]);
             };
 
             void inline prox(const Vector<T>& x, Vector<T>& y, const T lambda) {
                y.copy(x);
-               const long maxn= this->_intercept ? x.n()-1 : x.n();
+               const int maxn= this->_intercept ? x.n()-1 : x.n();
                if (!_groups.empty()) {
-                  for (long i = 0; i<_groups.size(); ++i) {
-                     list_long* group=_groups[i];
+                  for (int i = 0; i<_groups.size(); ++i) {
+                     list_int* group=_groups[i];
                      Vector<T> tmp(group->size());
                      Vector<T> tmp2(group->size());
-                     long count=0;
-                     for (const_iterator_long it = group->begin(); it != group->end(); ++it) {
+                     int count=0;
+                     for (const_iterator_int it = group->begin(); it != group->end(); ++it) {
                         tmp[count++]=x[*it];
                      }
                      _prox->prox(tmp,tmp2,lambda);
                      count=0;
-                     for (const_iterator_long it = group->begin(); it != group->end(); ++it) {
+                     for (const_iterator_int it = group->begin(); it != group->end(); ++it) {
                         y[*it]=tmp2[count++];
                      }
                   }
                } else {
                   Vector<T> tmp;
                   Vector<T> tmp2;
-                  const long p = _size_group;
-                  for (long i = 0; i+p-1<maxn; i+=p) {
+                  const int p = _size_group;
+                  for (int i = 0; i+p-1<maxn; i+=p) {
                      tmp.setPointer(x.rawX()+i,p);
                      tmp2.setPointer(y.rawX()+i,p);
                      _prox->prox(tmp,tmp2,lambda);
@@ -1701,22 +1707,22 @@ namespace FISTA {
                }
             }
             T inline eval(const Vector<T>& x) const {
-               const long maxn= this->_intercept ? x.n()-1 : x.n();
+               const int maxn= this->_intercept ? x.n()-1 : x.n();
                T sum=0;
                if (!_groups.empty()) {
-                  for (long i = 0; i<_groups.size(); ++i) {
-                     list_long* group=_groups[i];
+                  for (int i = 0; i<_groups.size(); ++i) {
+                     list_int* group=_groups[i];
                      Vector<T> tmp(group->size());
-                     long count=0;
-                     for (const_iterator_long it = group->begin(); it != group->end(); ++it) {
+                     int count=0;
+                     for (const_iterator_int it = group->begin(); it != group->end(); ++it) {
                         tmp[count++]=x[*it];
                      }
                      sum+=_prox->eval(tmp);
                   }
                } else {
                   Vector<T> tmp;
-                  const long p = _size_group;
-                  for (long i = 0; i+p-1<maxn; i+=p) {
+                  const int p = _size_group;
+                  for (int i = 0; i+p-1<maxn; i+=p) {
                      tmp.setPointer(x.rawX()+i,p);
                      sum+=_prox->eval(tmp);
                   }
@@ -1725,17 +1731,17 @@ namespace FISTA {
             }
             virtual bool is_fenchel() const { return _prox->is_fenchel(); };
             void inline fenchel(const Vector<T>& x, T& val, T& scal) const { 
-               const long maxn= this->_intercept ? x.n()-1 : x.n();
+               const int maxn= this->_intercept ? x.n()-1 : x.n();
                T val2;
                T scal2;
                scal=T(1.0);
                val=0;
                if (!_groups.empty()) {
-                  for (long i = 0; i<_groups.size(); ++i) {
-                     list_long* group=_groups[i];
+                  for (int i = 0; i<_groups.size(); ++i) {
+                     list_int* group=_groups[i];
                      Vector<T> tmp(group->size());
-                     long count=0;
-                     for (const_iterator_long it = group->begin(); it != group->end(); ++it) {
+                     int count=0;
+                     for (const_iterator_int it = group->begin(); it != group->end(); ++it) {
                         tmp[count++]=x[*it];
                      }
                      _prox->fenchel(tmp,val2,scal2);
@@ -1743,9 +1749,9 @@ namespace FISTA {
                      scal=MIN(scal,scal2);
                   }
                } else {
-                  const long p = _size_group;
+                  const int p = _size_group;
                   Vector<T> tmp;
-                  for (long i = 0; i+p-1<maxn; i+=p) {
+                  for (int i = 0; i+p-1<maxn; i+=p) {
                      tmp.setPointer(x.rawX()+i,p);
                      _prox->fenchel(tmp,val2,scal2);
                      val+=val2;
@@ -1754,8 +1760,8 @@ namespace FISTA {
                }
             };
          protected:
-            long _size_group;
-            std::vector<list_long*> _groups;
+            int _size_group;
+            std::vector<list_int*> _groups;
             Reg* _prox;
       };
 
@@ -1791,18 +1797,18 @@ namespace FISTA {
                if (this->_pos) y.thrsPos();
                y.norm_2_rows(norm);
                y.setZeros();
-               const long m = x.m();
-               const long n = x.n();
-               for (long i = 0; i<m; ++i) {
+               const int m = x.m();
+               const int n = x.n();
+               for (int i = 0; i<m; ++i) {
                   if (norm[i] > lambda) {
                      T scal = (norm[i]-lambda)/norm[i];
-                     for (long j = 0; j<n; ++j) 
+                     for (int j = 0; j<n; ++j) 
                         y[j*m+i] = x[j*m+i]*scal;
                   }
                }
                if (this->_pos) y.thrsPos();
                if (this->_intercept)
-                  for (long j = 0; j<n; ++j) 
+                  for (int j = 0; j<n; ++j) 
                      y[j*m+m-1]=x[j*m+m-1];
             }
             T inline eval(const Matrix<T>& x) const {
@@ -1814,7 +1820,7 @@ namespace FISTA {
             virtual void sub_grad(const Matrix<T>& input, Matrix<T>& output) const { 
                Vector<T> norm;
                input.norm_2_rows(norm);
-               for (long i = 0; i<norm.n(); ++i) {
+               for (int i = 0; i<norm.n(); ++i) {
                   if (norm[i] < 1e-20) norm[i]=T(1.0);
                }
                norm.inv();
@@ -1852,12 +1858,12 @@ namespace FISTA {
                if (this->_pos) y.thrsPos();
                Vector<T> row(x.n());
                Vector<T> row2(x.n());
-               const long maxn= this->_intercept ? x.m()-1 : x.m();
-               for (long i = 0; i< maxn; ++i) {
-                  for (long j = 0; j<x.n(); ++j)
+               const int maxn= this->_intercept ? x.m()-1 : x.m();
+               for (int i = 0; i< maxn; ++i) {
+                  for (int j = 0; j<x.n(); ++j)
                      row[j]=y(i,j);
                   row.l1project(row2,lambda);
-                  for (long j = 0; j<x.n(); ++j)
+                  for (int j = 0; j<x.n(); ++j)
                      y(i,j) = row[j]-row2[j];
                }
             }
@@ -1888,17 +1894,17 @@ namespace FISTA {
                output.setZeros();
                const T maxm= this->_intercept ? input.m()-1 : input.m();
                Vector<T> row(input.n());
-               for (long i = 0; i<maxm; ++i) {
+               for (int i = 0; i<maxm; ++i) {
                   input.copyRow(i,row);
                   T max=row.fmaxval();
                   if (max > 1e-15) {
-                     long num_max=0;
-                     for (long j = 0; j<row.n(); ++j) {
+                     int num_max=0;
+                     for (int j = 0; j<row.n(); ++j) {
                         if (abs<T>(max-abs<T>(row[j])) < 1e-15) 
                            num_max++;
                      }
                      T add = T(1.0)/num_max;
-                     for (long j = 0; j<row.n(); ++j) {
+                     for (int j = 0; j<row.n(); ++j) {
                         if (abs<T>(max-abs<T>(row[j])) < 1e-15) 
                            row[j] = row[j] > 0 ? add : -add;
                      }
@@ -1935,7 +1941,7 @@ namespace FISTA {
               /* Vector<T> u0(x.m());
                u0.setZeros();
                Vector<T> u, v;
-               for (long i = 0; i<MIN(x.m(),x.n()); ++i) {
+               for (int i = 0; i<MIN(x.m(),x.n()); ++i) {
                   tmp.svdRankOne(u0,u,v);
                   T val=v.nrm2();
                   if (val < lambda) break;
@@ -1956,7 +1962,7 @@ namespace FISTA {
                T sum=0;
                Vector<T> u0(XtX.m());
                u0.setAleat();
-               for (long i = 0; i<XtX.m(); ++i) {
+               for (int i = 0; i<XtX.m(); ++i) {
                   T val=XtX.eigLargestMagnSym(u0,u0); // uses power method
                   XtX.rank1Update(u0,u0,-val);
                   sum+=sqrt(val);
@@ -2002,7 +2008,7 @@ namespace FISTA {
                Vector<T> u0(x.m());
                u0.setZeros();
                Vector<T> u, v;
-               for (long i = 0; i<MIN(x.m(),x.n()); ++i) {
+               for (int i = 0; i<MIN(x.m(),x.n()); ++i) {
                   tmp.svdRankOne(u0,u,v);
                   T val=v.nrm2();
                   if (val*val < lambda) break;
@@ -2020,7 +2026,7 @@ namespace FISTA {
                T sum=0;
                Vector<T> u0(XtX.m());
                u0.setAleat();
-               for (long i = 0; i<XtX.m(); ++i) {
+               for (int i = 0; i<XtX.m(); ++i) {
                   T val=XtX.eigLargestMagnSym(u0,u0); // uses power method
                   XtX.rank1Update(u0,u0,-val);
                   sum++;
@@ -2033,28 +2039,28 @@ namespace FISTA {
       };
 
     template <typename T>
-       inline void convert_paths_to_mat(const List<Path<long long>*>& paths,SpMatrix<T>& paths_mat, const long n) {
-          long nzmax=0;
+       inline void convert_paths_to_mat(const List<Path<long long>*>& paths,SpMatrix<T>& paths_mat, const int n) {
+          int nzmax=0;
           for (ListIterator<Path<long long>*> it=paths.begin(); it != paths.end(); ++it)
              nzmax+=it->nodes.size();
           paths_mat.resize(n,paths.size(),nzmax);
-          long* pB =paths_mat.pB();
-          long* pE =paths_mat.pE();
-          long* r =paths_mat.r();
+          INTM* pB =paths_mat.pB();
+          INTM* pE =paths_mat.pE();
+          INTM* r =paths_mat.r();
           T* v =paths_mat.v();
-          long count_col=0;
-          long count=0;
+          int count_col=0;
+          int count=0;
           pB[0]=0;
           for (ListIterator<Path<long long>*> it_path=paths.begin(); 
                 it_path != paths.end(); ++it_path) {
-             for (const_iterator_long it = it_path->nodes.begin(); 
+             for (const_iterator_int it = it_path->nodes.begin(); 
                    it != it_path->nodes.end(); ++it) {
                 r[count]= *it;
                 v[count++]= it_path->flow;
              }
              pB[++count_col]=count;
           }
-          for (long i = 0; i<paths_mat.n(); ++i) sort(r,v,pB[i],pE[i]-1);
+          for (int i = 0; i<paths_mat.n(); ++i) sort(r,v,pB[i],pE[i]-1);
        };
  
     template <typename T> 
@@ -2155,25 +2161,25 @@ namespace FISTA {
          public:
             RegMat(const ParamReg<T>& param) : Regularizer<T,Matrix<T> >(param) { 
                _transpose=param.transpose;
-               const long N = param.num_cols;
+               const int N = param.num_cols;
                _regs=new Reg*[N];
                _N=N;
-               for (long i = 0; i<N; ++i) 
+               for (int i = 0; i<N; ++i) 
                   _regs[i]=new Reg(param);
             };
             virtual ~RegMat() { 
-               for (long i = 0; i<_N; ++i) {
+               for (int i = 0; i<_N; ++i) {
                   delete(_regs[i]);
                   _regs[i]=NULL;
                }
                delete[](_regs);
             };
             void inline reset() { 
-               for (long i = 0; i<_N; ++i) _regs[i]->reset();
+               for (int i = 0; i<_N; ++i) _regs[i]->reset();
             };
             void inline prox(const Matrix<T>& x, Matrix<T>& y, const T lambda) {
                y.copy(x);
-               long i;
+               int i;
                if (_transpose) {
 #pragma omp parallel for private(i) 
                   for (i = 0; i<_N; ++i) {
@@ -2194,7 +2200,7 @@ namespace FISTA {
             };
             virtual bool is_subgrad() const { 
                bool ok=true;
-               for (long i = 0; i<_N; ++i) 
+               for (int i = 0; i<_N; ++i) 
                   ok=ok && _regs[i]->is_subgrad();
                return ok;
             };
@@ -2202,13 +2208,13 @@ namespace FISTA {
                y.resize(x.m(),x.n());
                Vector<T> colx, coly, cold;
                if (_transpose) {
-                  for (long i = 0; i<_N; ++i) {
+                  for (int i = 0; i<_N; ++i) {
                      x.copyRow(i,colx);
                      _regs[i]->sub_grad(colx,coly);
                      y.setRow(i,coly);
                   }
                } else {
-                  for (long i = 0; i<_N; ++i) {
+                  for (int i = 0; i<_N; ++i) {
                      x.refCol(i,colx);
                      y.refCol(i,coly);
                      _regs[i]->sub_grad(colx,coly);
@@ -2217,7 +2223,7 @@ namespace FISTA {
             };
             T inline eval(const Matrix<T>& x) const { 
                T sum = 0;
-               long i;
+               int i;
 #pragma omp parallel for private(i) 
                for (i = 0; i<_N; ++i) {
                   Vector<T> col;
@@ -2235,7 +2241,7 @@ namespace FISTA {
                Vector<T> col;
                val = 0;
                scal = 1.0;
-               for (long i = 0; i<_N; ++i) {
+               for (int i = 0; i<_N; ++i) {
                   if (_transpose) {
                      input.copyRow(i,col);
                   } else {
@@ -2250,13 +2256,13 @@ namespace FISTA {
             };
             virtual bool is_fenchel() const {
                bool ok=true;
-               for (long i = 0; i<_N; ++i) 
+               for (int i = 0; i<_N; ++i) 
                   ok = ok && _regs[i]->is_fenchel();
                return ok;
             };
 
          protected:
-            long _N;
+            int _N;
             Reg** _regs;
             bool _transpose;
       };
@@ -2310,27 +2316,27 @@ namespace FISTA {
    template <typename T>
       class MixedL1LINFCR : public SpecGraphMat<T> {
          public:
-            MixedL1LINFCR(const long m, const ParamReg<T>& param) : SpecGraphMat<T>(param) { 
-               const long n = param.num_cols;
+            MixedL1LINFCR(const int m, const ParamReg<T>& param) : SpecGraphMat<T>(param) { 
+               const int n = param.num_cols;
                const T l2dl1 = param.lambda2d1;
                GraphStruct<T> graph_st;
                graph_st.Nv=m*n;
                graph_st.Ng=m+n;
                T* weights = new T[graph_st.Ng];
-               for (long i = 0; i<n; ++i) weights[i]=T(1.0);
-               for (long i = 0; i<m; ++i) weights[i+n]=l2dl1;
+               for (int i = 0; i<n; ++i) weights[i]=T(1.0);
+               for (int i = 0; i<m; ++i) weights[i+n]=l2dl1;
                graph_st.weights=weights;
 
                mwSize* gv_jc = new mwSize[graph_st.Ng+1];
                mwSize* gv_ir = new mwSize[m*n*2];
-               for (long i = 0; i<n; ++i) {
+               for (int i = 0; i<n; ++i) {
                   gv_jc[i]=i*m;
-                  for (long j = 0; j<m; ++j)
+                  for (int j = 0; j<m; ++j)
                      gv_ir[i*m+j]=i*m+j;
                }
-               for (long i = 0; i<m; ++i) {
+               for (int i = 0; i<m; ++i) {
                   gv_jc[i+n]=i*n+n*m;
-                  for (long j = 0; j<n; ++j)
+                  for (int j = 0; j<n; ++j)
                      gv_ir[i*n+n*m+j]=j*m+i;
                }
                gv_jc[m+n]=2*m*n;
@@ -2339,7 +2345,7 @@ namespace FISTA {
 
                mwSize* gg_jc = new mwSize[graph_st.Ng+1];
                mwSize* gg_ir = new mwSize[1];
-               for (long i = 0; i< graph_st.Ng+1; ++i) gg_jc[i]=0;
+               for (int i = 0; i< graph_st.Ng+1; ++i) gg_jc[i]=0;
                graph_st.gg_jc=gg_jc;
                graph_st.gg_ir=gg_ir;
 
@@ -2363,63 +2369,63 @@ namespace FISTA {
          public:
             TreeMult(const ParamReg<T>& param) : SpecGraphMat<T>(param) { 
                const TreeStruct<T>& tree_st=*(param.tree_st);
-               const long N = param.num_cols;
+               const int N = param.num_cols;
                const T l1dl2 = param.lambda2d1;
                GraphStruct<T> graph_st;
-               long Nv=tree_st.Nv;
+               int Nv=tree_st.Nv;
                if (param.intercept) ++Nv;
-               long Ng=tree_st.Ng;
+               int Ng=tree_st.Ng;
                graph_st.Nv=Nv*N;
                graph_st.Ng=Ng*(N+1);
                T* weights=new T[graph_st.Ng];
-               for (long i = 0; i<N+1; ++i)
-                  for (long j = 0; j<Ng; ++j)
+               for (int i = 0; i<N+1; ++i)
+                  for (int j = 0; j<Ng; ++j)
                      weights[i*Ng+j]=tree_st.weights[j];
-               for (long j = 0; j<Ng; ++j)
+               for (int j = 0; j<Ng; ++j)
                   weights[N*Ng+j]*=l1dl2;
                graph_st.weights=weights;
 
-               long nzmax_tree=0;
-               for (long i = 0; i<Ng; ++i)
+               int nzmax_tree=0;
+               for (int i = 0; i<Ng; ++i)
                   nzmax_tree += tree_st.N_own_variables[i];
-               long nzmax_v=nzmax_tree*N;
+               int nzmax_v=nzmax_tree*N;
                mwSize* gv_jc = new mwSize[graph_st.Ng+1];
                mwSize* gv_ir = new mwSize[nzmax_v];
-               long count=0;
-               for (long i = 0; i<N; ++i) {
-                  for (long j = 0; j<Ng; ++j) {
+               int count=0;
+               for (int i = 0; i<N; ++i) {
+                  for (int j = 0; j<Ng; ++j) {
                      gv_jc[i*Ng+j]=count;
-                     for (long k = 0; k<tree_st.N_own_variables[j]; ++k) {
+                     for (int k = 0; k<tree_st.N_own_variables[j]; ++k) {
                         gv_ir[gv_jc[i*Ng+j] + k] =Nv*i+tree_st.own_variables[j]+k;
                         ++count;
                      }
                   }
                }
-               for (long i = 0; i<Ng+1; ++i) {
+               for (int i = 0; i<Ng+1; ++i) {
                   gv_jc[N*Ng+i]=count;
                }
                graph_st.gv_jc=gv_jc;
                graph_st.gv_ir=gv_ir;
 
                mwSize* gg_jc = new mwSize[graph_st.Ng+1];
-               long nzmax_tree2=tree_st.groups_jc[Ng];
-               long nzmax2=nzmax_tree2*(N+1)+Ng*N;
+               int nzmax_tree2=tree_st.groups_jc[Ng];
+               int nzmax2=nzmax_tree2*(N+1)+Ng*N;
                mwSize* gg_ir = new mwSize[nzmax2];
                count=0;
-               for (long i = 0; i<N; ++i) {
-                  for (long j = 0; j<Ng; ++j) {
+               for (int i = 0; i<N; ++i) {
+                  for (int j = 0; j<Ng; ++j) {
                      gg_jc[i*Ng+j] = count;
-                     for (long k = tree_st.groups_jc[j]; k<static_cast<long>(tree_st.groups_jc[j+1]); ++k) {
+                     for (int k = tree_st.groups_jc[j]; k<static_cast<int>(tree_st.groups_jc[j+1]); ++k) {
                         gg_ir[count++] = i*Ng+tree_st.groups_ir[k];
                      }
                   }
                }
-               for (long i = 0; i<Ng; ++i) {
+               for (int i = 0; i<Ng; ++i) {
                   gg_jc[N*Ng+i] = count;
-                  for (long j = tree_st.groups_jc[i]; j<static_cast<long>(tree_st.groups_jc[i+1]); ++j) {
+                  for (int j = tree_st.groups_jc[i]; j<static_cast<int>(tree_st.groups_jc[i+1]); ++j) {
                      gg_ir[count++] = N*Ng+tree_st.groups_ir[j];
                   }
-                  for (long j = 0; j<N; ++j) {
+                  for (int j = 0; j<N; ++j) {
                      gg_ir[count++] = j*Ng+i;
                   }
                }
@@ -2447,58 +2453,58 @@ namespace FISTA {
          public:
             GraphMult(const ParamReg<T>& param) : SpecGraphMat<T>(param) { 
                const GraphStruct<T>& graph_st=*(param.graph_st);
-               const long N = param.num_cols;
+               const int N = param.num_cols;
                const T l1dl2 = param.lambda2d1;
                GraphStruct<T> g_st;
-               long Nv=graph_st.Nv;
-               long Ng=graph_st.Ng;
+               int Nv=graph_st.Nv;
+               int Ng=graph_st.Ng;
                g_st.Nv=Nv*N;
                g_st.Ng=Ng*(N+1);
                T* weights=new T[g_st.Ng];
-               for (long i = 0; i<N+1; ++i)
-                  for (long j = 0; j<Ng; ++j)
+               for (int i = 0; i<N+1; ++i)
+                  for (int j = 0; j<Ng; ++j)
                      weights[i*Ng+j]=graph_st.weights[j];
-               for (long j = 0; j<Ng; ++j)
+               for (int j = 0; j<Ng; ++j)
                   weights[N*Ng+j]*=l1dl2;
                g_st.weights=weights;
-               long nzmax_graph=graph_st.gv_jc[Ng]; //just corrected to gv
-               long nzmax_v=nzmax_graph*N;
+               int nzmax_graph=graph_st.gv_jc[Ng]; //just corrected to gv
+               int nzmax_v=nzmax_graph*N;
                mwSize* gv_jc = new mwSize[g_st.Ng+1];
                mwSize* gv_ir = new mwSize[nzmax_v];
-               long count=0;
-               for (long i = 0; i<N; ++i) {
-                  for (long j = 0; j<Ng; ++j) {
+               int count=0;
+               for (int i = 0; i<N; ++i) {
+                  for (int j = 0; j<Ng; ++j) {
                      gv_jc[i*Ng+j]=count;
-                     for (long k = graph_st.gv_jc[j]; k<graph_st.gv_jc[j+1]; ++k) {
+                     for (int k = graph_st.gv_jc[j]; k<graph_st.gv_jc[j+1]; ++k) {
                         gv_ir[count++] =Nv*i+graph_st.gv_ir[k]; 
                      }
                   }
                }
-               for (long i = 0; i<Ng+1; ++i) {
+               for (int i = 0; i<Ng+1; ++i) {
                   gv_jc[N*Ng+i]=count;
                }
                g_st.gv_jc=gv_jc;
                g_st.gv_ir=gv_ir;
 
                mwSize* gg_jc = new mwSize[g_st.Ng+1];
-               long nzmax_tree2=graph_st.gg_jc[Ng];
-               long nzmax2=nzmax_tree2*(N+1)+Ng*N;
+               int nzmax_tree2=graph_st.gg_jc[Ng];
+               int nzmax2=nzmax_tree2*(N+1)+Ng*N;
                mwSize* gg_ir = new mwSize[nzmax2];
                count=0;
-               for (long i = 0; i<N; ++i) {
-                  for (long j = 0; j<Ng; ++j) {
+               for (int i = 0; i<N; ++i) {
+                  for (int j = 0; j<Ng; ++j) {
                      gg_jc[i*Ng+j] = count;
-                     for (long k = graph_st.gg_jc[j]; k<graph_st.gg_jc[j+1]; ++k) {
+                     for (int k = graph_st.gg_jc[j]; k<graph_st.gg_jc[j+1]; ++k) {
                         gg_ir[count++] = i*Ng+graph_st.gg_ir[k];
                      }
                   }
                }
-               for (long i = 0; i<Ng; ++i) {
+               for (int i = 0; i<Ng; ++i) {
                   gg_jc[N*Ng+i] = count;
-                  for (long j = graph_st.gg_jc[i]; j<static_cast<long>(graph_st.gg_jc[i+1]); ++j) {
+                  for (int j = graph_st.gg_jc[i]; j<static_cast<int>(graph_st.gg_jc[i+1]); ++j) {
                      gg_ir[count++] = N*Ng+graph_st.gg_ir[j];
                   }
-                  for (long j = 0; j<N; ++j) {
+                  for (int j = 0; j<N; ++j) {
                      gg_ir[count++] = j*Ng+i;
                   }
                }
@@ -2581,7 +2587,7 @@ namespace FISTA {
       }
 
    template <typename T>
-      void writeLog(const long iter, const T time, const T primal, const T dual,
+      void writeLog(const int iter, const T time, const T primal, const T dual,
             char* name) {
          std::ofstream f;
          f.precision(12);
@@ -2599,16 +2605,16 @@ namespace FISTA {
          D grad;
          D sub_grad;
          const T lambda=param.lambda;
-         const long it0 = MAX(1,param.it0);
+         const int it0 = MAX(1,param.it0);
          const bool duality = loss.is_fenchel() && regularizer.is_fenchel();
          optim_info.set(-1);
          T best_dual=-INFINITY;
          T rel_duality_gap=-INFINITY;
          Timer time;
          time.start();
-         long it;
+         int it;
          for (it = 1; it<=param.max_it; ++it) {
-            /// prlong loss
+            /// print loss
             if (param.verbose && ((it % it0) == 0)) {
                time.stop();
                T los=loss.eval(x) + lambda*regularizer.eval(x);    
@@ -2653,7 +2659,7 @@ namespace FISTA {
    template <typename T, typename D, typename E>
       void ISTA_Generic(Loss<T,D,E>& loss, Regularizer<T,D>& regularizer, const D& x0, D& x, Vector<T>& optim_info,
             const ParamFISTA<T>& param) {
-         const long it0 = MAX(1,param.it0);
+         const int it0 = MAX(1,param.it0);
          const T lambda=param.lambda;
          T L=param.L0;
          T Lold=L;
@@ -2666,10 +2672,10 @@ namespace FISTA {
          time.start();
          T rel_duality_gap=-INFINITY;
 
-         long it;
+         int it;
          T best_dual=-INFINITY;
          for (it = 1; it<=param.max_it; ++it) {
-            /// prlong loss
+            /// print loss
             if (param.verbose && ((it % it0) == 0)) {
                time.stop();
                T los=loss.eval(x) + lambda*regularizer.eval(x);
@@ -2684,7 +2690,7 @@ namespace FISTA {
 
             /// compute gradient
             loss.grad(x,grad);
-            long iter=1;
+            int iter=1;
             while (iter < param.max_iter_backtracking) {
                prox.copy(x);
                prox.add(grad,-T(1.0)/L);
@@ -2735,7 +2741,7 @@ namespace FISTA {
    template <typename T, typename D, typename E>
       void FISTA_Generic(Loss<T,D,E>& loss, Regularizer<T,D>& regularizer, const D& x0, D& x, Vector<T>& optim_info,
             const ParamFISTA<T>& param) {
-         const long it0 = MAX(1,param.it0);
+         const int it0 = MAX(1,param.it0);
          const T lambda=param.lambda;
          T L=param.L0;
          T t = 1.0;
@@ -2752,10 +2758,10 @@ namespace FISTA {
          Timer time;
          time.start();
 
-         long it;
+         int it;
          T best_dual=-INFINITY;
          for (it = 1; it<=param.max_it; ++it) {
-            /// prlong loss
+            /// print loss
             if (param.verbose && ((it % it0) == 0)) {
                time.stop();
                T los=loss.eval(x) + lambda*regularizer.eval(x);    
@@ -2771,7 +2777,7 @@ namespace FISTA {
             /// compute gradient
             loss.grad(y,grad);
 
-            long iter=1;
+            int iter=1;
 
             while (iter < param.max_iter_backtracking) {
                prox.copy(y);
@@ -2826,7 +2832,7 @@ namespace FISTA {
       T LagrangianADMM(const SplittingFunction<T, Matrix<T> >& loss, const SplittingFunction<T, SpMatrix<T> >& reg, 
             const T lambda, const T gamma, const Vector<T>& w,  const Matrix<T>& splitted_loss, const SpMatrix<T>& splitted_reg,
             const Matrix<T>& multi_loss, const SpMatrix<T>& multi_reg, T& los, const T* weights = NULL) {
-         const long n_reg=reg.num_components();
+         const int n_reg=reg.num_components();
          //T loss_val = loss.eval(w) + lambda*reg.eval(w);
          T lagrangian = loss.eval_split(splitted_loss) + lambda*reg.eval_split(splitted_reg);
          Matrix<T> tmp;
@@ -2863,19 +2869,19 @@ namespace FISTA {
          w.add(mean,-T(1.0)/gamma);   
          Vector<T> number_occurences(w.n());
          number_occurences.set(splitted_w_loss.n());
-         const long n_reg=splitted_w_reg.n();
+         const int n_reg=splitted_w_reg.n();
          if (n_reg > 0) {
             SpVector<T> col;
             mean.setZeros();
-            for (long i = 0; i<n_reg; ++i) {
+            for (int i = 0; i<n_reg; ++i) {
                splitted_w_reg.refCol(i,col);
                mean.add(col);
-               for (long j = 0; j<col.L(); ++j) 
+               for (int j = 0; j<col.L(); ++j) 
                   number_occurences[col.r(j)]++;
             }
             w.add(mean);   
             mean.setZeros();
-            for (long i = 0; i<n_reg; ++i) {
+            for (int i = 0; i<n_reg; ++i) {
                multipliers_w_reg.refCol(i,col);
                mean.add(col);
             }
@@ -2899,22 +2905,22 @@ namespace FISTA {
          w.add(mean,-T(1.0)/gamma);   
          Vector<T> number_occurences(w.n());
          number_occurences.set(splitted_w_loss.n());
-         const long n_reg=splitted_w_reg.n();
+         const int n_reg=splitted_w_reg.n();
          if (n_reg > 0) {
             SpVector<T> col;
             mean.setZeros();
-            for (long i = 0; i<n_reg; ++i) {
+            for (int i = 0; i<n_reg; ++i) {
                splitted_w_reg.refCol(i,col);
-               for (long j = 0; j<col.L(); ++j) {
+               for (int j = 0; j<col.L(); ++j) {
                   mean[col.r(j)]+=inner_weights[j]*col.v(j);
                   number_occurences[col.r(j)]+=inner_weights[j]*inner_weights[j];
                }
             }
             w.add(mean);   
             mean.setZeros();
-            for (long i = 0; i<n_reg; ++i) {
+            for (int i = 0; i<n_reg; ++i) {
                multipliers_w_reg.refCol(i,col);
-               for (long j = 0; j<col.L(); ++j) 
+               for (int j = 0; j<col.L(); ++j) 
                   mean[col.r(j)]+=inner_weights[j]*col.v(j);
             }
             w.add(mean,-T(1.0)/gamma);
@@ -2927,8 +2933,8 @@ namespace FISTA {
             const Vector<T>& w0, Vector<T>& w, Vector<T>& optim_info,
             const ParamFISTA<T>& param) {
          const T gamma = param.c; 
-         const long n_reg=reg.num_components();
-         const long it0 = MAX(1,param.it0);
+         const int n_reg=reg.num_components();
+         const int it0 = MAX(1,param.it0);
          const T lambda=param.lambda;
 
          w.copy(w0);
@@ -2947,7 +2953,7 @@ namespace FISTA {
 
          Timer time;
          time.start();
-         long it=0;
+         int it=0;
          T los;
          T old_los=INFINITY;
 
@@ -3045,18 +3051,18 @@ namespace FISTA {
          Vector<T> mean(w.n());
          Vector<T> number_occurences(w.n());
          number_occurences.set(delta);
-         const long n_reg=splitted_w_reg.n();
+         const int n_reg=splitted_w_reg.n();
          if (n_reg > 0) {
             SpVector<T> col;
             mean.setZeros();
-            for (long i = 0; i<n_reg; ++i) {
+            for (int i = 0; i<n_reg; ++i) {
                splitted_w_reg.refCol(i,col);
                mean.add(col);
-               for (long j = 0; j<col.L(); ++j) 
+               for (int j = 0; j<col.L(); ++j) 
                   number_occurences[col.r(j)]+=gamma;
             }
             mean.scal(gamma);
-            for (long i = 0; i<n_reg; ++i) {
+            for (int i = 0; i<n_reg; ++i) {
                multipliers_w_reg.refCol(i,col);
                mean.add(col);
             }
@@ -3071,8 +3077,8 @@ namespace FISTA {
             const Vector<T>& w0, Vector<T>& w, Vector<T>& optim_info,
             const ParamFISTA<T>& param) {
          const T gamma = param.c; 
-         const long n_reg=reg.num_components();
-         const long it0 = MAX(1,param.it0);
+         const int n_reg=reg.num_components();
+         const int it0 = MAX(1,param.it0);
          const T lambda=param.lambda;
 
          w.copy(w0);
@@ -3090,7 +3096,7 @@ namespace FISTA {
 
          Timer time;
          time.start();
-         long it=0;
+         int it=0;
          T los;
          T old_los=INFINITY;
 
@@ -3221,7 +3227,7 @@ namespace FISTA {
 
    template <typename T>
       Regularizer<T, Matrix<T> >* setRegularizerMatrices(const ParamFISTA<T>& param,
-            const long m, const long n,
+            const int m, const int n,
             const GraphStruct<T>* graph_st = NULL,
             const TreeStruct<T>* tree_st = NULL,
             const GraphPathStruct<T>* graph_path_st=NULL) {
@@ -3309,16 +3315,16 @@ namespace FISTA {
       void solver_admm(const Matrix<T>& X, const Matrix<T>& alpha0,
             Matrix<T>& alpha, Matrix<T>& optim_info, SplittingFunction<T, SpMatrix<T> >** regularizers,
             SplittingFunction<T, Matrix<T> >** losses, const ParamFISTA<T>& param) {
-         const long M = X.n();
+         const int M = X.n();
          optim_info.resize(4,M);
          
-         long i1;
+         int i1;
 #pragma omp parallel for private(i1) 
          for (i1 = 0; i1< M; ++i1) {
 #ifdef _OPENMP
-            long numT=omp_get_thread_num();
+            int numT=omp_get_thread_num();
 #else
-            long numT=0;
+            int numT=0;
 #endif
             Vector<T> Xi;
             X.refCol(i1,Xi);
@@ -3345,7 +3351,7 @@ namespace FISTA {
       void solver_aux1(const Matrix<T>& X, const Matrix<T>& alpha0,
             Matrix<T>& alpha, Matrix<T>& optim_info, Regularizer<T, Vector<T> >** regularizers,
             Loss<T, Vector<T> >** losses, const ParamFISTA<T>& param) {
-         const long M = X.n();
+         const int M = X.n();
          if (param.verbose) {
             const bool duality = losses[0]->is_fenchel() && regularizers[0]->is_fenchel();
             if (duality) cout << "Duality gap via Fenchel duality" << endl;
@@ -3358,13 +3364,13 @@ namespace FISTA {
          }
          optim_info.resize(4,M);
 
-         long i1;
+         int i1;
 #pragma omp parallel for private(i1) 
          for (i1 = 0; i1< M; ++i1) {
 #ifdef _OPENMP
-            long numT=omp_get_thread_num();
+            int numT=omp_get_thread_num();
 #else
-            long numT=0;
+            int numT=0;
 #endif
             Vector<T> Xi;
             X.refCol(i1,Xi);
@@ -3390,7 +3396,7 @@ namespace FISTA {
       void solver_aux2(const Matrix<T>& X, const Matrix<T>& alpha0,
             Matrix<T>& alpha, Matrix<T>& optim_info, Regularizer<T, Matrix<T> >** regularizers,
             Loss<T, Matrix<T> >** losses, const ParamFISTA<T>& param) {
-         const long M = X.n();
+         const int M = X.n();
          if (param.verbose) {
             const bool duality = losses[0]->is_fenchel() && regularizers[0]->is_fenchel();
             if (duality) cout << "Duality gap via Fenchel duality" << endl;
@@ -3399,18 +3405,18 @@ namespace FISTA {
 
          optim_info.resize(4,M);
 
-         long i2;
+         int i2;
 #pragma omp parallel for private(i2) 
          for (i2 = 0; i2< M; ++i2) {
 #ifdef _OPENMP
-            long numT=omp_get_thread_num();
+            int numT=omp_get_thread_num();
 #else
-            long numT=0;
+            int numT=0;
 #endif
             Vector<T> Xi;
             X.refCol(i2,Xi);
             losses[numT]->init(Xi);
-            const long N = alpha0.n()/X.n();
+            const int N = alpha0.n()/X.n();
             Matrix<T> alpha0i;
             alpha0.refSubMat(i2*N,N,alpha0i);
             Matrix<T> alphai;
@@ -3437,7 +3443,7 @@ namespace FISTA {
             const GraphPathStruct<T>* graph_path_st=NULL) {
          print_info_solver(param1);
 
-         long num_threads=MIN(X.n(),param1.num_threads);
+         int num_threads=MIN(X.n(),param1.num_threads);
          num_threads=init_omp(num_threads);
          ParamFISTA<T> param=param1;
          param.copied=true;
@@ -3445,7 +3451,7 @@ namespace FISTA {
             if (num_threads > 1) param.verbose=false;
             SplittingFunction<T>** losses = new SplittingFunction<T>*[num_threads];
             SplittingFunction<T, SpMatrix<T> >** regularizers= new SplittingFunction<T, SpMatrix<T> >*[num_threads];
-            for (long i = 0; i<num_threads; ++i) {
+            for (int i = 0; i<num_threads; ++i) {
                regularizers[i]=setRegularizerADMM(param,graph_st,tree_st);
                switch (param.loss) {
                   case SQUARE: losses[i]=new SqLoss<T>(D); break;
@@ -3454,7 +3460,7 @@ namespace FISTA {
                }
             }
             solver_admm(X, alpha0,  alpha, optim_info, regularizers,losses,param);
-            for (long i = 0; i<num_threads; ++i) {
+            for (int i = 0; i<num_threads; ++i) {
                delete(losses[i]);
                delete(regularizers[i]);
             }
@@ -3472,7 +3478,7 @@ namespace FISTA {
                if (num_threads > 1) param.verbose=false;
                Loss<T>** losses = new Loss<T>*[num_threads];
                Regularizer<T>** regularizers= new Regularizer<T>*[num_threads];
-               for (long i = 0; i<num_threads; ++i) {
+               for (int i = 0; i<num_threads; ++i) {
                   regularizers[i]=setRegularizerVectors(param,graph_st,tree_st,graph_path_st);
                   switch (param.loss) {
                      case SQUARE: if (param.compute_gram) {
@@ -3489,7 +3495,7 @@ namespace FISTA {
                }
 
                solver_aux1(X, alpha0,  alpha, optim_info, regularizers,losses,param);
-               for (long i = 0; i<num_threads; ++i) {
+               for (int i = 0; i<num_threads; ++i) {
                   delete(losses[i]);
                   losses[i]=NULL;
                   delete(regularizers[i]);
@@ -3502,8 +3508,8 @@ namespace FISTA {
                if (num_threads > 1) param.verbose=false;
                Loss<T, Matrix<T> >** losses = new Loss<T, Matrix<T> >*[num_threads];
                Regularizer<T, Matrix<T> >** regularizers= new Regularizer<T, Matrix<T> >*[num_threads];
-               const long N = alpha0.n()/X.n();
-               for (long i = 0; i<num_threads; ++i) {
+               const int N = alpha0.n()/X.n();
+               for (int i = 0; i<num_threads; ++i) {
                   regularizers[i]=setRegularizerMatrices(param,alpha0.m(),N,graph_st,tree_st,graph_path_st);
                   switch (param.loss) {
                      case MULTILOG:  losses[i] = new MultiLogLoss<T>(D); break;
@@ -3512,7 +3518,7 @@ namespace FISTA {
                }
                solver_aux2(X, alpha0,  alpha, optim_info, regularizers,losses,param);
 
-               for (long i = 0; i<num_threads; ++i) {
+               for (int i = 0; i<num_threads; ++i) {
                   delete(losses[i]);
                   losses[i]=NULL;
                   delete(regularizers[i]);
@@ -3576,9 +3582,9 @@ namespace FISTA {
             if (param.intercept) cout << "with intercept" << endl;
             flush(cout);
          }
-         long num_threads=MIN(alpha.n(),param.num_threads);
+         int num_threads=MIN(alpha.n(),param.num_threads);
          num_threads=init_omp(num_threads);
-         const long M = alpha.n();
+         const int M = alpha.n();
          if (!graph_st && param.regul==GRAPH) {
             cerr << "Graph structure should be provided" << endl;
             return;
@@ -3586,18 +3592,18 @@ namespace FISTA {
 
          if (!regul_for_matrices(param.regul)) {
             Regularizer<T>** regularizers= new Regularizer<T>*[num_threads];
-            for (long i = 0; i<num_threads; ++i) 
+            for (int i = 0; i<num_threads; ++i) 
                regularizers[i]=setRegularizerVectors(param,graph_st,tree_st,graph_path_st);
 
-            long i;
+            int i;
             if (param.eval)
                val_loss.resize(M);
 #pragma omp parallel for private(i) 
             for (i = 0; i< M; ++i) {
 #ifdef _OPENMP
-               long numT=omp_get_thread_num();
+               int numT=omp_get_thread_num();
 #else
-               long numT=0;
+               int numT=0;
 #endif
                Vector<T> alpha0i;
                alpha0.refCol(i,alpha0i);
@@ -3639,23 +3645,23 @@ namespace FISTA {
             if (param.eval_dual_norm) cout << "Evaluate the dual norm only" << endl;
             flush(cout);
          }
-         long num_threads=MIN(alpha0.n(),param.num_threads);
+         int num_threads=MIN(alpha0.n(),param.num_threads);
          num_threads=init_omp(num_threads);
-         const long M = alpha0.n();
+         const int M = alpha0.n();
 
          if (!regul_for_matrices(param.regul)) {
             Regularizer<T>** regularizers= new Regularizer<T>*[num_threads];
-            for (long i = 0; i<num_threads; ++i) 
+            for (int i = 0; i<num_threads; ++i) 
                regularizers[i]=setRegularizerVectors<T>(param,NULL,NULL,graph_path_st);
 
-            long i;
+            int i;
             val_loss.resize(M);
 #pragma omp parallel for private(i) 
             for (i = 0; i< M; ++i) {
 #ifdef _OPENMP
-               long numT=omp_get_thread_num();
+               int numT=omp_get_thread_num();
 #else
-               long numT=0;
+               int numT=0;
 #endif
                Vector<T> alphai;
                alpha0.refCol(i,alphai);

@@ -24,37 +24,37 @@
 #include <list.h>
 
 template <typename T>
-long count_cc_graph(const SpMatrix<T>& G, Vector<T>& active) {
-   long nzmax=0;
-   for (long i = 0; i<active.n(); ++i)
+int count_cc_graph(const SpMatrix<T>& G, Vector<T>& active) {
+   INTM nzmax=0;
+   for (INTM i = 0; i<active.n(); ++i)
       if (active[i]) nzmax++;
-   list_long** cc = new list_long*[nzmax];
-   long* pr_list = new long[active.n()];
-   memset(pr_list,-1,active.n()*sizeof(long));
-   long count=0;
-   list_long list;
-   for (long i = 0; i<active.n(); ++i) {
+   list_int** cc = new list_int*[nzmax];
+   int* pr_list = new int[active.n()];
+   memset(pr_list,-1,active.n()*sizeof(int));
+   int count=0;
+   list_int list;
+   for (int i = 0; i<active.n(); ++i) {
       if (active[i]) {
          list.push_back(i);
          pr_list[i]=count;
-         cc[count] = new list_long();
+         cc[count] = new list_int();
          cc[count++]->push_back(i);
       }
    }
-   const long* pB = G.pB();
-   const long* r = G.r();
+   const INTM* pB = G.pB();
+   const INTM* r = G.r();
    const T* v = G.v();
 
    while (!list.empty()) {
-      long node=list.front();
+      int node=list.front();
       list.pop_front();
-      for (long j = pB[node]; j<pB[node+1]; ++j) {
-         long child=r[j];
+      for (int j = pB[node]; j<pB[node+1]; ++j) {
+         int child=r[j];
          if (active[child]) {
             if (pr_list[node] != pr_list[child]) {
                // fusion
-               const long pr = pr_list[child];
-               for (const_iterator_long it = cc[pr]->begin(); it != cc[pr]->end(); ++it) {
+               const int pr = pr_list[child];
+               for (const_iterator_int it = cc[pr]->begin(); it != cc[pr]->end(); ++it) {
                   pr_list[*it]=pr_list[node];
                }
                cc[pr_list[node]]->fusion(*(cc[pr]));
@@ -65,9 +65,9 @@ long count_cc_graph(const SpMatrix<T>& G, Vector<T>& active) {
       }
    }
 
-   long num_cc=0;
-   for (long i = 0; i<nzmax; ++i) if (cc[i]) num_cc++;
-   for (long i = 0; i<nzmax; ++i) delete(cc[i]);
+   int num_cc=0;
+   for (int i = 0; i<nzmax; ++i) if (cc[i]) num_cc++;
+   for (int i = 0; i<nzmax; ++i) delete(cc[i]);
    delete[](cc);
    delete[](pr_list);
    return num_cc;
@@ -76,40 +76,40 @@ long count_cc_graph(const SpMatrix<T>& G, Vector<T>& active) {
 template <typename T>
 void remove_cycles(const SpMatrix<T>& G1, SpMatrix<T>& G2) {
    G2.copy(G1);
-   long n = G1.n();
-   long* color = new long[n];
-   memset(color,0,n*sizeof(long));
-   long next=0;
-   list_long list;
-   long* pB = G2.pB();
-   long* r = G2.r();
+   int n = G1.n();
+   int* color = new int[n];
+   memset(color,0,n*sizeof(int));
+   int next=0;
+   list_int list;
+   INTM* pB = G2.pB();
+   INTM* r = G2.r();
    T* v = G2.v();
 
-   list_long current_path;
+   list_int current_path;
    bool cycle_detected=true;
-   long cycles_removed=0;
+   int cycles_removed=0;
    while (cycle_detected) {
       cycle_detected=false;
       list.clear();
-      for (long i = 0; i<n; ++i) if (color[i] != 2) {
+      for (int i = 0; i<n; ++i) if (color[i] != 2) {
          color[i]=0;
          list.push_back(i);
       }
       current_path.clear();
       while (!list.empty()) {
-         const long node=list.front();
+         const int node=list.front();
          if (color[node] == 0) {
             current_path.push_front(node);
             color[node]=1; 
-            for (long i = pB[node]; i<pB[node+1]; ++i) {
+            for (int i = pB[node]; i<pB[node+1]; ++i) {
                if (v[i]) {
-                  const long child = r[i];
+                  const int child = r[i];
                   if (color[child]==1) {
                      cycle_detected=true;
-                     list_long reverse_path;
+                     list_int reverse_path;
                      current_path.reverse(reverse_path);
                      while (true) {
-                        const long current_node=reverse_path.front();
+                        const int current_node=reverse_path.front();
                         if (current_node == child) break;
                         reverse_path.pop_front();
                      }
@@ -117,14 +117,14 @@ void remove_cycles(const SpMatrix<T>& G1, SpMatrix<T>& G2) {
 
                      reverse_path.push_back(child);
                      T min_link = INFINITY;
-                     long min_node= -1;
-                     const_iterator_long it = reverse_path.begin();
+                     int min_node= -1;
+                     const_iterator_int it = reverse_path.begin();
                      // detect weakest link
                      while (true) {
-                        const long current_node=*it;
+                        const int current_node=*it;
                         ++it;
                         if (it == reverse_path.end()) break;
-                        for (long j = pB[current_node]; j<pB[current_node+1]; ++j) {
+                        for (int j = pB[current_node]; j<pB[current_node+1]; ++j) {
                            if (r[j]==*it) {
                               if (min_link  > v[j]) {
                                  min_link=v[j];
@@ -154,10 +154,10 @@ void remove_cycles(const SpMatrix<T>& G1, SpMatrix<T>& G2) {
          }
       }
    }
-   long current_remove=0;
-   for (long i = 0; i<n; ++i) {
-      long old_remove=current_remove;
-      for (long j = pB[i]; j < pB[i+1]; ++j) {
+   int current_remove=0;
+   for (int i = 0; i<n; ++i) {
+      int old_remove=current_remove;
+      for (int j = pB[i]; j < pB[i+1]; ++j) {
          if (v[j]) {
             r[j-current_remove]=r[j];
             v[j-current_remove]=v[j];
@@ -174,27 +174,27 @@ void remove_cycles(const SpMatrix<T>& G1, SpMatrix<T>& G2) {
 
 template <typename T>
 T count_paths_dags(const SpMatrix<T>& G) {
-   const long n = G.n();
+   const INTM n = G.n();
    T* num_paths = new T[n];
    memset(num_paths,0,n*sizeof(T));
-   const long* pB = G.pB();
-   const long* r = G.r();
-   long* color = new long[n];
-   memset(color,0,n*sizeof(long));
-   list_long list;
-   for (long i = 0; i<n; ++i)
+   const INTM* pB = G.pB();
+   const INTM* r = G.r();
+   int* color = new int[n];
+   memset(color,0,n*sizeof(int));
+   list_int list;
+   for (INTM i = 0; i<n; ++i)
       list.push_back(i);
 
    while (!list.empty()) {
-      const long node=list.front();
+      const INTM node=list.front();
       if (color[node]==0) {
-         for (long i = pB[node]; i<pB[node+1]; ++i) {
+         for (INTM i = pB[node]; i<pB[node+1]; ++i) {
             list.push_front(r[i]);
          }
          color[node]++;
       } else if (color[node]==1) {
          num_paths[node]=T(1.0);
-         for (long i = pB[node]; i<pB[node+1]; ++i) {
+         for (INTM i = pB[node]; i<pB[node+1]; ++i) {
             num_paths[node]+=num_paths[r[i]];
          }
          color[node]++;

@@ -27,7 +27,7 @@ using namespace FISTA;
 
 template <typename T>
 inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
-      const long nlhs) {
+      const int nlhs) {
    if (!mexCheckType<T>(prhs[0])) 
       mexErrMsgTxt("type of argument 1 is not consistent");
    if (mxIsSparse(prhs[0])) 
@@ -38,8 +38,8 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
 
    T* pr_alpha0 = reinterpret_cast<T*>(mxGetPr(prhs[0]));
    const mwSize* dimsAlpha=mxGetDimensions(prhs[0]);
-   long pAlpha=static_cast<long>(dimsAlpha[0]);
-   long nAlpha=static_cast<long>(dimsAlpha[1]);
+   int pAlpha=static_cast<int>(dimsAlpha[0]);
+   int nAlpha=static_cast<int>(dimsAlpha[1]);
    Matrix<T> alpha0(pr_alpha0,pAlpha,nAlpha);
 
    plhs[0]=createMatrix<T>(pAlpha,nAlpha);
@@ -47,23 +47,23 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
    Matrix<T> alpha(pr_alpha,pAlpha,nAlpha);
 
    FISTA::ParamFISTA<T> param;
-   param.num_threads = getScalarStructDef<long>(prhs[1],"numThreads",-1);
+   param.num_threads = getScalarStructDef<int>(prhs[1],"numThreads",-1);
    param.pos = getScalarStructDef<bool>(prhs[1],"pos",false);
    param.lambda= getScalarStructDef<T>(prhs[1],"lambda",1.0);
    param.lambda2= getScalarStructDef<T>(prhs[1],"lambda2",0.0);
    param.lambda3= getScalarStructDef<T>(prhs[1],"lambda3",0.0);
    mxArray* ppr_groups = mxGetField(prhs[1],0,"groups");
    if (ppr_groups) {
-      if (!mexCheckType<long>(ppr_groups))
+      if (!mexCheckType<int>(ppr_groups))
          mexErrMsgTxt("param.groups should be int32 (starting group is 1)");
-      long* pr_groups = reinterpret_cast<long*>(mxGetPr(ppr_groups));
+      int* pr_groups = reinterpret_cast<int*>(mxGetPr(ppr_groups));
       const mwSize* dims_groups =mxGetDimensions(ppr_groups);
-      long num_groups=static_cast<long>(dims_groups[0])*static_cast<long>(dims_groups[1]);
+      int num_groups=static_cast<int>(dims_groups[0])*static_cast<int>(dims_groups[1]);
       if (num_groups != pAlpha) mexErrMsgTxt("Wrong size of param.groups");
       param.ngroups=num_groups;
       param.groups=pr_groups;
    } else {
-      param.size_group= getScalarStructDef<long>(prhs[1],"size_group",1);
+      param.size_group= getScalarStructDef<int>(prhs[1],"size_group",1);
    }
 
    getStringStruct(prhs[1],"regul",param.name_regul,param.length_names);
@@ -94,7 +94,7 @@ inline void callFunction(mxArray* plhs[], const mxArray*prhs[],
    if (nlhs==2) {
       plhs[1]=createMatrix<T>(1,val_reg.n());
       T* pr_val=reinterpret_cast<T*>(mxGetPr(plhs[1]));
-      for (long i = 0; i<val_reg.n(); ++i) pr_val[i]=val_reg[i];
+      for (int i = 0; i<val_reg.n(); ++i) pr_val[i]=val_reg[i];
    }
 }
 
