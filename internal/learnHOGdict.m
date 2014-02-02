@@ -75,6 +75,7 @@ pd.sbin = sbin;
 pd.iters = iters;
 pd.lambda = lambda;
 pd.trainims = trainims;
+pd.feat = 'HOG';
 
 fprintf('ihog: paired dictionaries learned in %0.3fs\n', toc(t));
 

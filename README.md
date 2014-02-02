@@ -38,7 +38,7 @@ Inverting HOG
 
 To invert a HOG point, use the 'invertHOG()' function:
 
-    >> feat = features(im, 8);
+    >> feat = computeHOG(im, 8);
     >> ihog = invertHOG(feat);
     >> imagesc(ihog); axis image;
 
@@ -50,10 +50,10 @@ Learning
 --------
 
 We provide a prelearned dictionary in 'pd.mat', but you can learn your own if
-you wish. Simply call the 'learnpairdict()' function and pass it a directory of
+you wish. Simply call the 'learnHOGdict()' function and pass it a directory of
 images:
 
-    >> pd = learnpairdict('/path/to/images/', 1000000, 1000, 5, 5);
+    >> pd = learnHOGdict('/path/to/images/', 1000000, 1000, 5, 5);
 
 The above learns a 5x5 HOG patch paired dictionary with 1000 elements and a
 training set size of one million window patches. Depending on the size of the
