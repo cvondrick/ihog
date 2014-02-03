@@ -14,7 +14,7 @@ end
 
 elemsize = rgb*prod(master.imdim) + feat*prod(master.featdim);
 fprintf('icnn: allocating storage: %0.2fGB\n', elemsize * num * 4 / 1024^3);
-concat = zeros(elemsize, num);
+concat = zeros(elemsize, num, 'single');
 
 iii = logical(zeros(prod(master.imdim)+prod(master.featdim), 1));
 if rgb,
