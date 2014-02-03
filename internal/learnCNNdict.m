@@ -12,16 +12,7 @@ end
 
 t = tic;
 
-fprintf('icnn: locating chunkfiles...\n');
-master = load(chunkmasterfile);
-master = master.master;
-
-chunks = cell(length(master.files), 1);
-fprintf('icnn: %i valid chunks\n', length(master.files));
-for i=1:length(chunks),
-  chunks{i} = sprintf('%s/%s', fileparts(chunkmasterfile), master.files{i});
-  fprintf('icnn: chunk %i: %s\n', i, chunks{i})
-end
+[master, chunks] = resolveCNNchunks(chunkmasterfile);
 
 param.K = k;
 param.lambda = lambda;
