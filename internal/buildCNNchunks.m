@@ -68,7 +68,7 @@ for i=1:length(files),
       chunkid = chunkid + 1;
 
       master.n = n;
-      save(sprintf('%s/master.mat', outdir));
+      save(sprintf('%s/master.mat', outdir), '-v7.3', 'master');
     end
   end
 end
@@ -76,7 +76,7 @@ end
 data = data(:, 1:c-1);
 master.files{chunkid} = sprintf('chunk-%i.mat', chunkid);
 fprintf('icnn: flush chunk %i\n', chunkid);
-save(sprintf('%s/chunk-%i.mat', outdir, chunkid), 'data');
+save(sprintf('%s/chunk-%i.mat', outdir, chunkid), '-v7.3', 'data');
 
 master.n = n;
-save(sprintf('%s/master.mat', outdir));
+save(sprintf('%s/master.mat', outdir), '-v7.3', 'master');

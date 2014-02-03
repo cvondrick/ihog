@@ -1,5 +1,6 @@
 function pd = learnCNNdict(chunkmasterfile, k, lambda, iters, fast),
 
+
 if ~exist('k', 'var'),
   k = 1024;
 end
@@ -15,12 +16,15 @@ end
 
 t = tic;
 
+rng(0); % set seed so its somewhat reproducable
+
 fprintf('icnn: locating chunkfiles...\n');
 master = load(chunkmasterfile);
 master = master.master;
 
+fprintf('icnn: %i valid chunks\n', length(master.files));
 for i=1:length(master.files),
-  fprintf('icnn: valid chunk: %s\n', master.files{i})
+  fprintf('icnn: chunk %i: %s\n', i, master.files{i})
 end
 
 param.K = k;
@@ -33,12 +37,22 @@ param.verbose = 1;
 param.batchsize = 400;
 param.posAlpha = true;
 
+lastchunkid = -1;
+
 model = struct();
 for i=1:iters,
-  chunkid = floor(length(master.files)*rand()+1);
-  data = load(sprintf('%s/%s', fileparts(chunkmasterfile), master.files{chunkid}));
+  fprintf('icnn: iteration %i\n', i);
 
-  fprintf('icnn: iteration #%i: chunk=%s, n=%i\n', i, master.files{chunkid}, size(data.data,2));
+  chunkid = floor(length(master.files)*rand()+1);
+
+  if chunkid == lastchunkid,
+    fprintf('icnn: reusing chunk %s\n', master.files{chunkid});
+  else,
+    fprintf('icnn: loading %s\n', master.files{chunkid});
+    data = load(sprintf('%s/%s', fileparts(chunkmasterfile), master.files{chunkid}));
+    lastchunkid = chunkid;
+  end
+  fprintf('icnn: chunk %s has n=%i\n', master.files{chunkid}, size(data.data,2));
 
   [dict, model] = mexTrainDL(data.data, param, model);
   model.iter = i*param.iter;

@@ -15,6 +15,8 @@ param.pos = true;
 a = full(mexLasso(single(windows), pd.dcnn, param));
 recon = pd.drgb * a;
 
+fprintf('icnn: sparsity=%0.2f\n', sum(a(:) == 0) / length(a(:)));
+
 im = reshape(recon, [pd.imdim size(windows,2)]);
 for i=1:size(feat,4),
   img = im(:, :, :, i);
