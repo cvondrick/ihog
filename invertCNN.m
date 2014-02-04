@@ -1,5 +1,16 @@
 function im = invertCNN(feat, pd),
 
+if ~exist('pd', 'var'),
+  global icnn_pd
+  if isempty(icnn_pd),
+    if ~exist('pd-icnn.mat', 'file'),
+      error('please create pd-icnn.mat or otherwise specify pd');
+    end
+    icnn_pd = load('pd-icnn.mat');
+  end
+  pd = icnn_pd;
+end
+
 windows = zeros(prod(pd.featdim), size(feat,4));
 for i=1:size(feat,4),
   elem = feat(:, :, :, i);
