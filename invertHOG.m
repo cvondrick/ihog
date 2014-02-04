@@ -106,3 +106,6 @@ for k=1:nn,
 end
 
 im = im(par*pd.sbin:end-par*pd.sbin-1, par*pd.sbin:end-par*pd.sbin-1, :);
+
+im = repmat(im, [1 1 1 3]);
+im = permute(im, [1 2 4 3]);
