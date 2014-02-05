@@ -17,7 +17,7 @@ function out = visualizeHOG(feat),
 s = [size(feat,1)*8+16 size(feat,2)*8+16];
 
 im = invertHOG(max(feat, 0));
-hog = HOGpicture(feat);
+hog = showHOG(max(0, feat));
 hog = imresize(hog, s);
 hog(hog > 1) = 1;
 hog(hog < 0) = 0;
@@ -27,7 +27,7 @@ im = padarray(im, [buff buff], 0.5, 'both');
 hog = padarray(hog, [buff buff], 0.5, 'both');
 
 if min(feat(:)) < 0,
-  hogneg = HOGpicture(-feat);
+  hogneg = showHOG(max(0, -feat));
   hogneg = imresize(hogneg, s);
   hogneg(hogneg > 1) = 1;
   hogneg(hogneg < 0) = 0;

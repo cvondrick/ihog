@@ -1,4 +1,4 @@
-im = double(imread('2007_000272.jpg')) / 255.;
+im = im2double(imread('2007_000272.jpg'));
 feat = computeHOG(im, 8);
 ihog = invertHOG(feat);
 
