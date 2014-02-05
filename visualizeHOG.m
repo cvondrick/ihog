@@ -40,6 +40,7 @@ if min(feat(:)) < 0,
   hog = [hog; hogneg];
 end
 
+hog = repmat(hog, [1 1 3]);
 im = [im hog];
 
 if nargout == 0,
