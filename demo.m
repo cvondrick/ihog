@@ -1,5 +1,5 @@
 im = im2double(imread('2007_000272.jpg'));
-feat = computeHOG(im, 8);
+feat = features(im, 8);
 ihog = invertHOG(feat);
 
 figure(1);
