@@ -6,7 +6,7 @@ warning on;
 
 files = dir(dirpath);
 for i=1:length(files),
-  if files(i).isdir,
+  if files(i).isdir || files(i).name(1) == '.',
     continue;
   end
 
