@@ -3,7 +3,7 @@
 
 // implementation for 'round' (may not be defined on Windows)
 #if !defined(round) // && ( defined(_WIN32) || defined(_WIN64) )
-inline int round(double d)
+inline double round(double d)
 {
     return static_cast<int>(d + 0.5);
 }
