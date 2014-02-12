@@ -12,12 +12,24 @@
 %
 % If 'feat' has negative values, a second row will appear of the negatives.
 
-function out = visualizeHOG(feat),
+function out = visualizeHOG(feat, neg),
+
+if ~exist('neg', 'var'),
+  neg = true;
+end
+
+if neg,
+  posfeat = max(feat, 0);
+  negfeat = max(-feat, 0);
+else,
+  posfeat = feat;
+  negfeat = zeros(size(feat));
+end
 
 s = [size(feat,1)*8+16 size(feat,2)*8+16];
 
-im = invertHOG(max(feat, 0));
-hog = showHOG(max(0, feat));
+im = invertHOG(posfeat);
+hog = showHOG(max(0, posfeat));
 hog = imresize(hog, s);
 hog(hog > 1) = 1;
 hog(hog < 0) = 0;
@@ -26,8 +38,8 @@ buff = 5;
 im = padarray(im, [buff buff], 0.5, 'both');
 hog = padarray(hog, [buff buff], 0.5, 'both');
 
-if min(feat(:)) < 0,
-  hogneg = showHOG(max(0, -feat));
+if any(negfeat(:) > 0),
+  hogneg = showHOG(max(0, negfeat));
   hogneg = imresize(hogneg, s);
   hogneg(hogneg > 1) = 1;
   hogneg(hogneg < 0) = 0;
