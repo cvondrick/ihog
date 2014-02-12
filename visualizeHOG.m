@@ -21,7 +21,6 @@ end
 if neg,
   posfeat = max(feat, 0);
   negfeat = max(-feat, 0);
-  negfeat
 else,
   posfeat = feat;
   negfeat = zeros(size(feat));
