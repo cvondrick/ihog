@@ -3,6 +3,11 @@
 % Legacy HOG visualization
 function out = showHOG(w)
 
+w = w(:, :, 1:9) + w(:, :, 10:18) + w(:, :, 19:27);
+w = w / 3;
+w = repmat(w, [1 1 3]);
+w = padarray(w, [0 0 5], 'post');
+
 % Make pictures of positive and negative weights
 bs = 20;
 pos = HOGpicture(w, bs);
