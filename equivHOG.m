@@ -1,16 +1,17 @@
 function out = equivHOG(orig, n, gam, sig, pd),
 
+if ~exist('pd', 'var'),
+  pd = load('pd.mat');
+end
+
 orig = im2double(orig);
-feat = features(orig, 8);
+feat = computeHOG(orig, 8);
 
 if ~exist('n', 'var'),
   n = 6;
 end
 if ~exist('gam', 'var'),
-  gam = 1;
-end
-if ~exist('gam2', 'var'),
-  gam2 = 1;
+  gam = 100;
 end
 if ~exist('sig', 'var'),
   sig = 1;
@@ -22,28 +23,29 @@ numwindows = (ny+12-pd.ny+1)*(nx+12-pd.nx+1);
 
 fprintf('ihog: attempting to find %i equivalent images in HOG space\n', n);
 
-prev = zeros(pd.k, numwindows, n);
+prev.a = zeros(0, 0, 0);
+prev.gam = gam;
+prev.sig = sig;
+
 ims = ones((ny+2)*8, (nx+2)*8, n);
 hogs = zeros(ny, nx, nf, n);
 hogdists = zeros(n, 1);
 
 for i=1:n,
   fprintf('ihog: searching for image %i of %i\n', i, n);
-  [im, a] = invertHOG(feat, prev(:, :, 1:i-1), gam, sig, omp, pd);
+  [im, prev] = invertHOG(feat, pd, prev);
 
-  ims(:, :, i) = im;
-  hogs(:, :, :, i) = features(repmat(im, [1 1 3]), 8);
-  prev(:, :, i) = a;
+  ims(:, :, i) = mean(im, 3);
+  hogs(:, :, :, i) = computeHOG(im, 8);
 
   d = hogs(:, :, :, i) - feat;
   hogdists(i) = sqrt(mean(d(:).^2));
 
-  figure(1);
   subplot(122);
   imdiffmatrix(ims(:, :, 1:i), orig, 5);
 
   subplot(321);
-  sparsity = mean(reshape(double(prev(:, :, 1:i) == 0), [], i));
+  sparsity = mean(reshape(double(prev.a(:, :, 1:i) == 0), [], i));
   plot(sparsity(:), '.-', 'LineWidth', 2, 'MarkerSize', 40);
   title('Alpha Sparsity');
   ylabel('Sparsity');

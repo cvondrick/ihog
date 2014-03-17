@@ -144,7 +144,7 @@ im = repmat(im, [1 1 1 3]);
 im = permute(im, [1 2 4 3]);
 
 % build previous information
-if prev.num > 0,
+if prevnum > 0,
   prev.a = cat(3, prev.a, a);
 else,
   prev.a = a;
