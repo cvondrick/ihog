@@ -103,6 +103,7 @@ end
 param.lambda = pd.lambda * size(windows,1) / (pd.ny*pd.nx*computeHOG() + prevnum);
 param.mode = 2;
 param.pos = true;
+param.L = 800;
 a = full(mexLassoMask(single(windows), dhog, mask, param));
 recon = pd.dgray * a;
 
