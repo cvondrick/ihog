@@ -1,6 +1,6 @@
-function im = invertCNN(feat, pd),
+function [im, prev] = invertCNN(feat, pd, prev),
 
-if ~exist('pd', 'var'),
+if ~exist('pd', 'var') || isempty(pd),
   global icnn_pd
   if isempty(icnn_pd),
     if ~exist('pd-icnn.mat', 'file'),
@@ -11,6 +11,18 @@ if ~exist('pd', 'var'),
   pd = icnn_pd;
 end
 
+if ~exist('prev', 'var'),
+  prev.a = zeros(0, 0, 0);
+end
+if ~isfield(prev, 'gam'),
+  prev.gam = 10;
+end
+if ~isfield(prev, 'sig'),
+  prev.sig = 1;
+end
+prevnum = size(prev.a, 3);
+prevnuma = size(prev.a, 2);
+
 windows = zeros(prod(pd.featdim), size(feat,4));
 for i=1:size(feat,4),
   elem = feat(:, :, :, i);
@@ -19,11 +31,27 @@ for i=1:size(feat,4),
   windows(:, i) = elem(:);
 end
 
+% incorporate constraints for multiple inversions
+dcnn = pd.dcnn;
+mask = logical(ones(size(windows)));
+if prevnum > 0,
+  % build blurred dictionary
+  dblur = xpassdict(pd.drgb, pd.imdim, pd.k, prev.sig);
+
+  windows = padarray(windows, [prevnum*prevnuma 0], 0, 'post');
+  mask = cat(1, mask, repmat(logical(eye(prevnuma, size(windows,2))), [prevnum 1]));
+  offset = size(dcnn, 1);
+  dcnn = padarray(dcnn, [prevnum*prevnuma 0], 0, 'post');
+  for i=1:prevnum,
+    dcnn(offset+(i-1)*prevnuma+1:offset+i*prevnuma, :) = sqrt(prev.gam) * prev.a(:, :, i)' * dblur' * dblur;
+  end
+end
+
 % solve lasso problem
-param.lambda = pd.lambda;
+param.lambda = pd.lambda * size(windows,1) / (prod(pd.featdim) + prevnum);
 param.mode = 2;
 param.pos = true;
-a = full(mexLasso(single(windows), pd.dcnn, param));
+a = full(mexLassoMask(single(windows), dcnn, mask, param));
 recon = pd.drgb * a;
 
 %fprintf('icnn: sparsity=%0.2f\n', sum(a(:) == 0) / length(a(:)));
@@ -34,4 +62,11 @@ for i=1:size(feat,4),
   img(:) = img(:) - min(img(:));
   img(:) = img(:) / max(img(:));
   im(:, :, :, i) = img;
+end
+
+% build previous information
+if prevnum > 0,
+  prev.a = cat(3, prev.a, a);
+else,
+  prev.a = a;
 end

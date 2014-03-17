@@ -24,19 +24,6 @@
 % multiple times.
 function [im, prev] = invertHOG(feat, pd, prev),
 
-if ~exist('prev', 'var'),
-  prev.a = zeros(0, 0, 0);
-end
-if ~isfield(prev, 'gam'),
-  prev.gam = 10;
-end
-if ~isfield(prev, 'sig'),
-  prev.sig = 1;
-end
-
-prevnum = size(prev.a, 3);
-prevnuma = size(prev.a, 2);
-
 if ~exist('pd', 'var') || isempty(pd),
   global ihog_pd
   if isempty(ihog_pd),
@@ -53,6 +40,18 @@ if ~exist('pd', 'var') || isempty(pd),
   end
   pd = ihog_pd;
 end
+
+if ~exist('prev', 'var'),
+  prev.a = zeros(0, 0, 0);
+end
+if ~isfield(prev, 'gam'),
+  prev.gam = 10;
+end
+if ~isfield(prev, 'sig'),
+  prev.sig = 1;
+end
+prevnum = size(prev.a, 3);
+prevnuma = size(prev.a, 2);
 
 par = 5;
 feat = padarray(feat, [par par 0 0], 0);
