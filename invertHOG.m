@@ -84,11 +84,7 @@ dhog = pd.dhog;
 mask = logical(ones(size(windows)));
 if prevnum > 0,
   % build blurred dictionary
-  if prev.sig > 0,
-    dblur = xpassdict(pd, prev.sig, false);
-  elseif prev.sig < 0,
-    dblur = xpassdict(pd, -prev.sig, true);
-  end
+  dblur = xpassdict(pd.dgray, [(pd.ny+2)*pd.sbin (pd.nx+2)*pd.sbin], pd.k, prev.sig);
 
   windows = padarray(windows, [prevnum*prevnuma 0], 0, 'post');
   mask = cat(1, mask, repmat(logical(eye(prevnuma, size(windows,2))), [prevnum 1]));
