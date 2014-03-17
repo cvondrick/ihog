@@ -22,17 +22,19 @@
 % AxBxC. It will return an PxQxK image tensor where the last channel is the kth
 % inversion. This is usually significantly faster than calling invertHOG() 
 % multiple times.
-function [im, a] = invertHOG(feat, pd, prev, prevgamma, prevsigma),
+function [im, prev] = invertHOG(feat, pd, prev),
 
 if ~exist('prev', 'var'),
-  prev = zeros(0,0,0);
+  prev.a = zeros(0, 0, 0);
 end
-if ~exist('prevgamma', 'var'),
-  prevgamma = 10;
+if ~isfield(prev, 'gam'),
+  prev.gam = 10;
 end
-if ~exist('prevsigma', 'var'),
-  prevsigma = 1;
+if ~isfield(prev, 'sig'),
+  prev.sig = 1;
 end
+prev.num = size(prev.a, 3);
+prev.numa = size(prev.a, 2);
 
 if ~exist('pd', 'var') || isempty(pd),
   global ihog_pd
@@ -56,9 +58,6 @@ feat = padarray(feat, [par par 0 0], 0);
 
 [ny, nx, ~, nn] = size(feat);
 
-numprev = size(prev, 3);
-numpreva = size(prev, 2);
-
 % pad feat if dim lacks occlusion feature
 if size(feat,3) == computeHOG()-1,
   feat(:, :, end+1, :) = 0;
@@ -79,29 +78,28 @@ for k=1:nn,
   end
 end
 
+% incorporate constraints for multiple inversions
 dhog = pd.dhog;
 mask = logical(ones(size(windows)));
-
-if numprev > 0,
+if prev.num > 0,
   % build blurred dictionary
-  if prevsigma > 0,
-    dblur = xpassdict(pd, prevsigma, false);
-  elseif prevsigma < 0,
-    dblur = xpassdict(pd, -prevsigma, true);
+  if prev.sig > 0,
+    dblur = xpassdict(pd, prev.sig, false);
+  elseif prev.sig < 0,
+    dblur = xpassdict(pd, -prev.sig, true);
   end
 
-  windows = padarray(windows, [numprev*numpreva 0], 0, 'post');
-  mask = cat(1, mask, repmat(logical(eye(numpreva, size(windows,2))), [numprev 1]));
+  windows = padarray(windows, [prev.num*prev.numa 0], 0, 'post');
+  mask = cat(1, mask, repmat(logical(eye(prev.numa, size(windows,2))), [prev.num 1]));
   offset = size(dhog, 1);
-  dhog = padarray(dhog, [numprev*numpreva 0], 0, 'post');
-  for i=1:numprev,
-    dhog(offset+(i-1)*numpreva+1:offset+i*numpreva, :) = sqrt(prevgamma) * prev(:, :, i)' * dblur' * dblur;
-    %dhog(offset+(i-1)*numpreva+1:offset+i*numpreva, :) = sqrt(prevgamma) * prev(:, :, i)';
+  dhog = padarray(dhog, [prev.num*prev.numa 0], 0, 'post');
+  for i=1:prev.num,
+    dhog(offset+(i-1)*prev.numa+1:offset+i*prev.numa, :) = sqrt(prev.gam) * prev.a(:, :, i)' * dblur' * dblur;
   end
 end
 
 % solve lasso problem
-param.lambda = pd.lambda * size(windows,1) / (pd.ny*pd.nx*computeHOG() + numprev);
+param.lambda = pd.lambda * size(windows,1) / (pd.ny*pd.nx*computeHOG() + prev.num);
 param.mode = 2;
 param.pos = true;
 a = full(mexLassoMask(single(windows), dhog, mask, param));
@@ -143,3 +141,11 @@ im = im(par*pd.sbin:end-par*pd.sbin-1, par*pd.sbin:end-par*pd.sbin-1, :);
 
 im = repmat(im, [1 1 1 3]);
 im = permute(im, [1 2 4 3]);
+
+if prev.num > 0,
+  prev.a = cat(3, prev.a, a);
+else,
+  prev.a = a;
+end
+prev.num = size(prev.a, 3);
+prev.numa = size(prev.a, 2);
