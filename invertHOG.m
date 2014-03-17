@@ -22,9 +22,19 @@
 % AxBxC. It will return an PxQxK image tensor where the last channel is the kth
 % inversion. This is usually significantly faster than calling invertHOG() 
 % multiple times.
-function im = invertHOG(feat, pd),
+function [im, a] = invertHOG(feat, pd, prev, prevgamma, prevsigma),
 
-if ~exist('pd', 'var'),
+if ~exist('prev', 'var'),
+  prev = zeros(0,0,0);
+end
+if ~exist('prevgamma', 'var'),
+  prevgamma = 10;
+end
+if ~exist('prevsigma', 'var'),
+  prevsigma = 1;
+end
+
+if ~exist('pd', 'var') || isempty(pd),
   global ihog_pd
   if isempty(ihog_pd),
     if ~exist('pd.mat', 'file'),
@@ -46,6 +56,9 @@ feat = padarray(feat, [par par 0 0], 0);
 
 [ny, nx, ~, nn] = size(feat);
 
+numprev = size(prev, 3);
+numpreva = size(prev, 2);
+
 % pad feat if dim lacks occlusion feature
 if size(feat,3) == computeHOG()-1,
   feat(:, :, end+1, :) = 0;
@@ -66,11 +79,32 @@ for k=1:nn,
   end
 end
 
+dhog = pd.dhog;
+mask = logical(ones(size(windows)));
+
+if numprev > 0,
+  % build blurred dictionary
+  if prevsigma > 0,
+    dblur = xpassdict(pd, prevsigma, false);
+  elseif prevsigma < 0,
+    dblur = xpassdict(pd, -prevsigma, true);
+  end
+
+  windows = padarray(windows, [numprev*numpreva 0], 0, 'post');
+  mask = cat(1, mask, repmat(logical(eye(numpreva, size(windows,2))), [numprev 1]));
+  offset = size(dhog, 1);
+  dhog = padarray(dhog, [numprev*numpreva 0], 0, 'post');
+  for i=1:numprev,
+    dhog(offset+(i-1)*numpreva+1:offset+i*numpreva, :) = sqrt(prevgamma) * prev(:, :, i)' * dblur' * dblur;
+    %dhog(offset+(i-1)*numpreva+1:offset+i*numpreva, :) = sqrt(prevgamma) * prev(:, :, i)';
+  end
+end
+
 % solve lasso problem
-param.lambda = pd.lambda;
+param.lambda = pd.lambda * size(windows,1) / (pd.ny*pd.nx*computeHOG() + numprev);
 param.mode = 2;
 param.pos = true;
-a = full(mexLasso(single(windows), pd.dhog, param));
+a = full(mexLassoMask(single(windows), dhog, mask, param));
 recon = pd.dgray * a;
 
 % reconstruct
