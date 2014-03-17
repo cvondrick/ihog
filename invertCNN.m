@@ -36,7 +36,7 @@ dcnn = pd.dcnn;
 mask = logical(ones(size(windows)));
 if prevnum > 0,
   % build blurred dictionary
-  dblur = xpassdict(pd.drgb, pd.imdim, pd.k, prev.sig);
+  dblur = xpassdict(pd.drgb, pd.imdim, prev.sig);
 
   windows = padarray(windows, [prevnum*prevnuma 0], 0, 'post');
   mask = cat(1, mask, repmat(logical(eye(prevnuma, size(windows,2))), [prevnum 1]));

@@ -31,16 +31,16 @@ for i=1:n,
 
   ims(:, :, :, i) = im;
 
-  subplot(211);
+  %subplot(211);
   imdiffmatrix(ims(:, :, :, 1:i));
 
-  subplot(212);
-  sparsity = mean(reshape(double(prev.a(:, :, 1:i) == 0), [], i));
-  plot(sparsity(:), '.-', 'LineWidth', 2, 'MarkerSize', 40);
-  title('Alpha Sparsity');
-  ylabel('Sparsity');
-  ylim([0.75 1]);
-  grid on;
+  %subplot(212);
+  %sparsity = mean(reshape(double(prev.a(:, :, 1:i) == 0), [], i));
+  %plot(sparsity(:), '.-', 'LineWidth', 2, 'MarkerSize', 40);
+  %title('Alpha Sparsity');
+  %ylabel('Sparsity');
+  %ylim([0.75 1]);
+  %grid on;
 
   colormap gray;
   drawnow;

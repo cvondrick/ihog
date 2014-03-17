@@ -1,15 +1,10 @@
-function dblur = xpassdict(dgray, dim, k, sig),
+function dblur = xpassdict(dgray, dim, sig),
 
 if ~exist('sig', 'var'),
   sig = 10;
 end
 
-if sig < 0,
-  sig = -sig;
-  lo = true;
-else,
-  lo = false;
-end
+k = size(dgray, 2);
 
 ny = dim(1);
 nx = dim(2);
@@ -18,21 +13,32 @@ if length(dim) > 2,
 else,
   nc = 1;
 end
-  
-% build blurred dgray
-dblur = zeros(size(dgray));
-fil = fspecial('gaussian', round([ny/2 nx/2]), sig);
-for i=1:k,
-  elemnorm = norm(dgray(:, i));
-  elem = reshape(dgray(:, i), dim); 
-  for j=1:nc,
-    if lo,
-      elem(:, :, j) = filter2(fil, elem(:, :, j), 'same');
-    else,
-      elem(:, :, j) = elem(:, :, j) - filter2(fil, elem(:, :, j), 'same');
-    end
+
+if sig == 0,
+  dblur = dgray;
+else,
+  if sig < 0,
+    sig = -sig;
+    lo = true;
+  else,
+    lo = false;
   end
-  dblur(:, i) = elem(:) / elemnorm;
+    
+  % build blurred dgray
+  dblur = zeros(size(dgray));
+  fil = fspecial('gaussian', round([ny/2 nx/2]), sig);
+  parfor i=1:k,
+    elemnorm = norm(dgray(:, i));
+    elem = reshape(dgray(:, i), dim); 
+    for j=1:nc,
+      if lo,
+        elem(:, :, j) = filter2(fil, elem(:, :, j), 'same');
+      else,
+        elem(:, :, j) = elem(:, :, j) - filter2(fil, elem(:, :, j), 'same');
+      end
+    end
+    dblur(:, i) = elem(:) / elemnorm;
+  end
 end
 
 if nargout == 0, 
