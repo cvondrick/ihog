@@ -33,8 +33,9 @@ end
 if ~isfield(prev, 'sig'),
   prev.sig = 1;
 end
-prev.num = size(prev.a, 3);
-prev.numa = size(prev.a, 2);
+
+prevnum = size(prev.a, 3);
+prevnuma = size(prev.a, 2);
 
 if ~exist('pd', 'var') || isempty(pd),
   global ihog_pd
@@ -81,7 +82,7 @@ end
 % incorporate constraints for multiple inversions
 dhog = pd.dhog;
 mask = logical(ones(size(windows)));
-if prev.num > 0,
+if prevnum > 0,
   % build blurred dictionary
   if prev.sig > 0,
     dblur = xpassdict(pd, prev.sig, false);
@@ -89,17 +90,17 @@ if prev.num > 0,
     dblur = xpassdict(pd, -prev.sig, true);
   end
 
-  windows = padarray(windows, [prev.num*prev.numa 0], 0, 'post');
-  mask = cat(1, mask, repmat(logical(eye(prev.numa, size(windows,2))), [prev.num 1]));
+  windows = padarray(windows, [prevnum*prevnuma 0], 0, 'post');
+  mask = cat(1, mask, repmat(logical(eye(prevnuma, size(windows,2))), [prevnum 1]));
   offset = size(dhog, 1);
-  dhog = padarray(dhog, [prev.num*prev.numa 0], 0, 'post');
-  for i=1:prev.num,
-    dhog(offset+(i-1)*prev.numa+1:offset+i*prev.numa, :) = sqrt(prev.gam) * prev.a(:, :, i)' * dblur' * dblur;
+  dhog = padarray(dhog, [prevnum*prevnuma 0], 0, 'post');
+  for i=1:prevnum,
+    dhog(offset+(i-1)*prevnuma+1:offset+i*prevnuma, :) = sqrt(prev.gam) * prev.a(:, :, i)' * dblur' * dblur;
   end
 end
 
 % solve lasso problem
-param.lambda = pd.lambda * size(windows,1) / (pd.ny*pd.nx*computeHOG() + prev.num);
+param.lambda = pd.lambda * size(windows,1) / (pd.ny*pd.nx*computeHOG() + prevnum);
 param.mode = 2;
 param.pos = true;
 a = full(mexLassoMask(single(windows), dhog, mask, param));
@@ -142,10 +143,9 @@ im = im(par*pd.sbin:end-par*pd.sbin-1, par*pd.sbin:end-par*pd.sbin-1, :);
 im = repmat(im, [1 1 1 3]);
 im = permute(im, [1 2 4 3]);
 
+% build previous information
 if prev.num > 0,
   prev.a = cat(3, prev.a, a);
 else,
   prev.a = a;
 end
-prev.num = size(prev.a, 3);
-prev.numa = size(prev.a, 2);
