@@ -1,22 +1,15 @@
-function buildCNNchunks(sourcedir, outdir, chunksize),
+function buildCNNchunks(sourcedir, imagepath, outdir, chunksize),
 
 if ~exist('chunksize', 'var'),
   chunksize = 100000;
 end
-if ~exist('layer', 'var'),
-  layer = 'pool5_cudanet_out';
-end
 if ~exist('featdim', 'var'),
-  featdim = [6 6 256];
+  featdim = 9216;
 end
 if ~exist('imagedim', 'var'),
   imagedim = 64;
 end
-if ~exist('imagedimorig', 'var'),
-  imagedimorig = 256;
-end
 
-imagedimorig = 256;
 data = zeros(prod(featdim)+imagedim^2*3, chunksize, 'single');
 c = 1;
 chunkid = 1;
@@ -25,31 +18,44 @@ n = 0;
 master.imdim = [imagedim imagedim 3];
 master.featdim = featdim;
 
+warning off; mkdir(outdir); warning on;
+
 files = dir(sourcedir);
 files = files(randperm(length(files)));
 for i=1:length(files),
   if files(i).isdir,
     continue;
   end
+  if ~strcmp(files(i).name(end-3:end), '.mat'),
+    continue;
+  end
 
   fprintf('icnn: load: %s (chunk has %i of %i)\n', files(i).name, c, chunksize);
 
-  payload = load([sourcedir '/' files(i).name]);
-  payloadfeatures = getfield(payload, layer);
+  [~, basename] = fileparts(files(i).name);
+  imfull = imread(sprintf(imagepath, basename));
 
-  num = size(payloadfeatures,1);
+  payload = load([sourcedir '/' files(i).name]);
+
+  num = size(payload.feat,1);
   n = n + num;
 
   for j=1:num,
-    im = squeeze(payload.images(j, :, :, :));
+    xmin = payload.boxes(j, 1);
+    ymin = payload.boxes(j, 2);
+    xmax = payload.boxes(j, 3);
+    ymax = payload.boxes(j, 4);
+
+    im = imfull(ymin:ymax, xmin:xmax, :);
     im = imresize(im, [imagedim imagedim]);
     im = single(im) / 255.;
 
-    feat = payloadfeatures(j, :, :, :);
+    feat = payload.feat(j, :);
 
     % normalize
     im(:) = im(:) - mean(im(:));
     im(:) = im(:) / (sqrt(sum(im(:).^2) + eps));
+
 
     feat(:) = feat(:) - mean(feat(:));
     feat(:) = feat(:) / (sqrt(sum(feat(:).^2) + eps));
