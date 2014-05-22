@@ -12,13 +12,16 @@ if ~exist('pd', 'var') || isempty(pd),
 end
 
 if ~exist('prev', 'var'),
+  prev = struct();
+end
+if ~isfield(prev, 'a'),
   prev.a = zeros(0, 0, 0);
 end
 if ~isfield(prev, 'mode'),
-  prev.mode = 'xpass';
+  prev.mode = 'rgb';
 end
 if ~isfield(prev, 'gam'),
-  prev.gam = 10;
+  prev.gam = 1;
 end
 if ~isfield(prev, 'sig'),
   prev.sig = 1;
@@ -46,28 +49,35 @@ if prevnum > 0,
   offset = size(dcnn, 1);
   dcnn = padarray(dcnn, [prevnum*prevnuma 0], 0, 'post');
 
-  if strcmp(prev.mode, 'xpass'),
+  if strcmp(prev.mode, 'standard'),
+    D = pd.drgb' * pd.drgb;
+
+  elseif strcmp(prev.mode, 'xpass'),
     % build blurred dictionary
     dblur = xpassdict(pd.drgb, pd.imdim, prev.sig);
     D = dblur' * dblur;
-  elseif strcmp(prev.mode, 'rgb'),
-%    selector = ones(1, pd.imdim(1) * pd.imdim(2)) / (pd.imdim(1) * pd.imdim(2));
-%    colortrans = blkdiag(selector, selector, selector);
-%    D = pd.drgb' * colortrans' * colortrans * pd.drgb;
 
+  elseif strcmp(prev.mode, 'rgb'),
+    % build selector tensor 
     selector = zeros(prev.slices^2, pd.imdim(1), pd.imdim(2));
+
+    fil = 1;
+    %fil = fspecial('gaussian', [pd.imdim(1)/prev.slices pd.imdim(2)/prev.slices], prev.sig);
+
     for i=1:prev.slices,
       iii = (i-1)*pd.imdim(1)/prev.slices+1 : i*pd.imdim(1)/prev.slices;
       for j=1:prev.slices,
         jjj = (j-1)*pd.imdim(2)/prev.slices+1 : j*pd.imdim(2)/prev.slices;
-        selector((i-1)*prev.slices+j, iii, jjj) = 1;
+        selector((i-1)*prev.slices+j, iii, jjj) = fil;
       end
     end
-    selector = reshape(selector, [prev.slices^2 pd.imdim(1)*pd.imdim(2)]);
+
     %selector = selector / (pd.imdim(1) * pd.imdim(2) / prev.slices^2);
+    selector = reshape(selector, [prev.slices^2 pd.imdim(1)*pd.imdim(2)]);
     colortrans = blkdiag(selector, selector, selector);
 
     D = pd.drgb' * colortrans' * colortrans * pd.drgb;
+
   end
 
   for i=1:prevnum,
@@ -79,10 +89,11 @@ end
 param.lambda = pd.lambda * size(windows,1) / (prod(pd.featdim) + prevnum);
 param.mode = 2;
 param.pos = true;
+%param.L = 20;
 a = full(mexLassoMask(single(windows), dcnn, mask, param));
 recon = pd.drgb * a;
 
-%fprintf('icnn: sparsity=%0.2f\n', sum(a(:) == 0) / length(a(:)));
+fprintf('icnn: sparsity = %i or %0.2f\n', sum(a(:) ~= 0), sum(a(:) == 0) / length(a(:)));
 
 im = reshape(recon, [pd.imdim size(windows,2)]);
 for i=1:size(feat,2),
