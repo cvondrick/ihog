@@ -1,4 +1,4 @@
-function buildCNNchunks(sourcedir, imagepath, outdir, chunksize),
+function buildCNNchunks(sourcedir, outdir, chunksize, hogdim),
 
 if ~exist('chunksize', 'var'),
   chunksize = 100000;
@@ -9,14 +9,18 @@ end
 if ~exist('imagedim', 'var'),
   imagedim = 64;
 end
+if ~exist('hogdim', 'var'),
+  hogdim = [0 0];
+end
 
-data = zeros(prod(featdim)+imagedim^2*3, chunksize, 'single');
+data = zeros(prod(featdim)+imagedim^2*3+prod(hogdim)*computeHOG(), chunksize, 'single');
 c = 1;
 chunkid = 1;
 n = 0;
 
 master.imdim = [imagedim imagedim 3];
 master.featdim = featdim;
+master.hogdim = hogdim;
 
 warning off; mkdir(outdir); warning on;
 
@@ -30,10 +34,10 @@ for i=1:length(files),
     continue;
   end
 
-  fprintf('icnn: load: %s (chunk has %i of %i)\n', files(i).name, c, chunksize);
+  fprintf('icnn: load: %s (chunk has %i/%i or %.1f%%)\n', files(i).name, c, chunksize, c / chunksize * 100);
 
   [~, basename] = fileparts(files(i).name);
-  imfull = imread(sprintf(imagepath, basename));
+  imfull = imread([sourcedir '/images/' basename '.jpg']);
 
   payload = load([sourcedir '/' files(i).name]);
 
@@ -50,18 +54,25 @@ for i=1:length(files),
     im = imresize(im, [imagedim imagedim]);
     im = single(im) / 255.;
 
+    if prod(hogdim) > 0,
+      hogpatch = double(imresize(im, (hogdim+2)*8));
+      hog = computeHOG(hogpatch, 8);
+      hog(:) = hog(:) - mean(hog(:));
+      hog(:) = hog(:) / (sqrt(sum(hog(:).^2) + eps));
+      data(imagedim^2*3+prod(featdim)+1:end, c) = hog(:);
+    end
+
     feat = payload.feat(j, :);
 
     % normalize
     im(:) = im(:) - mean(im(:));
     im(:) = im(:) / (sqrt(sum(im(:).^2) + eps));
 
-
     feat(:) = feat(:) - mean(feat(:));
     feat(:) = feat(:) / (sqrt(sum(feat(:).^2) + eps));
 
     data(1:imagedim^2*3, c) = im(:);
-    data(imagedim^2*3+1:end, c) = feat(:);
+    data(imagedim^2*3+1:imagedim^2*3+prod(featdim), c) = feat(:);
 
     c = c + 1;
 
