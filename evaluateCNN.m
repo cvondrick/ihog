@@ -1,47 +1,105 @@
-function evaluateCNN(dirpath, outpath, pd),
+function evaluateCNN(featpath, outpath, pd),
 
 warning off;
 mkdir(outpath);
 warning on;
 
-files = dir(dirpath);
+maxper = 100;
+
+files = dir(featpath);
 for i=1:length(files),
-  if files(i).isdir || files(i).name(1) == '.',
+  if files(i).isdir || files(i).name(1) == '.' || ~strcmp(files(i).name(end-3:end), '.mat'),
     continue;
   end
 
   fprintf('processing %s\n', files(i).name);
 
-  payload = load([dirpath '/' files(i).name]);
-  icnn = invertCNN(permute(payload.pool5_cudanet_out, [2 3 4 1]), pd);
+  payload = load([featpath '/' files(i).name]);
+
+  n = size(payload.feat, 1);
+  if n > maxper,
+    iii = randperm(n, maxper);
+  else,
+    iii = randperm(n);
+  end
+
+  feat = payload.feat(iii, :);
+  boxes = payload.boxes(iii, :);
+
+  icnn = invertCNN(feat', pd);
+
+  [~, basename] = fileparts(files(i).name);
+  im = im2double(imread([featpath '/images/' basename '.jpg']));
 
   height = pd.imdim(2);
   width = pd.imdim(1);
 
-  rx = pd.imdim(2)/double(payload.cropdim(1));
-  ry = pd.imdim(1)/double(payload.cropdim(2));
+  reconstructions = cell(size(icnn, 4), 1);
+  for i=1:size(icnn, 4),
+    vis = icnn(:, :, :, i);
 
-  reconstruction = zeros(floor(payload.imsize(2)*rx), ...
-                         floor(payload.imsize(1)*ry), 3);
-  weights = zeros(size(reconstruction));
-  original = zeros(size(reconstruction));
-  for j=1:size(icnn, 4),
-    xc = payload.locations(j, 2) * rx + 1;
-    yc = payload.locations(j, 1) * ry + 1;
+    bbox = boxes(i, :);
+    orig = im(bbox(2):bbox(4), bbox(1):bbox(3), :);
+    orig = imresize(orig, pd.imdim(1:2));
+    orig(orig > 1) = 1;
+    orig(orig < 0) = 0;
 
-    xxx = xc:xc+width-1;
-    yyy = yc:yc+height-1;
-
-    reconstruction(yyy, xxx, :) = reconstruction(yyy, xxx, :) + icnn(:, :, :, j);
-    weights(yyy, xxx, :) = weights(yyy, xxx, :) + 1;
-    
-    imp = imresize(squeeze(payload.images(j, :, :, :)), pd.imdim(1:2));
-    original(yyy, xxx, :) = im2double(imp);
+    reconstructions{i} = cat(2, vis, orig);
   end
 
-  reconstruction = reconstruction ./ weights;
+  graphic = montage(reconstructions, 10, 10);
+  imwrite(graphic, [outpath '/' basename '.jpg']);
+  imagesc(graphic);
+  drawnow;
+end
 
-  vis = cat(2, reconstruction, original);
 
-  imwrite(vis, [outpath '/' files(i).name '.jpg']);
+
+% M = montage(images[, cy, cx[, pad]])
+%
+% Takes the cell array 'images' and displays the first
+% cy*cx images of them on a grid, with 'pad' pixels in between.
+function M = montage(images, cy, cx, pad),
+
+if isnumeric(images),
+  imagescell = cell(size(images, 4), 1);
+  for i=1:size(images,3),
+    imagescell{i} = images(:, :, i);
+  end
+  images = imagescell;
+end
+
+if ~exist('cy', 'var'),
+  cy = floor(sqrt(length(images)));
+end
+if ~exist('cx', 'var'),
+  cx = ceil(sqrt(length(images)));
+end
+if ~exist('pad', 'var'),
+  pad = 5;
+end
+
+if cy < 0 && cx > 0,
+  cy = ceil(length(images) / cx);
+end
+if cx < 0 && cy > 0,
+  cx = ceil(length(images) / cy);
+end
+
+ny = size(images{1}, 1)+pad*2;
+nx = size(images{1}, 2)+pad*2;
+nf = size(images{1}, 3);
+
+M = ones(ny*cy, nx*cx, nf);
+c = 1;
+for j=1:cy,
+  for i=1:cx,
+    im = padarray(images{c}, [pad pad 0], 1);
+    im = imresize(im, [ny nx]);
+    M((j-1)*ny+1:j*ny, (i-1)*nx+1:i*nx, :) = im;
+    c = c + 1;
+    if c > length(images),
+      return;
+    end
+  end
 end

@@ -23,9 +23,9 @@ end
 prevnum = size(prev.a, 3);
 prevnuma = size(prev.a, 2);
 
-windows = zeros(prod(pd.featdim), size(feat,4));
-for i=1:size(feat,4),
-  elem = feat(:, :, :, i);
+windows = zeros(prod(pd.featdim), size(feat,2));
+for i=1:size(feat,2),
+  elem = feat(:, i);
   elem(:) = elem(:) - mean(elem(:));
   elem(:) = elem(:) / (sqrt(sum(elem(:).^2) + eps));
   windows(:, i) = elem(:);
@@ -57,7 +57,7 @@ recon = pd.drgb * a;
 %fprintf('icnn: sparsity=%0.2f\n', sum(a(:) == 0) / length(a(:)));
 
 im = reshape(recon, [pd.imdim size(windows,2)]);
-for i=1:size(feat,4),
+for i=1:size(feat,2),
   img = im(:, :, :, i);
   img(:) = img(:) - min(img(:));
   img(:) = img(:) / max(img(:));
