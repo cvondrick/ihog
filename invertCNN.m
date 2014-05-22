@@ -14,14 +14,17 @@ end
 if ~exist('prev', 'var'),
   prev.a = zeros(0, 0, 0);
 end
+if ~isfield(prev, 'mode'),
+  prev.mode = 'xpass';
+end
 if ~isfield(prev, 'gam'),
   prev.gam = 10;
 end
 if ~isfield(prev, 'sig'),
   prev.sig = 1;
 end
-if ~isfield(prev, 'mode'),
-  prev.mode = 'xpass';
+if ~isfield(prev, 'slices'),
+  prev.slices = 2;
 end
 prevnum = size(prev.a, 3);
 prevnuma = size(prev.a, 2);
@@ -48,8 +51,22 @@ if prevnum > 0,
     dblur = xpassdict(pd.drgb, pd.imdim, prev.sig);
     D = dblur' * dblur;
   elseif strcmp(prev.mode, 'rgb'),
-    selector = ones(1, pd.imdim(1) * pd.imdim(2)) / (pd.imdim(1) * pd.imdim(2));
+%    selector = ones(1, pd.imdim(1) * pd.imdim(2)) / (pd.imdim(1) * pd.imdim(2));
+%    colortrans = blkdiag(selector, selector, selector);
+%    D = pd.drgb' * colortrans' * colortrans * pd.drgb;
+
+    selector = zeros(prev.slices^2, pd.imdim(1), pd.imdim(2));
+    for i=1:prev.slices,
+      iii = (i-1)*pd.imdim(1)/prev.slices+1 : i*pd.imdim(1)/prev.slices;
+      for j=1:prev.slices,
+        jjj = (j-1)*pd.imdim(2)/prev.slices+1 : j*pd.imdim(2)/prev.slices;
+        selector((i-1)*prev.slices+j, iii, jjj) = 1;
+      end
+    end
+    selector = reshape(selector, [prev.slices^2 pd.imdim(1)*pd.imdim(2)]);
+    %selector = selector / (pd.imdim(1) * pd.imdim(2) / prev.slices^2);
     colortrans = blkdiag(selector, selector, selector);
+
     D = pd.drgb' * colortrans' * colortrans * pd.drgb;
   end
 
