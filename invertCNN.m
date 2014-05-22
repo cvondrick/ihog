@@ -20,6 +20,9 @@ end
 if ~isfield(prev, 'sig'),
   prev.sig = 1;
 end
+if ~isfield(prev, 'mode'),
+  prev.mode = 'xpass';
+end
 prevnum = size(prev.a, 3);
 prevnuma = size(prev.a, 2);
 
@@ -35,15 +38,23 @@ end
 dcnn = pd.dcnn;
 mask = logical(ones(size(windows)));
 if prevnum > 0,
-  % build blurred dictionary
-  dblur = xpassdict(pd.drgb, pd.imdim, prev.sig);
-
   windows = padarray(windows, [prevnum*prevnuma 0], 0, 'post');
   mask = cat(1, mask, repmat(logical(eye(prevnuma, size(windows,2))), [prevnum 1]));
   offset = size(dcnn, 1);
   dcnn = padarray(dcnn, [prevnum*prevnuma 0], 0, 'post');
+
+  if strcmp(prev.mode, 'xpass'),
+    % build blurred dictionary
+    dblur = xpassdict(pd.drgb, pd.imdim, prev.sig);
+    D = dblur' * dblur;
+  elseif strcmp(prev.mode, 'rgb'),
+    selector = ones(1, pd.imdim(1) * pd.imdim(2)) / (pd.imdim(1) * pd.imdim(2));
+    colortrans = blkdiag(selector, selector, selector);
+    D = pd.drgb' * colortrans' * colortrans * pd.drgb;
+  end
+
   for i=1:prevnum,
-    dcnn(offset+(i-1)*prevnuma+1:offset+i*prevnuma, :) = sqrt(prev.gam) * prev.a(:, :, i)' * dblur' * dblur;
+    dcnn(offset+(i-1)*prevnuma+1:offset+i*prevnuma, :) = sqrt(prev.gam) * prev.a(:, :, i)' * D;
   end
 end
 

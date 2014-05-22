@@ -22,8 +22,9 @@ fprintf('icnn: attempting to find %i equivalent images in CNN space\n', n);
 prev.a = zeros(0, 0, 0);
 prev.gam = gam;
 prev.sig = sig;
+prev.mode = 'rgb';
 
-ims = ones((ny+2)*8, (nx+2)*8, 3, n);
+ims = ones([pd.imdim n]);
 
 for i=1:n,
   fprintf('icnn: searching for image %i of %i\n', i, n);
