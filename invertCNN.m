@@ -1,5 +1,6 @@
-function [im, prev] = invertCNN(feat, pd, prev),
+function [im, prev] = invertCNN(feat, pd, prev, w),
 
+% load dictionary if missing
 if ~exist('pd', 'var') || isempty(pd),
   global icnn_pd
   if isempty(icnn_pd),
@@ -11,6 +12,7 @@ if ~exist('pd', 'var') || isempty(pd),
   pd = icnn_pd;
 end
 
+% build previous data structure
 if ~exist('prev', 'var'),
   prev = struct();
 end
@@ -32,6 +34,20 @@ end
 prevnum = size(prev.a, 3);
 prevnuma = size(prev.a, 2);
 
+% check for model weights
+if ~exist('w', 'var'),
+  w = ones(pd.featdim, 1);
+end
+
+% do some error checking
+if size(feat,1) ~= pd.featdim,
+  error(sprintf('expected feat to be %ixK, instead got %ix%i', pd.featdim, size(feat,1), size(feat,2)));
+end
+if size(w,1) ~= pd.featdim || size(w,2) ~= 1,
+  error(sprintf('expected w to be %ix1, instead got %ix%i', pd.featdim, size(w,1), size(w,2)));
+end
+
+% process windows
 windows = zeros(prod(pd.featdim), size(feat,2));
 for i=1:size(feat,2),
   elem = feat(:, i);
@@ -40,8 +56,20 @@ for i=1:size(feat,2),
   windows(:, i) = elem(:);
 end
 
-% incorporate constraints for multiple inversions
+% copy dcnn since we'll manipulate it now
 dcnn = pd.dcnn;
+
+% incorporate model weights, if any
+if any(w ~= 1),
+  w = abs(w);
+  w = w / norm(w) * sqrt(pd.featdim);
+  w = diag(w);
+  keyboard;
+  dcnn = w * dcnn;
+  windows = w * windows;
+end
+
+% incorporate constraints for multiple inversions
 mask = logical(ones(size(windows)));
 if prevnum > 0,
   windows = padarray(windows, [prevnum*prevnuma 0], 0, 'post');
@@ -77,7 +105,6 @@ if prevnum > 0,
     colortrans = blkdiag(selector, selector, selector);
 
     D = pd.drgb' * colortrans' * colortrans * pd.drgb;
-
   end
 
   for i=1:prevnum,
@@ -95,6 +122,7 @@ recon = pd.drgb * a;
 
 fprintf('icnn: sparsity = %i or %0.2f\n', sum(a(:) ~= 0), sum(a(:) == 0) / length(a(:)));
 
+% post process the result
 im = reshape(recon, [pd.imdim size(windows,2)]);
 for i=1:size(feat,2),
   img = im(:, :, :, i);
