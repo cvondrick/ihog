@@ -71,6 +71,7 @@ if any(w ~= 1),
   w = diag(w);
   dcnn = w * dcnn;
   windows = w * windows;
+  w = diag(w);
 end
 
 % incorporate constraints for multiple inversions
@@ -150,11 +151,21 @@ else,
 end
 
 % output some debugging information
-featcost = pd.dcnn * a - origwindows;
-featcost = norm(featcost(:));
-diversitycost = dcnn(offset+1:end, :) * a;
-diversitycost = norm(diversitycost(:));
 fprintf('icnn: finished in %0.2fs\n', toc(t));
 fprintf('icnn:   sparsity = %i or %0.2f\n', sum(a(:) ~= 0), sum(a(:) == 0) / length(a(:)));
+
+featcost = pd.dcnn * a - origwindows;
+featcost = norm(featcost(:));
 fprintf('icnn:   feat cost = %f\n', featcost);
-fprintf('icnn:   diversity cost = %f\n', diversitycost);
+
+if any(w ~= 1),
+  featcostw = diag(w) * pd.dcnn * a - diag(w) * origwindows;
+  featcostw = norm(featcostw(:));
+  fprintf('icnn:   feat weighted cost = %f\n', featcost);
+end
+
+diversitycost = 0;
+for i=1:prevnum,
+  diversitycost = diversitycost + sqrt(prev.gam) * prev.a(:, :, i)' * D * a;
+end
+fprintf('icnn:   diversity %s cost = %f\n', prev.mode, diversitycost);
