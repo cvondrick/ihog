@@ -1,4 +1,4 @@
-function out = equivCNN(feat, pd, n, param),
+function out = equivCNN(feat, pd, n, param, w),
 
 if ~exist('pd', 'var'),
   pd = load('pd-cnn.mat');
@@ -9,6 +9,9 @@ if ~exist('n', 'var'),
 end
 if ~exist('param', 'var'),
   param = struct();
+end
+if ~exist('w', 'var'),
+  w = ones(pd.featdim, 1);
 end
 
 bord = 5;
@@ -22,7 +25,7 @@ prev = param;
 
 for i=1:n,
   fprintf('icnn: searching for image %i of %i\n', i, n);
-  [im, prev] = invertCNN(feat, pd, prev);
+  [im, prev] = invertCNN(feat, pd, prev, w);
 
   ims(:, :, :, i) = im;
 

@@ -47,6 +47,8 @@ if size(w,1) ~= pd.featdim || size(w,2) ~= 1,
   error(sprintf('expected w to be %ix1, instead got %ix%i', pd.featdim, size(w,1), size(w,2)));
 end
 
+t = tic();
+
 % process windows
 windows = zeros(prod(pd.featdim), size(feat,2));
 for i=1:size(feat,2),
@@ -56,6 +58,9 @@ for i=1:size(feat,2),
   windows(:, i) = elem(:);
 end
 
+% we will modify this variable later, so keep backup
+origwindows = windows;
+
 % copy dcnn since we'll manipulate it now
 dcnn = pd.dcnn;
 
@@ -64,17 +69,16 @@ if any(w ~= 1),
   w = abs(w);
   w = w / norm(w) * sqrt(pd.featdim);
   w = diag(w);
-  keyboard;
   dcnn = w * dcnn;
   windows = w * windows;
 end
 
 % incorporate constraints for multiple inversions
 mask = logical(ones(size(windows)));
+offset = size(dcnn, 1);
 if prevnum > 0,
   windows = padarray(windows, [prevnum*prevnuma 0], 0, 'post');
   mask = cat(1, mask, repmat(logical(eye(prevnuma, size(windows,2))), [prevnum 1]));
-  offset = size(dcnn, 1);
   dcnn = padarray(dcnn, [prevnum*prevnuma 0], 0, 'post');
 
   if strcmp(prev.mode, 'standard'),
@@ -105,6 +109,15 @@ if prevnum > 0,
     colortrans = blkdiag(selector, selector, selector);
 
     D = pd.drgb' * colortrans' * colortrans * pd.drgb;
+
+  elseif strcmp(prev.mode, 'hog-dets'),
+    D = pd.dhog' * prev.dets * prev.dets' * pd.dhog;
+
+  elseif strcmp(prev.mode, 'hog-metric'),
+    D = pd.dhog' * prev.metric * pd.dhog;
+
+  elseif strcmp(prev.mode, 'hog'),
+    D = pd.dhog' * pd.dhog;
   end
 
   for i=1:prevnum,
@@ -119,8 +132,6 @@ param.pos = true;
 %param.L = 20;
 a = full(mexLassoMask(single(windows), dcnn, mask, param));
 recon = pd.drgb * a;
-
-fprintf('icnn: sparsity = %i or %0.2f\n', sum(a(:) ~= 0), sum(a(:) == 0) / length(a(:)));
 
 % post process the result
 im = reshape(recon, [pd.imdim size(windows,2)]);
@@ -137,3 +148,13 @@ if prevnum > 0,
 else,
   prev.a = a;
 end
+
+% output some debugging information
+featcost = pd.dcnn * a - origwindows;
+featcost = norm(featcost(:));
+diversitycost = dcnn(offset+1:end, :) * a;
+diversitycost = norm(diversitycost(:));
+fprintf('icnn: finished in %0.2fs\n', toc(t));
+fprintf('icnn:   sparsity = %i or %0.2f\n', sum(a(:) ~= 0), sum(a(:) == 0) / length(a(:)));
+fprintf('icnn:   feat cost = %f\n', featcost);
+fprintf('icnn:   diversity cost = %f\n', diversitycost);
