@@ -31,13 +31,11 @@ orig = im(bbox(2):bbox(4), bbox(1):bbox(3), :);
 subplot(121);
 [ims, vis] = equivCNN(feat', pd, n, param, w, orig);
 
-subplot(222);
+subplot(122);
 hogs = zeros(8, 8, 32, size(ims, 4));
 for i=1:size(ims, 4),
   hogs(:, :, :, i) = computeHOG(imresize(ims(:, :, :, i), [80 80]), 8);
 end
-imdiffmatrix(hogs, computeHOG(imresize(orig, [80 80]), 8), 5, @(x) showHOG(max(0, x - mean(x(:)))));
-
-subplot(224);
-hogs = reshape(hogs, [], size(ims,4));
-bar(hogs' * param.dets);
+render = @(x) showHOG(max(0, x - mean(x(:))));
+%render = @(x) invertHOG(x); 
+imdiffmatrix(hogs, computeHOG(imresize(orig, [80 80]), 8), 5, render);
