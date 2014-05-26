@@ -112,6 +112,9 @@ if prevnum > 0,
     D = pd.drgb' * colortrans' * colortrans * pd.drgb;
 
   elseif strcmp(prev.mode, 'hog-dets'),
+    for i=1:size(prev.dets, 2),
+      prev.dets(:, i) = prev.dets(:, i) / norm(prev.dets(:, i));
+    end
     D = pd.dhog' * prev.dets * prev.dets' * pd.dhog;
 
   elseif strcmp(prev.mode, 'hog-metric'),
@@ -119,6 +122,9 @@ if prevnum > 0,
 
   elseif strcmp(prev.mode, 'hog'),
     D = pd.dhog' * pd.dhog;
+
+  else,
+    error(sprintf('unknown mode %s\n', prev.mode));
   end
 
   for i=1:prevnum,
@@ -155,17 +161,17 @@ fprintf('icnn: finished in %0.2fs\n', toc(t));
 fprintf('icnn:   sparsity = %i or %0.2f\n', sum(a(:) ~= 0), sum(a(:) == 0) / length(a(:)));
 
 featcost = pd.dcnn * a - origwindows;
-featcost = norm(featcost(:));
+featcost = norm(featcost(:))^2;
 fprintf('icnn:   feat cost = %f\n', featcost);
 
 if any(w ~= 1),
   featcostw = diag(w) * pd.dcnn * a - diag(w) * origwindows;
-  featcostw = norm(featcostw(:));
+  featcostw = norm(featcostw(:))^2;
   fprintf('icnn:   feat weighted cost = %f\n', featcost);
 end
 
 diversitycost = 0;
 for i=1:prevnum,
-  diversitycost = diversitycost + sqrt(prev.gam) * prev.a(:, :, i)' * D * a;
+  diversitycost = diversitycost + prev.gam * sum((prev.a(:, :, i)' * D * a).^2);
 end
 fprintf('icnn:   diversity %s cost = %f\n', prev.mode, diversitycost);
