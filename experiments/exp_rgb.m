@@ -1,9 +1,11 @@
+function exp_rgb(gam, slices),
+
 pd = load('pd-caffe.mat');
 rootpath = '/data/vision/torralba/hallucination/icnn/rcnn-features/voc_2007_val';
 
 param.mode = 'rgb';
-param.gam = 10;
-param.slices = 1;
+param.gam = gam;
+param.slices = slices;
 n = 10;
 
 outpath = sprintf('/data/vision/torralba/hallucination/icnn/experiments/%s-%i', param.mode, param.gam);
