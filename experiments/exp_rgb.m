@@ -1,3 +1,6 @@
+% interesting at:
+%   slice=1, gam=.000001
+
 function exp_rgb(gam, slices),
 
 pd = load('pd-caffe.mat');
