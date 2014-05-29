@@ -23,7 +23,7 @@ if ~isfield(prev, 'mode'),
   prev.mode = 'rgb';
 end
 if ~isfield(prev, 'gam'),
-  prev.gam = 1;
+  prev.gam = .00001;
 end
 if ~isfield(prev, 'sig'),
   prev.sig = 1;
@@ -78,19 +78,24 @@ end
 mask = logical(ones(size(windows)));
 offset = size(dcnn, 1);
 if prevnum > 0,
+  fprintf('icnn: adding %i multiple inversion constraints:\n', prevnum);
+
   windows = padarray(windows, [prevnum*prevnuma 0], 0, 'post');
   mask = cat(1, mask, repmat(logical(eye(prevnuma, size(windows,2))), [prevnum 1]));
   dcnn = padarray(dcnn, [prevnum*prevnuma 0], 0, 'post');
 
   if strcmp(prev.mode, 'standard'),
+    fprintf('icnn:   mode is standard\n');
     D = pd.drgb' * pd.drgb;
 
   elseif strcmp(prev.mode, 'xpass'),
     % build blurred dictionary
+    fprintf('icnn:   mode is xpass: sig=%f\n', prev.sig);
     dblur = xpassdict(pd.drgb, pd.imdim, prev.sig);
     D = dblur' * dblur;
 
   elseif strcmp(prev.mode, 'rgb'),
+    fprintf('icnn:   mode is rgb: slices=%i\n', prev.slices);
     % build selector tensor 
     selector = zeros(prev.slices^2, pd.imdim(1), pd.imdim(2));
 
@@ -112,21 +117,25 @@ if prevnum > 0,
     D = pd.drgb' * colortrans' * colortrans * pd.drgb;
 
   elseif strcmp(prev.mode, 'hog-dets'),
+    fprintf('icnn:   mode is hog-dets: #dets=%i\n', size(prev.dets, 2));
     for i=1:size(prev.dets, 2),
       prev.dets(:, i) = prev.dets(:, i) / norm(prev.dets(:, i));
     end
     D = pd.dhog' * prev.dets * prev.dets' * pd.dhog;
 
   elseif strcmp(prev.mode, 'hog-metric'),
+    fprintf('icnn:   mode is hog-metric\n');
     D = pd.dhog' * prev.metric * pd.dhog;
 
   elseif strcmp(prev.mode, 'hog'),
+    fprintf('icnn:   mode is hog\n');
     D = pd.dhog' * pd.dhog;
 
   else,
     error(sprintf('unknown mode %s\n', prev.mode));
   end
 
+  fprintf('icnn:   gam=%f\n', prev.gam);
   for i=1:prevnum,
     dcnn(offset+(i-1)*prevnuma+1:offset+i*prevnuma, :) = sqrt(prev.gam) * prev.a(:, :, i)' * D;
   end

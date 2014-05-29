@@ -1,4 +1,4 @@
-function [ims, orig] = exp_equiv(name, i, pd, n, param, w),
+function out = exp_equiv(name, i, pd, n, param, w),
 
 rootpath = '/data/vision/torralba/hallucination/icnn/rcnn-features/voc_2007_val';
 
@@ -26,6 +26,15 @@ end
 
 feat = payload.feat(i, :);
 bbox = payload.boxes(i, :);
-orig = im(bbox(2):bbox(4), bbox(1):bbox(3), :);
 
-ims = equivCNN(feat', pd, n, param, w, orig);
+orig = uint8(im_crop(single(im2uint8(im)), bbox, 'warp', 227, 16, []));
+
+origvis = im2double(imresize(orig, pd.imdim(1:2)));
+
+ims = equivCNN(feat', pd, n, param, w, origvis);
+
+out.ims = ims;
+out.orig = orig;
+out.feat = feat;
+out.im = im;
+out.bbox = bbox;

@@ -8,7 +8,7 @@ param.gam = gam;
 param.slices = slices;
 n = 10;
 
-outpath = sprintf('/data/vision/torralba/hallucination/icnn/experiments/%s-%i', param.mode, param.gam);
+outpath = sprintf('/data/vision/torralba/hallucination/icnn/experiments/%s_gam=%0.8f_slices=%i', param.mode, param.gam, param.slices);
 
 
 files = dir(rootpath);
@@ -39,17 +39,18 @@ for iter=1:1000,
 
   feat = cell(length(gt),1);
   orig = cell(length(gt),1);
+  boxes = cell(length(gt),1);
   out = cell(length(gt),1);
 
   for j=1:length(gt),
     feat{j} = payload.feat(gt(j), :)';
-    bbox = payload.boxes(gt(j), :);
-    orig{j} = im(bbox(2):bbox(4), bbox(1):bbox(3), :);
+    boxes{j} = payload.boxes(gt(j), :);
+    orig{j} = im2double(uint8(im_crop(single(im2uint8(im)), boxes{j}, 'warp', 227, 16, [])));
 
     out{j} = equivCNN(feat{j}, pd, n, param, [], orig{j});
   end
 
-  save(outfile, 'out', 'feat', 'orig', 'infile', 'param');
+  save(outfile, 'out', 'feat', 'im', 'boxes', 'orig', 'infile', 'param');
 
   try,
     rmdir(lockfile);
