@@ -8,6 +8,10 @@ for i=1:length(dirs),
     continue;
   end
 
+  if length(strfind(dirs(i).name, 'reclip')),
+    continue;
+  end
+
   newdir = sprintf('%s-reclip=%0.2f', dirs(i).name, p);
   mkdir([outpath newdir]);
 
