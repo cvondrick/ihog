@@ -13,7 +13,6 @@ n = 10;
 
 outpath = sprintf('/data/vision/torralba/hallucination/icnn/experiments/%s_gam=%0.8f_slices=%i', param.mode, param.gam, param.slices);
 
-
 files = dir(rootpath);
 
 for iter=1:1000,
