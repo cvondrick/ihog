@@ -1,6 +1,4 @@
-% interesting at:
-%   slice=1, gam=.000001
-
+% builds the baseline result files
 function exp_baseline(mag),
 
 param.mag = mag;
