@@ -34,12 +34,6 @@ for i=1:length(featfiles),
     subplot(121);
     imdiffmatrix(reclip(data.out{j}, 0.02), data.orig{j});
 
-    subplot(122);
-    imdiffmatrix(reclip(data.out{j}, 0), data.orig{j});
-
-    pause; continue;
-
-
     subplot(222);
     hold on;
     plot(ratios, '.', 'MarkerSize', 50);
