@@ -31,7 +31,8 @@ orig = uint8(im_crop(single(im2uint8(im)), bbox, 'warp', 227, 16, []));
 
 origvis = im2double(imresize(orig, pd.imdim(1:2)));
 
-ims = equivCNN(feat', pd, n, param, w, origvis);
+%ims = equivCNN(feat', pd, n, param, w, origvis);
+ims = nearbyCNN(feat', pd, n, 1000, origvis);
 
 out.ims = ims;
 out.orig = orig;
