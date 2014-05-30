@@ -14,6 +14,6 @@ noise(:, 1) = 0;
 feat = feat + noise;
 
 out = invertCNN(feat, pd);
-out = reclip(out, 0.02);
+%out = reclip(out, 0.02);
 
 imdiffmatrix(out, orig);
