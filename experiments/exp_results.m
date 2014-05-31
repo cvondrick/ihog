@@ -1,6 +1,7 @@
 function exp_results(dirpath),
 
 samplesize = 100;
+dohog = true;
 
 plotnames = cell(10000000,1);
 featdist = zeros(length(plotnames),1);
@@ -55,8 +56,11 @@ for d=1:length(dirs),
       featdist(c) = norm(data{f}.refeat{k}(:, 1) - data{f}.refeat{k}(:, 2)) / size(data{f}.feat{1},1);
       featratio(c) = norm(data{f}.refeat{k}(:, 2) - data{f}.feat{k}) / (eps + norm(data{f}.refeat{k}(:, 1) - data{f}.feat{k}));
 
-      imdiff = applycform(double(data{f}.out{k}(:, :, :, 1)), ctransform) - applycform(double(data{f}.out{k}(:, :, :, 2)), ctransform);
-      %imdiff = computeHOG(double(data{f}.out{k}(:, :, :, 1)), 8) - computeHOG(double(data{f}.out{k}(:, :, :, 2)), 8);
+      if dohog,
+        imdiff = computeHOG(double(data{f}.out{k}(:, :, :, 1)), 4) - computeHOG(double(data{f}.out{k}(:, :, :, 2)), 4);
+      else,
+        imdiff = applycform(double(data{f}.out{k}(:, :, :, 1)), ctransform) - applycform(double(data{f}.out{k}(:, :, :, 2)), ctransform);
+      end
 
       imdist(c) = norm(imdiff(:)) / length(imdiff(:));
       c = c + 1;
@@ -64,7 +68,7 @@ for d=1:length(dirs),
   end
 
   if c > 1,
-    plotdata(plotnames(1:c-1), featdist(1:c-1), featratio(1:c-1), imdist(1:c-1));
+    plotdata(plotnames(1:c-1), featdist(1:c-1), featratio(1:c-1), imdist(1:c-1), dohog);
   end
 end
 
@@ -77,7 +81,7 @@ end
 
 
 
-function plotdata(plotnames, featdist, featratio, imdist),
+function plotdata(plotnames, featdist, featratio, imdist, dohog),
 
 clf;
 
@@ -121,7 +125,12 @@ end
 
 legend(legends, legendnames, 'FontSize', 20);
 xlabel('Feat Distance', 'FontSize', 20);
-ylabel('Image Distance', 'FontSize', 20);
+
+if dohog,
+  ylabel('HOG of Image Distance', 'FontSize', 20);
+else,
+  ylabel('Image Distance', 'FontSize', 20);
+end
 
 xlim([0 max(featdist)]);
 ylim([0 max(imdist)]);
