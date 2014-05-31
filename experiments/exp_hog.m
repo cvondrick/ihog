@@ -1,6 +1,7 @@
 function exp_standard(gam),
 
 pd = load('pd-caffe-hog.mat');
+pd.lambda = .005;
 param.mode = 'hog';
 param.gam = gam;
 

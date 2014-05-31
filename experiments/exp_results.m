@@ -1,7 +1,7 @@
 function exp_results(dirpath),
 
 samplesize = 100;
-dohog = true;
+dohog = false;
 
 plotnames = cell(10000000,1);
 featdist = zeros(length(plotnames),1);
@@ -63,6 +63,12 @@ for d=1:length(dirs),
       end
 
       imdist(c) = norm(imdiff(:)) / length(imdiff(:));
+
+      if featdist(c) <= .001 && imdist(c) <= 0.01,
+        fprintf('skipping %s: %s %i/%i since they are identical!!!\n', dirs(d).name, files(f).name, f, length(files));
+        continue;
+      end
+
       c = c + 1;
     end
   end
@@ -164,8 +170,7 @@ for i=1:length(uplotnames),
   allims{i} = im;
 end
 
-bigim = montage(allims, 2, 2, 1);
-bigim(isnan(bigim)) = max(bigim(:));
+bigim = montage(allims, 3, 2, 1);
 
 imagesc(bigim);
 axis image;
