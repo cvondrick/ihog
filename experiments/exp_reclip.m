@@ -3,6 +3,7 @@ function exp_reclip(p),
 outpath = '/data/vision/torralba/hallucination/icnn/experiments/';
 
 dirs = dir(outpath);
+dirs = dirs(randperm(dirs));
 for i=1:length(dirs),
   if ~dirs(i).isdir || dirs(i).name(1) == '.',
     continue;
@@ -20,12 +21,17 @@ for i=1:length(dirs),
     if files(j).isdir,
       continue;
     end
+
+    outfile = [outpath '/' newdir '/' files(j).name];
+    if exist(outfile, 'file'),
+      continue;
+    end
     
     payload = load([outpath '/' dirs(i).name '/' files(j).name]);
     for k=1:length(payload.out),
       fprintf('reclipping %s/%s #%i to %0.2f percentile\n', dirs(i).name, files(j).name, k, p);
       payload.out{k} = reclip(payload.out{k}, p);
     end
-    save([outpath '/' newdir '/' files(j).name], '-struct', 'payload');
+    save(outfile, '-struct', 'payload');
   end
 end

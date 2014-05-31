@@ -55,18 +55,9 @@ for i=1:length(featfiles),
     sampleratios = mean(sampledistances') / distances(1);
     invsampleratios = mean(invsampledistances') / distances(1);
 
-    baselinefeat = repmat(data.feat{j}, [1 10]);
-    baselinenoise = randn(size(baselinefeat));
-    baselinenoise = baselinenoise ./ repmat(sqrt(sum(baselinenoise.^2)), [9216 1]);
-    baselinenoise = baselinenoise .* repmat(distances', [9216 1]);
-    baselineinv = invertCNN(baselinefeat + baselinenoise, pd);
-
     clf;
-    subplot(221);
+    subplot(121);
     imdiffmatrix(data.out{j}, data.orig{j});
-
-    subplot(223);
-    imdiffmatrix(baselineinv, data.orig{j});
 
     subplot(4,2,2);
     hold on;
