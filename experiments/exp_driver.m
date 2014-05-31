@@ -3,7 +3,7 @@ function exp_driver(param, outpath, method),
 pd = load('pd-caffe.mat');
 rootpath = '/data/vision/torralba/hallucination/icnn/rcnn-features/voc_2007_val';
 
-n = 10;
+n = 3;
 
 files = dir(rootpath);
 
@@ -22,7 +22,7 @@ for iter=1:1000,
 
   if exist(outfile, 'file'),
     continue;
-  elseif exist(lockfile, 'file'),
+  elseif exist(lockfile, 'dir'),
     continue;
   end
   mkdir(lockfile);

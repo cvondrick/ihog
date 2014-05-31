@@ -26,6 +26,19 @@ for d=1:length(dirs),
   if length(files) > samplesize,
     files = files(randperm(length(files), samplesize));
   end
+
+  data = cell(length(files), 1);
+  parfor f=1:length(data),
+    if files(f).isdir,
+      continue;
+    end
+    fprintf('loading %s: %s %i/%i\n', dirs(d).name, files(f).name, f, length(files));
+    feat = load([dirpath '/' dirs(d).name '/feat/' files(f).name]);
+    payload = load([dirpath '/' dirs(d).name '/' files(f).name]);
+    payload.refeat = feat.feat;
+    data{f} = payload;;
+  end
+
   for f=1:length(files),
     if files(f).isdir,
       continue;
@@ -33,15 +46,10 @@ for d=1:length(dirs),
 
     fprintf('processing %s: %s %i/%i\n', dirs(d).name, files(f).name, f, length(files));
     
-    feat = load([dirpath '/' dirs(d).name '/feat/' files(f).name]);
-    data = load([dirpath '/' dirs(d).name '/' files(f).name]);
-    data.refeat = feat.feat;
-
-    for k=1:length(data.refeat),
+    for k=1:length(data{f}.refeat),
       plotnames{c} = base;
-      featdist(c) = norm(data.refeat{k}(:, 1) - data.refeat{k}(:, 2));
-      imdiff = data.out{k}(:, :, :, 1) - data.out{k}(:, :, :, 2);
-      %imdiff = computeHOG(double(data.out{k}(:, :, :, 1)), 8) - computeHOG(double(data.out{k}(:, :, :, 2)), 8);
+      featdist(c) = norm(data{f}.refeat{k}(:, 1) - data{f}.refeat{k}(:, 2));
+      imdiff = data{f}.out{k}(:, :, :, 1) - data{f}.out{k}(:, :, :, 2);
       imdist(c) = norm(imdiff(:));
       c = c + 1;
     end
@@ -58,8 +66,7 @@ clf;
 hold on;
 
 uplotnames = unique(plotnames);
-colors = lines(length(uplotnames));
-colors = [0 0 1; 1 0 0];
+colors = hsv(length(uplotnames)+1);
 
 legends = zeros(length(uplotnames), 1);
 legendnames = cell(length(uplotnames), 1);
@@ -73,12 +80,11 @@ for i=1:length(uplotnames),
   [~, iii] = sort(feat);
 
   k = 10;
-  smoothfeat = zeros(0,1);
-  smoothim = zeros(0,1);
-  for j=min(feat):k:max(feat),
-    jjj = (feat>=j).*(feat<j+k);
-    smoothim(end+1) = median(im(logical(jjj)));
-    smoothfeat(end+1) = j;
+  smoothfeat = min(feat):k:max(feat);
+  smoothim = zeros(size(smoothfeat));
+  for j=1:length(smoothfeat),
+    jjj = (feat>=smoothfeat(j)).*(feat<smoothfeat(j)+k);
+    smoothim(j) = median(im(logical(jjj)));
   end
   
   legends(i) = plot(smoothfeat, smoothim, '.-', 'color', colors(i, :), 'MarkerSize', 20, 'LineWidth', 5);
