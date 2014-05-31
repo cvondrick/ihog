@@ -48,8 +48,12 @@ for d=1:length(dirs),
     
     for k=1:length(data{f}.refeat),
       plotnames{c} = base;
-      featdist(c) = norm(data{f}.refeat{k}(:, 1) - data{f}.refeat{k}(:, 2));
+
+      %featdist(c) = norm(data{f}.refeat{k}(:, 1) - data{f}.refeat{k}(:, 2));
+      featdist(c) = norm(data{f}.refeat{k}(:, 2) - data{f}.feat{k}) / (eps + norm(data{f}.refeat{k}(:, 1) - data{f}.feat{k}));
+      %featdist(c) = norm(data{f}.feat{k} - data{f}.refeat{k}(:, 2));
       imdiff = data{f}.out{k}(:, :, :, 1) - data{f}.out{k}(:, :, :, 2);
+
       imdist(c) = norm(imdiff(:));
       c = c + 1;
     end
@@ -63,6 +67,8 @@ end
 function plotdata(plotnames, featdist, imdist),
 
 clf;
+
+subplot(121);
 hold on;
 
 uplotnames = unique(plotnames);
@@ -102,7 +108,48 @@ legend(legends, legendnames, 'FontSize', 20);
 xlabel('Feat Distance', 'FontSize', 20);
 ylabel('Image Distance', 'FontSize', 20);
 
-xlim([0 max(featdist)]);
+xlim([.8 1.2]);
 ylim([0 max(imdist)]);
+
+subplot(122);
+
+lb = 0.8;
+ub = 1.2;
+del = [find(featdist < lb) find(featdist > ub)];
+featdist(del) = [];
+imdist(del) = [];
+plotnames(del) = [];
+
+featdist(:) = featdist(:) - lb;
+featdist(:) = featdist(:) / (ub - lb);
+featdist = ceil(featdist * 100) + 1;
+imdist(:) = imdist(:) - min(imdist(:));
+imdist(:) = imdist(:) / max(imdist(:));
+imdist = ceil(imdist * 100) + 1;
+
+bigim = [];
+for i=1:length(uplotnames),
+  active = strcmp(plotnames, uplotnames{i});
+  im = zeros(max(imdist), max(featdist));
+  ind = sub2ind(size(im), imdist(active), featdist(active));
+  t = tabulate(ind);
+  im(t(:, 1)) = t(:, 2);
+  im(:) = im(:) / max(im(:));
+  im = padarray(im, [10 10], NaN);
+  bigim = [bigim im];
+end
+
+bigim(isnan(bigim)) = max(bigim(:));
+bigim = flipud(bigim);
+
+imagesc(bigim);
+axis image;
+colormap gray;
+
+ptitle = uplotnames{1};
+for i=2:length(uplotnames),
+  ptitle = [ptitle ', ' uplotnames{i}];
+end
+title(ptitle, 'FontSize', 20);
 
 drawnow;
