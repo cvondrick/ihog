@@ -3,7 +3,7 @@ function exp_reclip(p),
 outpath = '/data/vision/torralba/hallucination/icnn/experiments/';
 
 dirs = dir(outpath);
-dirs = dirs(randperm(dirs));
+dirs = dirs(randperm(length(dirs)));
 for i=1:length(dirs),
   if ~dirs(i).isdir || dirs(i).name(1) == '.',
     continue;
