@@ -89,7 +89,6 @@ colors = lines(length(uplotnames));
 
 legends = zeros(length(uplotnames), 1);
 legendnames = cell(length(uplotnames), 1);
-legendsort = zeros(length(uplotnames), 1);
 
 for i=1:length(uplotnames),
   active = strcmp(plotnames, uplotnames{i});
@@ -113,18 +112,14 @@ for i=1:length(uplotnames),
   
   legends(i) = plot(smoothfeat, smoothim, '.-', 'color', colors(i, :), 'MarkerSize', 20, 'LineWidth', 5);
   plot(feat, im, '.', 'color', colors(i, :), 'MarkerSize', 7);
-
-  bestfit = polyfit(feat, im, 1);
-  legendnames{i} = sprintf('%s = %f', uplotnames{i}, bestfit(1));
-  legendsort(i) = bestfit(1);
+  legendnames{i} = uplotnames{i};
 
 %  bestfit = polyfit(feat(iii), im(iii), 2);
 %  bestfitres = linspace(min(feat), max(feat), 10);
 %  plot(bestfitres, polyval(bestfit, bestfitres), '-', 'color', colors(i, :), 'LineWidth', 5);
 end
 
-[~, legendind] = sort(legendsort, 'descend');
-legend(legends(legendind), legendnames(legendind), 'FontSize', 20);
+legend(legends, legendnames, 'FontSize', 20);
 xlabel('Feat Distance', 'FontSize', 20);
 ylabel('Image Distance', 'FontSize', 20);
 
