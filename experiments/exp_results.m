@@ -128,19 +128,20 @@ ylim([0 max(imdist)]);
 
 subplot(122);
 
-%lb = 0.8;
-%ub = 1.2;
-%del = [find(featratio < lb) find(featratio > ub)];
-%featratio(del) = [];
-%imdist(del) = [];
-%plotnames(del) = [];
+lb = 0.8;
+ub = 1.2;
+dim = 100;
+del = [find(featratio < lb) find(featratio > ub)];
+featratio(del) = [];
+imdist(del) = [];
+plotnames(del) = [];
 
-featratio(:) = featratio(:) - min(featratio(:));
-featratio(:) = featratio(:) / max(featratio(:));
-featratio = ceil(featratio * 20) + 1;
+featratio(:) = featratio(:) - lb;
+featratio(:) = featratio(:) / (ub - lb);
+featratio = ceil(featratio * (dim-1)) + 1;
 imdist(:) = imdist(:) - min(imdist(:));
 imdist(:) = imdist(:) / max(imdist(:));
-imdist = ceil(imdist * 20) + 1;
+imdist = ceil(imdist * (dim-1)) + 1;
 
 allims = {};
 for i=1:length(uplotnames),
@@ -149,7 +150,7 @@ for i=1:length(uplotnames),
   ind = sub2ind(size(im), imdist(active), featratio(active));
   t = tabulate(ind);
   im(t(:, 1)) = t(:, 2);
-  im(:) = im(:) / max(im(:));
+  im = im ./ repmat(max(im)+1, [size(im,1) 1]);
   im = flipud(im);
   allims{i} = im;
 end

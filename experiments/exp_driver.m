@@ -1,6 +1,8 @@
-function exp_driver(param, outpath, method),
+function exp_driver(param, outpath, method, pd),
 
-pd = load('pd-caffe.mat');
+if ~exist('pd', 'var'),
+  pd = load('pd-caffe.mat');
+end
 rootpath = '/data/vision/torralba/hallucination/icnn/rcnn-features/voc_2007_val';
 
 n = 3;
