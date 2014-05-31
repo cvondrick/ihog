@@ -46,6 +46,10 @@ for iter=1:1000,
     orig{j} = im2double(uint8(im_crop(single(im2uint8(im)), boxes{j}, 'warp', 227, 16, [])));
 
     out{j} = method(feat{j}, pd, n, param, [], orig{j});
+
+    %clf;
+    %imdiffmatrix(out{j}, orig{j});
+    %pause;
   end
 
   save(outfile, 'out', 'feat', 'im', 'boxes', 'orig', 'infile', 'param');
