@@ -47,9 +47,6 @@ for iter=1:1000,
 
     out{j} = method(feat{j}, pd, n, param, [], orig{j});
 
-    clf;
-    imdiffmatrix(out{j}, orig{j});
-    keyboard;
   end
 
   save(outfile, 'out', 'feat', 'im', 'boxes', 'orig', 'infile', 'param');
