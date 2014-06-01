@@ -43,7 +43,6 @@ catch,
   save([cache_path 'cnn.mat'], 'feat', 'classes');
 end
 
-
 try,
   load([cache_path 'icnn.mat']);
 catch,
@@ -80,7 +79,7 @@ catch,
     X = X';
     Y = [ones(sum(clsind), 1); -ones(sum(~clsind),1)];
 
-    model = svmtrain(Y, X, '-s 0 -t 0 -c .1');
+    model = svmtrain(Y, X, '-s 0 -t 0 -c .01');
     [~, accuracy, ~] = svmpredict(Y, X, model);
     fprintf('training accuracy is %f\n', accuracy(1));
 
