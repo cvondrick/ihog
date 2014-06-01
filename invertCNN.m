@@ -1,4 +1,4 @@
-function [im, prev] = invertCNN(feat, pd, prev, w),
+function [im, prev] = invertCNN(feat, pd, prev, w, sim),
 
 % load dictionary if missing
 if ~exist('pd', 'var') || isempty(pd),
@@ -39,6 +39,20 @@ if ~exist('w', 'var'),
   w = ones(pd.featdim, 1);
 end
 
+% check for similarity
+if ~exist('sim', 'var'),
+  sim = struct();
+end
+if ~isfield(sim, 'channel'),
+  sim.channel = 'off';
+end
+if ~isfield(sim, 'weight'),
+  sim.weight = 0.1;
+end
+if ~isfield(sim, 'negate'),
+  sim.negate = false;
+end
+
 % do some error checking
 if size(feat,1) ~= pd.featdim,
   error(sprintf('expected feat to be %ixK, instead got %ix%i', pd.featdim, size(feat,1), size(feat,2)));
@@ -74,6 +88,23 @@ if any(w ~= 1),
   w = diag(w);
 end
 
+% incorporate (dis)similarity constraints
+if ~strcmp(sim.channel, 'off'),
+  if strcmp(sim.channel, 'rgb'),
+    dcnn = cat(1, dcnn, sim.weight * pd.drgb);
+  elseif strcmp(sim.channel, 'hog'),
+    dcnn = cat(1, dcnn, sim.weight * pd.dhog);
+  end
+
+  if sim.negate,
+    weight = -sim.weight;
+  else,
+    weight = sim.weight;
+  end
+    
+  windows = cat(1, windows, weight * repmat(sim.data(:), [1 size(windows,2)]));
+end
+
 % incorporate constraints for multiple inversions
 mask = logical(ones(size(windows)));
 offset = size(dcnn, 1);
@@ -93,6 +124,12 @@ if prevnum > 0,
     fprintf('icnn:   mode is xpass: sig=%f\n', prev.sig);
     dblur = xpassdict(pd.drgb, pd.imdim, prev.sig);
     D = dblur' * dblur;
+
+  elseif strcmp(prev.mode, 'edge'),
+    % build blurred dictionary
+    fprintf('icnn:   mode is edge\n');
+    dedge = edgepassdict(pd.drgb, pd.imdim);
+    D = dedge' * dedge;
 
   elseif strcmp(prev.mode, 'rgb'),
     fprintf('icnn:   mode is rgb: slices=%i\n', prev.slices);

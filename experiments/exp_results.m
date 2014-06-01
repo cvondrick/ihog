@@ -18,7 +18,7 @@ for d=1:length(dirs),
     continue;
   end
 
-  if length(strfind(dirs(d).name, 'reclip')),
+  if ~length(strfind(dirs(d).name, 'reclip=0.02')),
     fprintf('skip %s\n', dirs(d).name);
     continue;
   end
