@@ -18,7 +18,7 @@ for d=1:length(dirs),
     continue;
   end
 
-  if ~length(strfind(dirs(d).name, 'reclip=0.02')),
+  if length(strfind(dirs(d).name, 'reclip=0.02')),
     fprintf('skip %s\n', dirs(d).name);
     continue;
   end
@@ -120,8 +120,8 @@ for i=1:length(uplotnames),
     end
   end
   
-  legends(i) = plot(smoothfeat, smoothim, '.-', 'color', colors(i, :), 'MarkerSize', 20, 'LineWidth', 5);
-  plot(feat, im, '.', 'color', colors(i, :), 'MarkerSize', 7);
+  legends(i) = plot(smoothfeat, smoothim, '-', 'color', colors(i, :), 'MarkerSize', 20, 'LineWidth', 5);
+  plot(feat, im, '*', 'color', colors(i, :), 'MarkerSize', 2);
   legendnames{i} = uplotnames{i};
 
 %  bestfit = polyfit(feat(iii), im(iii), 2);
