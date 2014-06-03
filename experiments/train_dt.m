@@ -1,9 +1,12 @@
+function out = train_dt(),
+
 cnn_cache = '/data/vision/torralba/hallucination/icnn/rcnn-features/voc_2007_train';
 cache_path = '/scratch/carl/cache/icnn-dt-';
 n = 10000;
 
 try,
   load([cache_path 'cnn.mat']);
+  fprintf('loaded cnn from cache\n');
 catch,
   feat = zeros(pd.featdim, n);
   classes = zeros(n,1);
@@ -45,6 +48,7 @@ end
 
 try,
   load([cache_path 'icnn.mat']);
+  fprintf('loaded icnn from cache\n');
 catch,
   fprintf('inverting\n');
   icnn = invertCNN(feat, pd);
@@ -53,6 +57,7 @@ end
 
 try,
   load([cache_path 'hog.mat']);
+  fprintf('loaded hog from cache\n');
 catch,
   sbin = 8;
   hog = zeros(pd.imdim(1) / sbin - 2, pd.imdim(2) / sbin - 2, computeHOG(), size(icnn,4));
@@ -64,8 +69,8 @@ catch,
 end
 
 try,
-  fail
   load([cache_path 'model.mat']),
+  fprintf('loaded models from cache\n');
 catch,
   uclasses = unique(classes);
   w = zeros(size(hog,1)*size(hog,2)*size(hog,3), length(uclasses));
@@ -79,7 +84,7 @@ catch,
     X = X';
     Y = [ones(sum(clsind), 1); -ones(sum(~clsind),1)];
 
-    model = svmtrain(Y, X, '-s 0 -t 0 -c .01');
+    model = svmtrain(Y, X, '-s 0 -t 0 -c .01 -w1 10');
     [~, accuracy, ~] = svmpredict(Y, X, model);
     fprintf('training accuracy is %f\n', accuracy(1));
 
@@ -92,3 +97,6 @@ catch,
 
   save([cache_path 'model.mat'], 'w', 'b'),
 end
+
+out.w = w;
+out.b = b;

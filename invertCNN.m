@@ -60,6 +60,12 @@ end
 if size(w,1) ~= pd.featdim || size(w,2) ~= 1,
   error(sprintf('expected w to be %ix1, instead got %ix%i', pd.featdim, size(w,1), size(w,2)));
 end
+if strcmp(sim.channel, 'rgb') && length(sim.data(:)) ~= size(pd.rgdb,1),
+  error('expected sim.data to be %ix1', size(pd.drgb,1));
+end
+if strcmp(sim.channel, 'hog') && length(sim.data(:)) ~= size(pd.dhog,1),
+  error('expected sim.data to be %ix1', size(pd.dhog,1));
+end
 
 t = tic();
 
@@ -167,6 +173,17 @@ if prevnum > 0,
   elseif strcmp(prev.mode, 'hog'),
     fprintf('icnn:   mode is hog\n');
     D = pd.dhog' * pd.dhog;
+
+  elseif strcmp(prev.mode, 'delete'),
+    fprintf('icnn:   mode is delete\n');
+
+    if size(prev.a, 2) ~= 1,
+      error('mode delete is not compatible for vectorized inversions');
+    end
+
+    D = zeros(pd.k, pd.k);
+    del = (sum(prev.a ~= 0, 3) ~= 0); 
+    dcnn(:, del) = 0;
 
   else,
     error(sprintf('unknown mode %s\n', prev.mode));

@@ -1,7 +1,12 @@
 function exp_results(dirpath),
 
 samplesize = 100;
-dohog = false;
+mode = 'standard';
+dtind = 15;
+reclip = false;
+
+dt = train_dt();
+dt = dt.w(:, dtind);
 
 plotnames = cell(10000000,1);
 featdist = zeros(length(plotnames),1);
@@ -18,8 +23,12 @@ for d=1:length(dirs),
     continue;
   end
 
-  if length(strfind(dirs(d).name, 'reclip=0.02')),
+  if (length(strfind(dirs(d).name, 'reclip=0.02')) == 0) == reclip,
     fprintf('skip %s\n', dirs(d).name);
+    continue;
+  end
+
+  if length(strfind(dirs(d).name, 'standard')) == 0 && length(strfind(dirs(d).name, 'rgb')) == 0 && length(strfind(dirs(d).name, 'edge')) == 0 && length(strfind(dirs(d).name, 'baseline')) == 0,
     continue;
   end
 
@@ -40,7 +49,18 @@ for d=1:length(dirs),
     feat = load([dirpath '/' dirs(d).name '/feat/' files(f).name]);
     payload = load([dirpath '/' dirs(d).name '/' files(f).name]);
     payload.refeat = feat.feat;
-    data{f} = payload;;
+    data{f} = payload;
+
+    if strcmp(mode, 'dt'),
+      origpayload = load(payload.infile);
+      keep = find(origpayload.class == dtind);
+
+      payload.feat = payload.feat(keep);
+      payload.orig = payload.orig(keep);
+      payload.boxes = payload.boxes(keep);
+      payload.out = payload.out(keep);
+      payload.refeat = payload.refeat(keep);
+    end
   end
 
   for f=1:length(files),
@@ -56,15 +76,21 @@ for d=1:length(dirs),
       featdist(c) = norm(data{f}.refeat{k}(:, 1) - data{f}.refeat{k}(:, 2)) / size(data{f}.feat{1},1);
       featratio(c) = norm(data{f}.refeat{k}(:, 2) - data{f}.feat{k}) / (eps + norm(data{f}.refeat{k}(:, 1) - data{f}.feat{k}));
 
-      if dohog,
+      if strcmp(mode, 'hog'), 
         imdiff = computeHOG(double(data{f}.out{k}(:, :, :, 1)), 4) - computeHOG(double(data{f}.out{k}(:, :, :, 2)), 4);
+        imdiff = norm(imdiff(:)) / length(imdiff(:));
+      elseif strcmp(mode, 'dt'), 
+        firstim = computeHOG(double(data{f}.out{k}(:, :, :, 1)), 8);
+        secondim = computeHOG(double(data{f}.out{k}(:, :, :, 2)), 8);
+        imdiff = abs(dt' * (secondim(:) - firstim(:)));
       else,
         imdiff = applycform(double(data{f}.out{k}(:, :, :, 1)), ctransform) - applycform(double(data{f}.out{k}(:, :, :, 2)), ctransform);
+        imdiff = norm(imdiff(:)) / length(imdiff(:));
       end
 
-      imdist(c) = norm(imdiff(:)) / length(imdiff(:));
+      imdist(c) = imdiff;
 
-      if featdist(c) <= .001 && imdist(c) <= 0.01,
+      if featdist(c) == 0 && imdist(c) == 0,
         fprintf('skipping %s: %s %i/%i since they are identical!!!\n', dirs(d).name, files(f).name, f, length(files));
         continue;
       end
@@ -74,7 +100,7 @@ for d=1:length(dirs),
   end
 
   if c > 1,
-    plotdata(plotnames(1:c-1), featdist(1:c-1), featratio(1:c-1), imdist(1:c-1), dohog);
+    plotdata(plotnames(1:c-1), featdist(1:c-1), featratio(1:c-1), imdist(1:c-1), mode);
   end
 end
 
@@ -87,7 +113,7 @@ end
 
 
 
-function plotdata(plotnames, featdist, featratio, imdist, dohog),
+function plotdata(plotnames, featdist, featratio, imdist, mode),
 
 clf;
 
@@ -129,17 +155,31 @@ for i=1:length(uplotnames),
 %  plot(bestfitres, polyval(bestfit, bestfitres), '-', 'color', colors(i, :), 'LineWidth', 5);
 end
 
-legend(legends, legendnames, 'FontSize', 20);
-xlabel('Feat Distance', 'FontSize', 20);
+for i=1:length(legendnames),
+  if strcmp(legendnames{i}, 'standard'),
+    legendnames{i} = 'identity';
+  elseif strcmp(legendnames{i}, 'rgb'),
+    legendnames{i} = 'color';
+  elseif strcmp(legendnames{i}, 'edge'),
+    legendnames{i} = 'edge';
+  elseif strcmp(legendnames{i}, 'baseline'),
 
-if dohog,
+  end
+end
+
+legend(legends, legendnames, 'FontSize', 20);
+xlabel('CNN Distance', 'FontSize', 20);
+
+if strcmp(mode, 'hog'),
   ylabel('HOG of Image Distance', 'FontSize', 20);
+elseif strcmp(mode, 'dt'),
+  ylabel('DT Score Distance', 'FontSize', 20);
 else,
   ylabel('Image Distance', 'FontSize', 20);
 end
 
 xlim([0 max(featdist)]);
-ylim([0 max(imdist)]);
+%ylim([0 max(imdist)]);
 
 subplot(122);
 
@@ -167,12 +207,14 @@ for i=1:length(uplotnames),
   im(t(:, 1)) = t(:, 2);
   im = im ./ repmat(max(im)+1, [size(im,1) 1]);
   im = flipud(im);
-  allims{i} = im;
+  allims{i} = 1-im;
+
+  %imwrite(allims{i}, sprintf('~/papers/multiple/figs/ratio_%s.jpg', uplotnames{i}));
 end
 
 bigim = montage(allims, 3, 2, 1);
 
-imagesc(bigim);
+imagesc(bigim, [0 1]);
 axis image;
 colormap gray;
 
