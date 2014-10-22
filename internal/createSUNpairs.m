@@ -1,5 +1,7 @@
 function createSUNpairs(),
 
+seedrandom();
+
 imdir = '/data/vision/torralba/cityimage/SUN_source_code_v2/data/scene_397class/image/SUN397/';
 outdir = '/data/vision/torralba/hallucination/ihogj/data';
 
@@ -17,6 +19,8 @@ for i=1:length(data),
   if exist(outpath, 'file'),
     continue;
   end
+
+  fprintf('%s\n', outpath);
 
   im = imread([imdir '/' tline]);
   im = imresize(im, [256 256]);
@@ -45,3 +49,28 @@ for i=1:length(data),
 
   save(outpath, 'feat', 'ihog');
 end
+
+
+
+% Generates a random seed for MATLAB that is robust against many problems that
+% crop up when laucning jobs on the cluster. It is better than just seeding
+% with the clock since cluster jobs may start at the *exact* same time.
+function seed = seedrandom(),
+
+[~, hostname] = system('hostname');
+hostname = strtrim(hostname);
+hostname = double(hostname);
+hostname = sum(hostname);
+
+[~, randnum] = system('echo $RANDOM');
+randnum = strtrim(randnum);
+randnum = str2num(randnum);
+
+pid = feature('getpid');
+
+seed = hostname * randnum * pid;
+seed = mod(seed, 2^31);
+
+rng(seed);
+
+fprintf('random seed set to %i = %i * %i * %i\n', seed, hostname, randnum, pid);
