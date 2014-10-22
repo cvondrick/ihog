@@ -7,8 +7,8 @@ outdir = '/data/vision/torralba/hallucination/ihogj/data';
 
 f = fopen('/data/vision/torralba/hallucination/ihogj/sun.txt', 'r');
 data = textscan(f, '%s');
-data = data(randperm(length(data)));
 data = data{1};
+data = data(randperm(length(data)));
 fclose(f);
 
 for i=1:length(data),
