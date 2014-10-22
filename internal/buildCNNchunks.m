@@ -24,6 +24,8 @@ master.imdim = [imagedim imagedim 3];
 master.featdim = featdim;
 master.hogdim = hogdim;
 
+rgb2lab = makecform('srgb2lab');
+
 warning off; mkdir(outdir); warning on;
 
 files = dir(sourcedir);
@@ -42,6 +44,7 @@ for i=1:length(files),
   imfull = double(imread([sourcedir '/images/' basename '.jpg']));
   imfullpad = padarray(imfull, [8 8], 0);
 
+
   payload = load([sourcedir '/' files(i).name]);
 
   num = size(payload.feat,1);
@@ -52,11 +55,17 @@ for i=1:length(files),
     im = imresize(im, [imagedim imagedim]);
     im = single(im) / 255.;
 
+    im = applycform(double(im), rgb2lab);
+
     feat = payload.feat(j, :);
 
     % normalize
-    im(:) = im(:) - mean(im(:));
-    im(:) = im(:) / (sqrt(sum(im(:).^2) + eps));
+    im_L = (im(:, :, 1) - 50) / 100;
+    im_ab = im(:, :, [2 3]) / 128;
+    im = cat(3, im_L, im_ab);
+
+    %im(:) = im(:) - mean(im(:));
+    %im(:) = im(:) / (sqrt(sum(im(:).^2) + eps));
 
     feat(:) = feat(:) - mean(feat(:));
     feat(:) = feat(:) / (sqrt(sum(feat(:).^2) + eps));

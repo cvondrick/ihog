@@ -28,16 +28,22 @@ for d=1:length(dirs),
     continue;
   end
 
-  if length(strfind(dirs(d).name, 'standard')) == 0 && length(strfind(dirs(d).name, 'rgb')) == 0 && length(strfind(dirs(d).name, 'edge')) == 0 && length(strfind(dirs(d).name, 'baseline')) == 0,
+  if length(strfind(dirs(d).name, 'standard')) == 0 && length(strfind(dirs(d).name, 'rgb')) == 0 && length(strfind(dirs(d).name, 'edge')) == 0 && length(strfind(dirs(d).name, 'baseline')) == 0 && length(strfind(dirs(d).name, 'delete')) == 0,
     continue;
   end
 
   pos = strfind(dirs(d).name, '_');
-  base = dirs(d).name(1:pos-1);
+  if isempty(pos),
+    base = dirs(d).name;
+  else,
+    base = dirs(d).name(1:pos-1);
+  end
 
   files = dir([dirpath '/' dirs(d).name '/feat']);
-  if length(files) > samplesize,
-    files = files(randperm(length(files), samplesize));
+  if ~strcmp(base, 'delete'),
+    if length(files) > samplesize,
+      files = files(randperm(length(files), samplesize));
+    end
   end
 
   data = cell(length(files), 1);
@@ -139,7 +145,7 @@ for i=1:length(uplotnames),
   smoothim = zeros(size(smoothfeat));
   for j=1:length(smoothfeat),
     jjj = (feat>=smoothfeat(j)).*(feat<smoothfeat(j)+k);
-    if length(jjj) > 10,
+    if length(jjj) > 25,
       smoothim(j) = median(im(logical(jjj)));
     else,
       smoothim(j) = NaN;
@@ -147,7 +153,7 @@ for i=1:length(uplotnames),
   end
   
   legends(i) = plot(smoothfeat, smoothim, '-', 'color', colors(i, :), 'MarkerSize', 20, 'LineWidth', 5);
-  plot(feat, im, '*', 'color', colors(i, :), 'MarkerSize', 2);
+  plot(feat, im, '*', 'color', colors(i, :), 'MarkerSize', 1);
   legendnames{i} = uplotnames{i};
 
 %  bestfit = polyfit(feat(iii), im(iii), 2);
@@ -157,17 +163,21 @@ end
 
 for i=1:length(legendnames),
   if strcmp(legendnames{i}, 'standard'),
-    legendnames{i} = 'identity';
+    legendnames{i} = 'Identity (us)';
   elseif strcmp(legendnames{i}, 'rgb'),
-    legendnames{i} = 'color';
+    legendnames{i} = 'Color (us)';
   elseif strcmp(legendnames{i}, 'edge'),
-    legendnames{i} = 'edge';
+    legendnames{i} = 'Edge (us)';
   elseif strcmp(legendnames{i}, 'baseline'),
-
+    legendnames{i} = 'Baseline A';
+  elseif strcmp(legendnames{i}, 'delete'),
+    legendnames{i} = 'Baseline B';
   end
 end
 
-legend(legends, legendnames, 'FontSize', 20);
+[~, iii] = sort(legendnames);
+
+legend(legends(iii), legendnames(iii), 'FontSize', 20);
 xlabel('CNN Distance', 'FontSize', 20);
 
 if strcmp(mode, 'hog'),
@@ -179,7 +189,9 @@ else,
 end
 
 xlim([0 max(featdist)]);
+xlim([0 0.02]);
 %ylim([0 max(imdist)]);
+
 
 subplot(122);
 
@@ -207,9 +219,10 @@ for i=1:length(uplotnames),
   im(t(:, 1)) = t(:, 2);
   im = im ./ repmat(max(im)+1, [size(im,1) 1]);
   im = flipud(im);
+  im = imresize(im, 4, 'nearest');
   allims{i} = 1-im;
 
-  %imwrite(allims{i}, sprintf('~/papers/multiple/figs/ratio_%s.jpg', uplotnames{i}));
+  imwrite(allims{i}, sprintf('~/papers/multiple/figs/ratio_%s.jpg', uplotnames{i}));
 end
 
 bigim = montage(allims, 3, 2, 1);

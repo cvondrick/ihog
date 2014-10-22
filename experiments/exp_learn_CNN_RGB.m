@@ -1,6 +1,6 @@
-chunkmasterfile = '/data/vision/torralba/hallucination/icnn/rcnn-features-chunks-pad/master.mat';
-k = 2048;
+chunkmasterfile = '/data/vision/torralba/hallucination/icnn/rcnn-features-chunks-lab/master.mat';
+k = 1024;
 
-pd = learnCNNdict(chunkmasterfile, k, .02, 20),
+pd = learnCNNdict(chunkmasterfile, k, .01, 10),
 
-save('pd-caffe-pad.mat', '-struct', 'pd');
+save('pd-caffe-lab.mat', '-struct', 'pd');

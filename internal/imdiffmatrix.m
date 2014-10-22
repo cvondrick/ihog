@@ -19,9 +19,9 @@ if exist('orig', 'var') && ~isempty(orig),
   if nc == 1,
     orig = mean(orig, 3);
   end
-  orig = padarray(orig, [bord bord], .8);
+  orig = padarray(orig, [bord bord],1);
 else,
-  orig = 0.8 * ones(h+2*bord, w+2*bord, 3);
+  orig = 1 * ones(h+2*bord, w+2*bord, 3);
 end
 
 h = h + 2 * bord;
@@ -29,8 +29,8 @@ w = w + 2 * bord;
 
 % build borders
 for i=1:n,
-  im(h*i:h*(i+1)-1, 1:w, :) = padarray(render(ims(:, :, :, i)), [bord bord 0], .8);
-  im(1:h, w*i:w*(i+1)-1, :) = padarray(render(ims(:, :, :, i)), [bord bord 0], .8);
+  im(h*i:h*(i+1)-1, 1:w, :) = padarray(render(ims(:, :, :, i)), [bord bord 0], 1);
+  im(1:h, w*i:w*(i+1)-1, :) = padarray(render(ims(:, :, :, i)), [bord bord 0], 1);
 end
 
 im(1:h, 1:w, :) = orig;

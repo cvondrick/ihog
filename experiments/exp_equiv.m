@@ -20,7 +20,7 @@ payload = load(sprintf('%s/%s.mat', rootpath, name));
 im = im2double(imread(sprintf('%s/images/%s.jpg', rootpath, name)));
 
 if i < 0,
-  iii = find(payload.gt);
+  iii = find(payload.overlap(:, 15) > .5);
   i = iii(-i);
 end
 
@@ -31,11 +31,20 @@ orig = uint8(im_crop(single(im2uint8(im)), bbox, 'warp', 227, 16, []));
 
 origvis = im2double(imresize(orig, pd.imdim(1:2)));
 
-%ims = equivCNN(feat', pd, n, param, w, origvis);
-ims = nearbyCNN(feat', pd, n, 1000, origvis);
+ims = equivCNN(feat', pd, n, param, w, origvis);
+featplot = plotCNN(feat);
+%ims = nearbyCNN(feat', pd, n, 300, origvis);
 
 out.ims = ims;
 out.orig = orig;
 out.feat = feat;
 out.im = im;
 out.bbox = bbox;
+out.featplot = featplot;
+
+for i=1:size(ims, 4),
+  imwrite(ims(:, :, :, i), sprintf('/Users/vondrick/Desktop/icnn-%i.jpg', i));
+end
+imwrite(origvis, '/Users/vondrick/Desktop/icnn-original.jpg');
+imwrite(featplot, '/Users/vondrick/Desktop/icnn-featplot.jpg');
+imwrite(imdiffmatrix(ims, origvis), '/Users/vondrick/Desktop/icnn-diffmatrix.jpg');

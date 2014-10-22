@@ -27,6 +27,8 @@ im = ones(cy*sy, cx*sx, 3);
 
 iii = randperm(size(pd.drgb,2));
 
+lab2rgb = makecform('lab2srgb');
+
 fprintf('icnn: show pair dict: ');
 for i=1:min(sy*sx, pd.k),
   fprintf('.');
@@ -35,8 +37,13 @@ for i=1:min(sy*sx, pd.k),
   col = floor((i-1) / sx)+1;
 
   graypic = reshape(pd.drgb(:, iii(i)), [gny gnx 3]);
-  graypic(:) = graypic(:) - min(graypic(:));
-  graypic(:) = graypic(:) / max(graypic(:));
+  graypic(:, :, 1) = graypic(:, :, 1) * 100 + 50;
+  graypic(:, :, [2 3]) = graypic(:, :, [2 3]) * 128;
+
+  graypic = applycform(double(graypic), lab2rgb);
+  
+  %graypic(:) = graypic(:) - min(graypic(:));
+  %graypic(:) = graypic(:) / max(graypic(:));
 
   if isfield(pd, 'dhog'),
     hogfeat = reshape(pd.dhog(:, iii(i)), [8 8 computeHOG()]);

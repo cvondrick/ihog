@@ -42,9 +42,17 @@ if iters > 0,
     data = load(chunks{chunkid});
     fprintf('icnn: chunk %i has d=%i, n=%i\n', chunkid, size(data.data, 1), size(data.data,2));
 
+    if any(isnan(data.data(:))),
+      error(sprintf('NaN found in chunkfile: %s\n', chunks{chunkid}));
+    end
+
     [dict, model] = mexTrainDL(data.data, param, model);
     model.iter = i*param.iter;
     param.D = dict;
+
+    if any(isnan(dict(:))),
+      error(sprintf('NaN found in dictionary'));
+    end
 
     chunkid = mod(chunkid, length(chunks))+1;
   end
