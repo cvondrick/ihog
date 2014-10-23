@@ -23,6 +23,9 @@ for i=1:length(data),
   fprintf('%s\n', outpath);
 
   im = imread([imdir '/' tline]);
+  if size(im,3) == 1,
+    im = repmat(im, [1 1 3]);
+  end
   im = imresize(im, [256 256]);
 
   %if size(im,1) > size(im,2),
