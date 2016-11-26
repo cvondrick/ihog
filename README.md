@@ -5,6 +5,9 @@ This software package contains tools to invert and visualize HOG features.
 It implements the Paired Dictionary Learning algorithm described in our
 paper "HOGgles: Visualizing Object Detection Features" [1].
 
+<img src='http://i.imgur.com/62zBmas.png'>
+
+
 Installation
 ------------
 
